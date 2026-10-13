@@ -6,6 +6,16 @@ from homeassistant.components import recorder
 from custom_components.ziko_ha_tools.adapters import HAAdapter
 
 
+async def recorder_barrier(instance):
+    # async_block_till_done can see an empty queue while a worker is processing
+    # a state event. Always enqueue the native commit barrier in tests.
+    import asyncio
+    from homeassistant.components.recorder.tasks import SynchronizeTask
+    future = instance.hass.loop.create_future()
+    instance.queue_task(SynchronizeTask(future))
+    await asyncio.wait_for(future, 10)
+
+
 async def test_real_recorder_sqlite_reads_attribute_changes(house, tmp_path):
     hass = house.hass
     loader.async_setup(hass)
@@ -18,14 +28,14 @@ async def test_real_recorder_sqlite_reads_attribute_changes(house, tmp_path):
     assert await recorder.async_setup(hass, config)
     await hass.async_start()
     instance = recorder.get_instance(hass)
-    await instance.async_block_till_done()
+    await recorder_barrier(instance)
     start = datetime.now(timezone.utc) - timedelta(minutes=1)
     hass.states.async_set('climate.radiator', 'heat', {'current_temperature': 28.2, 'temperature': 19})
     await hass.async_block_till_done()
-    await instance.async_block_till_done()
+    await recorder_barrier(instance)
     hass.states.async_set('climate.radiator', 'heat', {'current_temperature': 25.3, 'temperature': 19})
     await hass.async_block_till_done()
-    await instance.async_block_till_done()
+    await recorder_barrier(instance)
     rows = await HAAdapter(hass).history(['climate.radiator'], start, datetime.now(timezone.utc))
     values = [row['attributes']['current_temperature'] for row in rows['climate.radiator']]
     assert 28.2 in values and 25.3 in values
@@ -41,7 +51,7 @@ async def test_real_recorder_sqlite_reads_attribute_changes(house, tmp_path):
     hass.states.async_set('climate.radiator', 'heat', {'current_temperature': 28.4, 'temperature': 19})
     observed = hass.states.get('climate.radiator').last_updated
     await hass.async_block_till_done()
-    await instance.async_block_till_done()
+    await recorder_barrier(instance)
     boundary_start = datetime.now(timezone.utc)
     from test_history_tools import tool, context
     from homeassistant.helpers.llm import ToolInput

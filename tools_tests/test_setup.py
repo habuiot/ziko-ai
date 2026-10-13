@@ -86,3 +86,75 @@ async def test_flow_requires_admin_and_nonempty_bulk_scope(house):
     args['areas'] = [house.area]
     result = await flow.async_step_user(args)
     assert result['type'] == 'create_entry' and result['data']['owner_user_id'] == user.id
+
+
+async def test_actual_frontend_context_binds_authenticated_admin_request(house):
+    from aiohttp.test_utils import make_mocked_request
+    from homeassistant.components.http.const import KEY_HASS_USER
+    from homeassistant.components.config.config_entries import ConfigManagerFlowIndexView
+    from homeassistant.helpers.http import current_request
+    from custom_components.ziko_ha_tools.config_flow import ZikoToolsFlow
+    user = await house.hass.auth.async_create_user('Authenticated fixture admin')
+    request = make_mocked_request('POST', '/api/config/config_entries/flow')
+    request[KEY_HASS_USER] = user
+    flow = ZikoToolsFlow()
+    flow.hass, flow.handler = house.hass, 'ziko_ha_tools'
+    flow.context = ConfigManagerFlowIndexView(house.hass.config_entries.flow).get_context({'handler': 'ziko_ha_tools'})
+    assert 'user_id' not in flow.context  # Actual HA frontend does not add it.
+    token = current_request.set(request)
+    try:
+        result = await flow.async_step_user({'areas': [house.area], 'entities': [], 'automations': [],
+                                            'read_unexposed': True, 'diagnostics': False})
+        assert result['type'] == 'create_entry'
+        assert result['data']['owner_user_id'] == user.id
+    finally:
+        current_request.reset(token)
+
+
+@pytest.mark.parametrize('authenticated_nonadmin', [False, True])
+async def test_http_request_identity_overrides_programmatic_owner_context(house, authenticated_nonadmin):
+    from aiohttp.test_utils import make_mocked_request
+    from homeassistant.components.http.const import KEY_HASS_USER
+    from homeassistant.helpers.http import current_request
+    from homeassistant.auth.const import GROUP_ID_USER
+    from custom_components.ziko_ha_tools.config_flow import ZikoToolsFlow
+    admin = await house.hass.auth.async_create_user('Admin')
+    other = await house.hass.auth.async_create_user('Other', group_ids=[GROUP_ID_USER])
+    request = make_mocked_request('POST', '/api/config/config_entries/flow')
+    if authenticated_nonadmin:
+        request[KEY_HASS_USER] = other
+    flow = ZikoToolsFlow()
+    flow.hass, flow.handler = house.hass, 'ziko_ha_tools'
+    flow.context = {'user_id': admin.id}
+    token = current_request.set(request)
+    try:
+        assert (await flow.async_step_user())['reason'] == 'admin_required'
+    finally:
+        current_request.reset(token)
+
+
+async def test_actual_options_frontend_binds_authenticated_admin_request(house):
+    from aiohttp.test_utils import make_mocked_request
+    from homeassistant.components.http.const import KEY_HASS_USER
+    from homeassistant.components.config.config_entries import OptionManagerFlowIndexView
+    from homeassistant.helpers.http import current_request
+    from homeassistant.config_entries import ConfigEntry
+    from custom_components.ziko_ha_tools.config_flow import ZikoToolsOptions
+    user = await house.hass.auth.async_create_user('Fixture options admin')
+    entry = ConfigEntry(version=1, minor_version=1, domain='ziko_ha_tools', title='Ziko',
+        data={'areas': [house.area], 'owner_user_id': user.id}, options={}, source='user',
+        unique_id='ziko', discovery_keys={}, subentries_data=())
+    house.hass.config_entries._entries[entry.entry_id] = entry
+    request = make_mocked_request('POST', '/api/config/config_entries/options/flow')
+    request[KEY_HASS_USER] = user
+    flow = ZikoToolsOptions()
+    flow.hass, flow.handler = house.hass, entry.entry_id
+    flow.context = OptionManagerFlowIndexView(house.hass.config_entries.options).get_context({'handler': entry.entry_id})
+    token = current_request.set(request)
+    try:
+        assert (await flow.async_step_init())['type'] == 'form'
+        result = await flow.async_step_init({'areas': [house.area], 'entities': [], 'automations': [],
+                                            'read_unexposed': True, 'diagnostics': True})
+        assert result['type'] == 'create_entry' and result['data']['owner_user_id'] == user.id
+    finally:
+        current_request.reset(token)

@@ -99,6 +99,8 @@ A tesztek között valódi SQLite Recorder-olvasás, HA-regiszterek, attribútum
 10. A HA 2026.10.0 ellenőrzött; későbbi HA-verziók és az éles HACS-telepítés nem. Egy későbbi interfészváltozás célzott kompatibilitási frissítést tehet szükségessé.
 11. A ZIP mellett külön GitHub-javaslat készül az aktuális közzétett alapra, a főág felülírása nélkül. Ennek ára, hogy a HACS főági telepítés a javaslat beolvasztásáig vár.
 
-A független kódellenőrzés négy érdemi hibát talált: mesterséges kezdőállapot-időbélyeg, címke/emelet alapú futásnyom-célzás, korábbi pufferelt futás hatókörének visszavonása, idézőjeles JSON/Python titokmezők. Mind a négy javítást először hibát reprodukáló teszt, majd sikeres tesztfuttatás ellenőrizte. A végső készlet **52 sikeres tesztet** tartalmaz. Elhalasztott kisebb kódellenőrzési hibát nem jeleztek.
+A független kódellenőrzés négy érdemi hibát talált: mesterséges kezdőállapot-időbélyeg, címke/emelet alapú futásnyom-célzás, korábbi pufferelt futás hatókörének visszavonása, idézőjeles JSON/Python titokmezők. Mind a négy javítást először hibát reprodukáló teszt, majd sikeres tesztfuttatás ellenőrizte. A végső készlet **56 sikeres tesztet** tartalmaz. Elhalasztott kisebb kódellenőrzési hibát nem jeleztek.
 
 A később beküldött „jegyezd meg a lámpa jelenlegi fehér színét” példa további igény: pontos élő színadat-olvasás és tartós beállításmemória. Ez a verzió nem állítja, hogy ilyen beállítást tartósan elmentett; a teljes értékű beállításmemória külön funkció.
+
+A tiszta GitHub-környezet további tesztjavítást tett szükségessé: a Recorder-teszt immár kifejezett tranzakciós szinkronpontra vár. A beállítófelület tényleges, hitelesített HTTP-kérése adja az adminisztrátor azonosítóját; ezt konfigurációs és beállításmódosítási próbák is ellenőrzik.

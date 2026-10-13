@@ -3,6 +3,8 @@ import probatio
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import selector
+from homeassistant.helpers.http import current_request
+from homeassistant.components.http.const import KEY_HASS_USER
 from .const import DOMAIN
 
 
@@ -20,7 +22,12 @@ def settings_schema(defaults):
 
 
 async def _admin(hass, context):
-    user_id = context.get('user_id')
+    # HA's native config/options frontend does not add user_id to flow
+    # context. Bind to its authenticated request, never a form field.
+    request = current_request.get()
+    request_user = request.get(KEY_HASS_USER) if request is not None else None
+    user_id = ((request_user.id if request_user is not None else None)
+               if request is not None else context.get('user_id'))
     user = await hass.auth.async_get_user(user_id) if user_id else None
     return user_id if user and user.is_admin and user.is_active else None
 
