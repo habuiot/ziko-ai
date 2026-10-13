@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.ziko
+*connection*.json
+credentials.json
+imported-sessions.json
+host.json
+*.sqlite*

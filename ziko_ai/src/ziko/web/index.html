@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="hu">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ziko AI</title><link rel="stylesheet" href="./style.css"><script src="./app.js" defer></script></head>
+<body>
+<main>
+<header><div class="brand"><span class="orb" aria-hidden="true">Z</span><div><h1>Ziko<span>AI</span></h1><p>A Házikó asszisztense</p></div></div><span id="badge" class="badge">Betöltés…</span></header>
+<p id="notice" class="notice" role="status" aria-live="polite"></p>
+<section id="setup" class="card" hidden><h2>Első beállítás</h2><p>A saját HA-felhasználóazonosítód:</p><code id="user-id"></code><button id="copy-id" type="button">Azonosító másolása</button><p>Az alkalmazás Konfiguráció lapján másold az <strong>operator_user_id</strong> mezőbe, mentsd, majd indítsd újra Zikót.</p></section>
+<div id="workspace" hidden>
+<details class="card" id="connection-box"><summary>Fiók és modell <span id="account-summary"></span></summary>
+<p id="account">Kapcsolódás szükséges</p><p class="muted">A chathez szükséges szöveg és a kézzel mentett tények az OpenAI szolgáltatásához kerülnek. Beszélgetéskor a szűrt Házikó-állapotkép is az OpenAI-hoz kerül. A háttérfigyelés helyben fut, AI-hívás nélkül. Az előzmény a Házikóban marad.</p>
+<label for="connection-file">Kapcsolati fájl importálása</label><input id="connection-file" type="file" accept=".json,application/json"><p class="muted">A fájlt a csomag bejelentkező segédje készíti. Első belépéshez jelenleg számítógép szükséges.</p>
+<div class="row"><button id="import" type="button">Fiók kapcsolása</button><button id="disconnect" class="quiet" type="button">Fiók leválasztása</button></div>
+<label for="model">A fiókod elérhető modelljei</label><div class="row"><select id="model"><option value="">Modellválasztás</option></select><button id="refresh-models" class="quiet" type="button">Frissítés</button></div>
+</details>
+<details class="card" id="house-box" open><summary>Házikó megfigyelése <span id="house-summary"></span></summary>
+<p id="house-status" role="status">Kapcsolódás…</p><p id="house-coverage" class="muted"></p><p class="muted">Folyamatos helyi állapotfigyelés. Nem működtet eszközöket, és nem küld automatikus riasztást. A legutóbbi 200 változás újraindításig marad meg.</p>
+<label for="house-search">Eszköz, helyiség vagy entitás keresése</label><input id="house-search" type="search" placeholder="Például: Nagyszoba">
+<div id="house-list" class="house-list"></div><h3>Legutóbbi változások</h3><div id="house-recent" class="house-list"></div>
+</details>
+<section class="card chat-card"><div class="chat-top"><div><h2>Beszélgessünk</h2><p class="muted">Folyamatos állapotfigyelés · eszközvezérlés még nincs</p></div><button id="new-chat" class="quiet" type="button">＋ Új</button></div>
+<label class="sr-only" for="conversation">Beszélgetés</label><select id="conversation"></select>
+<div id="messages" class="messages" aria-live="polite"><p class="empty">Szia, Mesterem! Írj nekem, ha a fiókkapcsolat és a modell készen áll.</p></div>
+<form id="chat-form"><label class="sr-only" for="prompt">Üzenet Zikónak</label><textarea id="prompt" maxlength="4000" rows="3" placeholder="Írj Zikónak…"></textarea><div class="row composer-actions"><span id="run-status" class="muted"></span><button id="cancel" class="quiet" type="button" hidden>Megszakítás</button><button id="send" type="submit">Küldés ↗</button></div></form>
+<div class="row history-actions"><button id="export" class="quiet small" type="button">Beszélgetés exportálása</button><button id="delete-chat" class="quiet small danger" type="button">Beszélgetés törlése</button></div></section>
+<details class="card"><summary>Helyi memória <span id="memory-count"></span></summary><p class="muted">Te döntöd el, mit őrizzek meg. Ziko nem ír ide automatikusan.</p>
+<div id="memory-list"></div><form id="memory-form"><input id="memory-id" type="hidden"><label for="memory-text">Megőrzendő tény</label><textarea id="memory-text" rows="3" maxlength="8000" placeholder="Például: A nagyszobában van a tévé."></textarea><label for="memory-source">Forrás</label><input id="memory-source" maxlength="200" value="kézzel mentett"><div class="row"><button type="submit">Emlék mentése</button><button id="memory-reset" class="quiet" type="button">Új emlék</button></div></form>
+</details>
+<details class="card"><summary>Alkalmazás költöztetése</summary>
+<p>A fiókkapcsolat, beszélgetések, memória és eszközlista jelszóval titkosított fájlba kerül. Ugyanazzal a HA-felhasználóval importáld az üres új alkalmazásba.</p>
+<label for="migration-password">Költöztetési jelszó (legalább 12 karakter)</label><input id="migration-password" type="password" autocomplete="off" minlength="12" maxlength="200">
+<div class="row"><button id="migration-export" type="button">Titkosított mentés letöltése</button><button id="migration-cancel" type="button" class="quiet">Költöztetés megszakítása</button></div>
+<p class="muted">Mentés után a régi Ziko szünetel. Állítsd le a HA alkalmazáslapján az új változat importálása előtt. A régi alkalmazást csak a sikeres költözés ellenőrzése után töröld.</p>
+<label for="migration-file">Költöztetési fájl</label><input id="migration-file" type="file" accept=".ziko"><button id="migration-import" type="button">Mentés importálása</button>
+</details></div>
+<footer>Ziko AI · 0.3.0 · Helyi megfigyelés, előzmény és memória</footer>
+</main></body></html>

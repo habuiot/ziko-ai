@@ -1,0 +1,22 @@
+name: Ziko AI – Házikó megfigyelés
+version: "0.3.0"
+slug: ziko_ai
+description: Folyamatos helyi Házikó-megfigyelés, magyar chat és memória saját ChatGPT-fiókkal.
+arch:
+  - amd64
+startup: application
+boot: auto
+init: false
+homeassistant_api: true
+ingress: true
+ingress_port: 8099
+panel_icon: mdi:robot-outline
+panel_title: Ziko AI
+panel_admin: true
+options:
+  operator_user_id: ""
+  approved_device_ids: []
+schema:
+  operator_user_id: str
+  approved_device_ids:
+    - str
