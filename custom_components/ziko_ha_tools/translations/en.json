@@ -1,0 +1,46 @@
+{
+  "title": "Ziko HA Tools",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ziko HA Tools",
+        "description": "Choose only rooms belonging to this household. Extra entities are optional. This integration only reads; device control continues to use Assist exposure settings. Diagnostics include whole-system HA errors/Core logs and verified selected automation traces; they require the HA administrator who saves these options. Anonymous voice satellites cannot access diagnostics. All diagnostic results may be sent to your configured AI provider when requested.",
+        "data": {
+          "areas": "Household rooms",
+          "entities": "Additional individual entities",
+          "automations": "Automations approved for traces",
+          "read_unexposed": "Read enabled household entities even when not exposed to Assist",
+          "diagnostics": "Enable owner-authenticated diagnostics"
+        }
+      }
+    },
+    "error": {
+      "empty_scope": "Select at least one room or entity."
+    },
+    "abort": {
+      "single_instance_allowed": "Only one configuration is supported.",
+      "admin_required": "An authenticated HA administrator is required."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ziko HA Tools",
+        "description": "Choose only rooms belonging to this household. Extra entities are optional. This integration only reads; device control continues to use Assist exposure settings. Diagnostics include whole-system HA errors/Core logs and verified selected automation traces; they require the HA administrator who saves these options. Anonymous voice satellites cannot access diagnostics. All diagnostic results may be sent to your configured AI provider when requested.",
+        "data": {
+          "areas": "Household rooms",
+          "entities": "Additional individual entities",
+          "automations": "Automations approved for traces",
+          "read_unexposed": "Read enabled household entities even when not exposed to Assist",
+          "diagnostics": "Enable owner-authenticated diagnostics"
+        }
+      }
+    },
+    "error": {
+      "empty_scope": "Select at least one room or entity."
+    },
+    "abort": {
+      "admin_required": "An authenticated HA administrator is required."
+    }
+  }
+}

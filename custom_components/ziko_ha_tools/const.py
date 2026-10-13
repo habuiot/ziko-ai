@@ -1,0 +1,9 @@
+"""Integration constants."""
+DOMAIN = 'ziko_ha_tools'
+VERSION = '0.1.0'
+MAX_ENTITIES = 5
+MAX_DAYS = 14
+MAX_ROWS = 50_000
+MAX_OUTPUT = 200
+MAX_LOG_BYTES = 256_000
+MAX_STATS_DAYS = 366
