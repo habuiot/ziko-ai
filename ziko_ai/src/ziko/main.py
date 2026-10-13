@@ -13,6 +13,7 @@ from .oauth import ensure_access_token, validate_import, disconnect_account
 from .provider import list_models, stream_reply
 from .settings import Settings
 from .storage import Storage
+from .monitor import Monitor
 from .migration import export_data, decode_data, restore_data, MAX_SIZE
 
 WEB=Path(__file__).parent/'web'
@@ -41,12 +42,20 @@ def create_app(settings: Settings, client: httpx.AsyncClient | None = None):
             token=await ensure_access_token(app.state.store,app.state.http)
             async with aclosing(stream_reply(app.state.http,token,model,messages,instructions)) as source:
                 async for event in source:yield event
-        app.state.house=HouseObserver(settings.supervisor_token)
-        if settings.operator_user_id and not app.state.migration_frozen:app.state.house.start()
-        app.state.chat=ChatService(app.state.storage,provide,house_context=app.state.house.context)
+        app.state.monitor=Monitor(app.state.storage)
+        app.state.house=HouseObserver(settings.supervisor_token,on_change=app.state.monitor.enqueue)
+        def house_context():
+            result=app.state.house.context()
+            health=app.state.monitor.snapshot(app.state.house.snapshot())
+            result['health']={k:health[k] for k in ('fresh','alerts','coverage')}
+            return result
+        if settings.operator_user_id and not app.state.migration_frozen:
+            app.state.house.start();app.state.monitor.start(app.state.house)
+        app.state.chat=ChatService(app.state.storage,provide,house_context=house_context)
         try:yield
         finally:
             await app.state.house.stop()
+            await app.state.monitor.stop()
             if app.state.chat.busy:await app.state.chat.cancel(app.state.chat.run.request_id)
             app.state.storage.close()
             if client is None:await app.state.http.aclose()
@@ -109,29 +118,44 @@ def create_app(settings: Settings, client: httpx.AsyncClient | None = None):
     async def status():
         if not settings.operator_user_id:return dict(operator_configured=False,connected=False,busy=False)
         return dict(app.state.store.status(),operator_configured=True,busy=app.state.chat.busy,
-                    migration_frozen=app.state.migration_frozen,selected_model=app.state.storage.setting('model'),version='0.3.1',stage='B – folyamatos megfigyelés')
+                    migration_frozen=app.state.migration_frozen,selected_model=app.state.storage.setting('model'),version='0.4.0',stage='C – helyi jelzések és napló')
 
     @app.get('/house')
     async def house():return app.state.house.snapshot()
 
+    @app.get('/health')
+    async def health():return app.state.monitor.snapshot(app.state.house.snapshot())
+
+    @app.post('/health/ack')
+    async def acknowledge(req: Request):
+        data=await read_json(req,4096);idle();key=data.get('key')
+        if not isinstance(key,str) or key not in {a['key'] for a in app.state.monitor.snapshot(app.state.house.snapshot())['alerts']}:
+            raise ValueError('A jelzés már nem aktív')
+        app.state.monitor.acknowledge(key);return dict(ok=True)
+
     @app.post('/migration/export')
     async def migration_export(req: Request):
         data=await read_json(req,4096);idle(allow_frozen=True);app.state.connection_busy=True
+        was_frozen=app.state.migration_frozen
         try:
             async with app.state.store.refresh_lock:
+                await app.state.house.stop()
+                await app.state.monitor.stop()
                 payload=export_data(app.state.storage,settings.data_dir,settings.operator_user_id,
                                     app.state.house.approved,data.get('password'))
                 atomic_json(settings.data_dir/'migration-frozen.json',dict(frozen=True))
                 app.state.migration_frozen=True
                 app.state.account_epoch+=1
-                await app.state.house.stop()
                 return dict(file=payload)
-        finally:app.state.connection_busy=False
+        finally:
+            app.state.connection_busy=False
+            if not app.state.migration_frozen and not was_frozen:
+                app.state.house.start();app.state.monitor.start(app.state.house)
 
     @app.post('/migration/cancel')
     async def migration_cancel():
         idle(allow_frozen=True);(settings.data_dir/'migration-frozen.json').unlink(missing_ok=True)
-        app.state.migration_frozen=False;app.state.house.start()
+        app.state.migration_frozen=False;app.state.house.start();app.state.monitor.start(app.state.house)
         return dict(ok=True)
 
     @app.post('/migration/import')
@@ -146,18 +170,22 @@ def create_app(settings: Settings, client: httpx.AsyncClient | None = None):
         app.state.connection_busy=True
         try:
             await app.state.house.stop()
+            await app.state.monitor.stop()
             app.state.storage.close()
             try:restore_data(settings.data_dir,record)
             finally:
                 app.state.storage=Storage(settings.data_dir/'chat.sqlite')
                 app.state.chat.storage=app.state.storage
+                app.state.monitor=Monitor(app.state.storage)
+                app.state.house.on_change=app.state.monitor.enqueue
             app.state.store=CredentialStore(settings.data_dir)
             app.state.account_epoch+=1
-            app.state.house=HouseObserver(settings.supervisor_token,approved=record['approved_devices'])
-            app.state.chat.house_context=app.state.house.context
-            app.state.house.start()
+            app.state.house=HouseObserver(settings.supervisor_token,approved=record['approved_devices'],on_change=app.state.monitor.enqueue)
+            app.state.house.start();app.state.monitor.start(app.state.house)
             return dict(ok=True)
-        finally:app.state.connection_busy=False
+        finally:
+            app.state.connection_busy=False
+            app.state.house.start();app.state.monitor.start(app.state.house)
 
     @app.post('/connection/import')
     async def import_connection(req: Request):

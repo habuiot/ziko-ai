@@ -1,3 +1,11 @@
+# 0.4.0
+
+- Tartós, helyi eseménynapló: 14 nap, legfeljebb 10 000 bejegyzés; 10 másodpercenkénti mentés.
+- Közös jelzések: akkumulátor 20% alatt (25%-nál megszűnik), nyitásérzékelő 10 perce nyitva, minden figyelt állapotentitás 10 perce unavailable.
+- A „Láttam” jelölés megmarad, de nem szünteti meg a hibát. Ismeretlen vagy elavult állapot nem igazol hibát vagy helyreállást.
+- A napló és jelzések költöztetéskor megmaradnak. A chat megkapja az aktuális jelzéseket.
+- Nincs telefonos push, eszközvezérlés vagy automatikus AI-hívás.
+
 # Változások
 
 ## 0.3.1

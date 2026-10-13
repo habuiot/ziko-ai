@@ -1,5 +1,5 @@
 name: Ziko AI – Házikó megfigyelés
-version: "0.3.1"
+version: "0.4.0"
 slug: ziko_ai
 description: Folyamatos helyi Házikó-megfigyelés, magyar chat és memória saját ChatGPT-fiókkal.
 arch:

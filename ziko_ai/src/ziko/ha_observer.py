@@ -119,8 +119,9 @@ class ReadOnlyConnection:
 
 
 class HouseObserver:
-    def __init__(self, token='', *, approved=None, url='ws://supervisor/core/websocket', retry_seconds=1):
+    def __init__(self, token='', *, approved=None, url='ws://supervisor/core/websocket', retry_seconds=1, on_change=None):
         self.token = token
+        self.on_change = on_change
         self.approved = frozenset(approved_devices() if approved is None else approved)
         self.url = url
         self.retry_seconds = retry_seconds
@@ -129,6 +130,7 @@ class HouseObserver:
         self.states = {}
         self.recent = deque(maxlen=200)
         self.connected = False
+        self.session_verified = False
         self.synced = None
         self.sync_monotonic = 0
         self.task = None
@@ -150,10 +152,16 @@ class HouseObserver:
         self.disconnected()
 
     def disconnected(self):
+        was_connected=self.session_verified
         self.connected = False
+        self.session_verified = False
+        if was_connected and self.on_change:
+            self.on_change(dict(kind='connection',connected=False,name='Home Assistant',previous='Friss állapotkép',
+                state='Kapcsolati rés; kimaradt változások nem ismertek',time=now()))
         self.message = 'HA-kapcsolat megszakadt; az állapotok elavultak' if self.token else 'HA-hozzáférés még nincs engedélyezve'
 
     def replace(self, devices, entities, areas, states):
+        was_connected=self.session_verified
         by_device = {d['id']: d for d in devices if d.get('id') in self.approved}
         by_area = {a['area_id']: bounded(a.get('name')) for a in areas}
         catalog = {}
@@ -179,8 +187,12 @@ class HouseObserver:
         self.synced = now()
         self.sync_monotonic = time.monotonic()
         self.connected = True
+        self.session_verified = True
         self.failure = None
         self.message = 'Folyamatos megfigyelés aktív'
+        if not was_connected and self.on_change:
+            self.on_change(dict(kind='connection',connected=True,name='Home Assistant',previous='Kapcsolat nem igazolt',
+                state='Teljes szinkron helyreállt',time=now()))
 
     def _set(self, raw):
         eid = raw.get('entity_id')
@@ -195,7 +207,7 @@ class HouseObserver:
         meta = self.catalog[eid]
         self.states[eid] = dict(meta, entity_id=eid, name=meta['name'] if meta['name'] != eid else bounded(attrs.get('friendly_name') or meta['device']),
             state=safe_state(raw.get('state', 'unknown'), choices), attributes=safe, has_state=True,
-            last_updated=bounded(raw.get('last_updated')))
+            last_updated=bounded(raw.get('last_updated')), last_changed=bounded(raw.get('last_changed')))
 
     def apply_event(self, data, *, after_sync=False):
         eid = data.get('entity_id')
@@ -226,8 +238,10 @@ class HouseObserver:
         self._set(raw)
         new = self.states[eid]
         if old and (old['state'] != new['state'] or old['attributes'] != new['attributes']):
-            self.recent.appendleft(dict(entity_id=eid, name=new['name'], device=new['device'], area=new['area'],
-                previous=old['state'], state=new['state'], time=now()))
+            event=dict(entity_id=eid, device_id=new['device_id'], name=new['name'], device=new['device'], area=new['area'],
+                previous=old['state'], state=new['state'], time=now())
+            self.recent.appendleft(event)
+            if self.on_change:self.on_change(event)
 
     def snapshot(self):
         fresh = self.connected and time.monotonic() - self.sync_monotonic < 90

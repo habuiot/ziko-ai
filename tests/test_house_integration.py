@@ -27,3 +27,13 @@ def test_house_endpoint_is_operator_only(tmp_path):
         result=client.get('/house',headers={USER_HEADER:'owner'}).json()
         assert result['fresh'] is False and result['mode']=='read_only'
         assert 'token' not in json.dumps(result)
+
+
+def test_health_access_and_acknowledgement(tmp_path):
+    app=create_app(Settings(tmp_path,'owner'),httpx.AsyncClient(trust_env=False))
+    headers={USER_HEADER:'owner','X-Ziko-Request':'1'}
+    with TestClient(app,client=('172.30.32.2',123)) as client:
+        assert client.get('/health',headers={USER_HEADER:'other'}).status_code==403
+        assert client.get('/health',headers=headers).status_code==200
+        assert client.post('/health/ack',headers={USER_HEADER:'owner'},json={'key':'x'}).status_code==403
+        assert client.post('/health/ack',headers=headers,json={'key':'x'}).status_code==400

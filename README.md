@@ -1,6 +1,6 @@
 # Ziko AI – Home Assistant
 
-Magyar szöveges asszisztens, helyi beszélgetés és kézzel mentett memória, folyamatos Home Assistant állapotmegfigyelés. Saját ChatGPT-fiókkal kapcsolható. Eszközvezérlés és automatikus riasztás még nincs.
+Magyar szöveges asszisztens, helyi beszélgetés és kézzel mentett memória, folyamatos Home Assistant állapotmegfigyelés. Saját ChatGPT-fiókkal kapcsolható. Automatikus helyi jelzések és tartós eseménynapló; eszközvezérlés és telefonos értesítés még nincs.
 
 ## Telepítés
 
@@ -50,3 +50,18 @@ python -m pytest -q
 ```
 
 amd64 Home Assistant OS, Python 3.12. A forrásból építést a HA Supervisor végzi; helyi tesztek nem helyettesítik a valódi Docker-build és HA-próba ellenőrzését.
+
+
+## Helyi jelzések és tartós napló (0.4.0)
+
+A szabályok 10 másodpercenként a friss HA-állapotképből dolgoznak, csak a jóváhagyott Házikó-eszközökön. A teljes entitáslista továbbra is megmarad; a szabályokhoz szükséges típusokat külön számoljuk a felületen.
+
+- Akkumulátor: `sensor` + `device_class: battery` + `%`, számszerű `battery_level` attribútum, vagy `binary_sensor` + `device_class: battery`. Százaléknál 20% alatt jelez, 25%-nál helyreáll; feszültséget nem értelmez százalékként.
+- Nyitottság: ajtó/ablak/nyílás/garázsajtó osztályú bináris érzékelő, 10 perces folyamatos nyitottság. A `last_changed` segít újraindítás után is megállapítani az időt.
+- Elérhetetlenség: csak akkor, ha egy eszköz összes figyelt állapotentitása `unavailable` legalább 10 perce. Egyetlen élő állapot kizárja a teljes eszköz kiesését. Beállítások és műveletgombok nem döntenek erről.
+
+A HA-kapcsolat megszakadása, hiányzó vagy ismeretlen állapot nem bizonyít eszközhibát vagy gyógyulást. A korábbi aktív jelzés ilyenkor „jelenleg nem igazolt”. A „Láttam” nyugtázás nem zárja le a problémát; a jó állapot zárja le. A jelzések csak a Ziko-felületen jelennek meg, telefonos értesítés nincs.
+
+A szűrt állapotváltozások helyi SQLite-naplóba kerülnek 10 másodpercenként, legfeljebb 14 napig és 10 000 bejegyzésig. A memóriabeli várólista 1000 eseményes; túlterhelésnél a kimaradt események száma látható. Szabályos leállításkor mentünk; váratlan áramvesztésnél a még nem mentett események elveszhetnek. Kapcsolati rések külön bejegyzést kapnak, a közben történt változásokat nem találjuk ki. A felület a legutóbbi 100 megmaradt eseményt mutatja. A napló, jelzések, időzítők és nyugtázások titkosított költöztetéssel együtt átkerülnek.
+
+A háttérfigyelés helyben fut, AI-hívás nélkül; beszélgetéskor az aktív jelzések is a modell állapotkontextusába kerülnek.

@@ -14,10 +14,15 @@
 <label for="model">A fiókod elérhető modelljei</label><div class="row"><select id="model"><option value="">Modellválasztás</option></select><button id="refresh-models" class="quiet" type="button">Frissítés</button></div>
 </details>
 <details class="card" id="house-box" open><summary>Házikó megfigyelése <span id="house-summary"></span></summary>
-<p id="house-status" role="status">Kapcsolódás…</p><p id="house-coverage" class="muted"></p><p class="muted">Folyamatos helyi állapotfigyelés. Nem működtet eszközöket, és nem küld automatikus riasztást. A legutóbbi 200 változás újraindításig marad meg.</p>
+<p id="house-status" role="status">Kapcsolódás…</p><p id="house-coverage" class="muted"></p><p class="muted">Folyamatos helyi állapotfigyelés. Az automatikus jelzések és az eseménynapló helyben készülnek, külön AI-hívás nélkül. Eszközvezérlés még nincs.</p>
 <label for="house-search">Eszköz, helyiség vagy entitás keresése</label><input id="house-search" type="search" placeholder="Például: Nagyszoba">
-<div id="house-list" class="house-list"></div><h3>Legutóbbi változások</h3><div id="house-recent" class="house-list"></div>
+<div id="house-list" class="house-list"></div><div id="house-recent" hidden></div>
 </details>
+<details class="card" open><summary>Helyi jelzések <span id="health-summary"></span></summary>
+<p id="health-status" role="status">Betöltés…</p><p class="muted">Akkumulátor 20% alatt · ajtó vagy ablak 10 perce nyitva · eszköz összes figyelt állapotentitása 10 perce nem elérhető. A jelzések itt jelennek meg; telefonos értesítés még nincs.</p>
+<p id="health-coverage" class="muted"></p><div id="health-alerts"></div>
+</details>
+<details class="card"><summary>Tartós eseménynapló</summary><p class="muted">Legfeljebb 14 nap vagy 10 000 bejegyzés. Itt a legutóbbi 100 esemény látszik. A fenti kereső erre a listára is szűr.</p><p id="journal-status" class="muted"></p><div id="health-events" class="house-list"></div></details>
 <section class="card chat-card"><div class="chat-top"><div><h2>Beszélgessünk</h2><p class="muted">Folyamatos állapotfigyelés · eszközvezérlés még nincs</p></div><button id="new-chat" class="quiet" type="button">＋ Új</button></div>
 <label class="sr-only" for="conversation">Beszélgetés</label><select id="conversation"></select>
 <div id="messages" class="messages" aria-live="polite"><p class="empty">Szia, Mesterem! Írj nekem, ha a fiókkapcsolat és a modell készen áll.</p></div>
@@ -33,5 +38,5 @@
 <p class="muted">Mentés után a régi Ziko szünetel. Állítsd le a HA alkalmazáslapján az új változat importálása előtt. A régi alkalmazást csak a sikeres költözés ellenőrzése után töröld.</p>
 <label for="migration-file">Költöztetési fájl</label><input id="migration-file" type="file" accept=".ziko"><button id="migration-import" type="button">Mentés importálása</button>
 </details></div>
-<footer>Ziko AI · 0.3.1 · Helyi megfigyelés, előzmény és memória</footer>
+<footer>Ziko AI · 0.4.0 · Helyi megfigyelés, előzmény és memória</footer>
 </main></body></html>

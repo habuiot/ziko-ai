@@ -241,3 +241,32 @@ def test_option_labels_cannot_forward_secrets_urls_or_free_text():
     s[0]['state']='private text';s[0]['attributes']={'options':['private text']}
     o.replace(d,e,a,s)
     assert 'private text' not in json.dumps(o.context())
+
+
+def test_journal_callback_only_receives_sanitized_approved_changes():
+    events=[];o=HouseObserver(approved={'yes'},on_change=events.append);o.replace(*fixture());events.clear()
+    o.apply_event({'entity_id':'light.foreign','new_state':{'entity_id':'light.foreign','state':'on'}})
+    o.apply_event({'entity_id':'light.new_name','new_state':dict(entity_id='light.new_name',state='on',
+        attributes={'access_token':'SECRET'},last_changed='2026-10-13T09:00:00Z')})
+    assert len(events)==1 and events[0]['device_id']=='yes'
+    assert 'SECRET' not in json.dumps(events)
+    assert o.snapshot()['entities'][0]['last_changed']=='2026-10-13T09:00:00Z'
+
+
+def test_short_disconnect_reconnect_emits_gap_without_monitor_tick():
+    events=[];o=HouseObserver(approved={'yes'},on_change=events.append);o.replace(*fixture())
+    events.clear();o.disconnected();o.replace(*fixture())
+    assert [e['connected'] for e in events]==[False,True]
+    assert all(e['kind']=='connection' for e in events)
+
+
+async def test_periodic_sync_has_no_false_recovery_and_failed_sync_records_gap(monkeypatch):
+    events=[];o=HouseObserver(approved={'yes'},on_change=events.append);o.replace(*fixture());events.clear()
+    d,e,a,s=fixture();data=iter([d,e,a,s])
+    async def result(*args,**kwargs):return next(data)
+    monkeypatch.setattr(o,'_result',result)
+    await o.sync_once(None);assert events==[]
+    async def fail(*args,**kwargs):raise ConnectionError()
+    monkeypatch.setattr(o,'_result',fail)
+    with pytest.raises(ConnectionError):await o.sync_once(None)
+    o.disconnected();assert [v['connected'] for v in events]==[False]
