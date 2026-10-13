@@ -1,5 +1,11 @@
 # Változások
 
+## 0.3.1
+
+- A HA által felsorolt select és enum szenzorállapotok láthatók a felületen és a chat állapotképében.
+- A felsorolt üzemmódok és eseménytípusok, valamint az aktuális választásuk megmaradnak.
+- URL-ek, jelszójellegű értékek és nem deklarált szabad szöveg továbbra sem kerülnek az AI állapotképébe.
+
 ## 0.3.0
 
 - Tárolóból telepíthető alkalmazás.

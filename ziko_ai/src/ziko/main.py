@@ -109,7 +109,7 @@ def create_app(settings: Settings, client: httpx.AsyncClient | None = None):
     async def status():
         if not settings.operator_user_id:return dict(operator_configured=False,connected=False,busy=False)
         return dict(app.state.store.status(),operator_configured=True,busy=app.state.chat.busy,
-                    migration_frozen=app.state.migration_frozen,selected_model=app.state.storage.setting('model'),version='0.3.0',stage='B – folyamatos megfigyelés')
+                    migration_frozen=app.state.migration_frozen,selected_model=app.state.storage.setting('model'),version='0.3.1',stage='B – folyamatos megfigyelés')
 
     @app.get('/house')
     async def house():return app.state.house.snapshot()

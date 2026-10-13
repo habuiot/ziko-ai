@@ -36,7 +36,16 @@ def bounded(value, limit=256):
     return text
 
 
-def safe_state(value):
+def safe_choices(value):
+    if not isinstance(value, list) or len(value) > 64:
+        return []
+    return list(dict.fromkeys(v for v in value if isinstance(v, str)
+        and re.fullmatch(r'[\w .°%()/-]{1,128}', v) and bounded(v) == v
+        and not re.search(r'(?i)\b(password|secret|token|credential|authorization|bearer|jelszó|jelszo|api[ _-]?key)\b', v)
+        and not re.match(r'(?i)(sk[-_]|gh[pousr]_|github_pat_|eyJ[A-Za-z0-9_-]+\.)', v)))
+
+
+def safe_state(value, choices=()):
     text = bounded(value)
     known = {'on', 'off', 'unknown', 'unavailable', 'locked', 'unlocked', 'locking', 'unlocking',
         'jammed', 'open', 'closed', 'opening', 'closing', 'idle', 'streaming', 'recording',
@@ -45,7 +54,7 @@ def safe_state(value):
         'dry', 'fan_only', 'heating', 'cooling', 'cleaning', 'paused', 'docked', 'standby',
         'normal', 'low', 'high', 'medium', 'charging', 'not_charging', 'full', 'empty', 'detected', 'clear',
         'playing', 'buffering', 'home', 'not_home', 'active', 'inactive', 'connected', 'disconnected'}
-    if text in known:
+    if text in known or text in choices:
         return text
     try:
         if math.isfinite(float(text)):
@@ -59,6 +68,12 @@ def safe_state(value):
 
 def safe_attributes(attrs):
     result = {}
+    for current, available in (('preset_mode', 'preset_modes'), ('event_type', 'event_types')):
+        choices = safe_choices(attrs.get(available))
+        if choices:
+            result[available] = choices
+            if isinstance(attrs.get(current), str) and attrs[current] in choices:
+                result[current] = attrs[current]
     for key, value in attrs.items():
         if key not in ATTRIBUTES:
             continue
@@ -173,9 +188,13 @@ class HouseObserver:
             return
         attrs = raw.get('attributes') or {}
         safe = safe_attributes(attrs)
+        choices = safe_choices(attrs.get('options')) if eid.startswith('select.') or (
+            eid.startswith('sensor.') and attrs.get('device_class') == 'enum') else []
+        if choices:
+            safe['options'] = choices
         meta = self.catalog[eid]
         self.states[eid] = dict(meta, entity_id=eid, name=meta['name'] if meta['name'] != eid else bounded(attrs.get('friendly_name') or meta['device']),
-            state=safe_state(raw.get('state', 'unknown')), attributes=safe, has_state=True,
+            state=safe_state(raw.get('state', 'unknown'), choices), attributes=safe, has_state=True,
             last_updated=bounded(raw.get('last_updated')))
 
     def apply_event(self, data, *, after_sync=False):

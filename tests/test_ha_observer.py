@@ -199,3 +199,45 @@ def test_large_context_keeps_all_approved_entities_for_ai_selection():
     context=o.context()
     assert context['omitted_entities']==0
     assert len(context['entities'])==1000
+
+
+def test_declared_select_and_enum_states_are_available_to_ai():
+    o=HouseObserver('secret',approved={'yes'})
+    d,e,a,s=fixture()
+    e=[dict(entity_id='select.power_on',device_id='yes',platform='matter'),
+       dict(entity_id='sensor.mode',device_id='yes',platform='mqtt')]
+    s=[dict(entity_id='select.power_on',state='restore',attributes={'options':['on','off','restore']}),
+       dict(entity_id='sensor.mode',state='Deep sleep',attributes={'device_class':'enum','options':['Deep sleep','Running']})]
+    o.replace(d,e,a,s)
+    entities={v['entity_id']:v for v in o.context()['entities']}
+    assert entities['select.power_on']['state']=='restore'
+    assert entities['select.power_on']['attributes']['options']==['on','off','restore']
+    assert entities['sensor.mode']['state']=='Deep sleep'
+
+
+def test_declared_modes_and_event_types_are_preserved():
+    o=ready()
+    o.apply_event(dict(entity_id='light.new_name',new_state=dict(entity_id='light.new_name',state='on',
+        attributes={'preset_mode':'Quiet night','preset_modes':['Quiet night','Normal'],
+                    'event_type':'double_press','event_types':['single_press','double_press']})))
+    attrs=o.context()['entities'][0]['attributes']
+    assert attrs['preset_mode']=='Quiet night' and attrs['event_type']=='double_press'
+
+
+def test_option_labels_cannot_forward_secrets_urls_or_free_text():
+    o=HouseObserver('secret',approved={'yes'})
+    d,e,a,s=fixture();e[0]['entity_id']='select.power_on';s[0]['entity_id']='select.power_on'
+    for value in ['https://user:SECRET@example.test','Bearer SECRET','password=SECRET',
+                  'password SECRET','API key SECRET','sk-proj-SECRET','eyJhbGciOi.SECRET.signature',
+                  '\nSECRET','UNDECLARED']:
+        s[0]['state']=value
+        s[0]['attributes']={'options':['restore',value] if value!='UNDECLARED' else ['restore']}
+        o.replace(d,e,a,s)
+        data=json.dumps(o.context())
+        assert 'SECRET' not in data and 'UNDECLARED' not in data
+        assert o.context()['entities'][0]['state']=='[szöveges állapot kihagyva]'
+    # An arbitrary sensor declaring options is not automatically treated as an enum.
+    e[0]['entity_id']=s[0]['entity_id']='sensor.free_text'
+    s[0]['state']='private text';s[0]['attributes']={'options':['private text']}
+    o.replace(d,e,a,s)
+    assert 'private text' not in json.dumps(o.context())
