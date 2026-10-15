@@ -1,0 +1,46 @@
+{
+  "title": "Ziko HA Tools",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Ziko HA Tools",
+        "description": "Válaszd ki egyszerre a Házikó összes helyiségét. A további egyedi entitások megadása opcionális. Ez a bővítés csak olvas; a vezérlést továbbra is az Assist közzétételi beállításai szabályozzák. A diagnosztika a teljes HA rendszer hibáit és Core naplóját, illetve az ellenőrizhető kijelölt automatizálási futásnyomokat tartalmazza. Csak a beállításokat mentő, hitelesített HA-adminisztrátor érheti el. Névtelen hangszatellitről nem használható. A lekért eredmények a beállított AI-szolgáltatóhoz kerülhetnek.",
+        "data": {
+          "areas": "A Házikó helyiségei",
+          "entities": "További egyedi entitások",
+          "automations": "Futásnyom-olvasásra engedélyezett automatizálások",
+          "read_unexposed": "A kijelölt körben az Assist számára nem közzétett, engedélyezett entitások olvasása is",
+          "diagnostics": "Hitelesített tulajdonosi diagnosztika engedélyezése"
+        }
+      }
+    },
+    "error": {
+      "empty_scope": "Válassz ki legalább egy helyiséget vagy entitást."
+    },
+    "abort": {
+      "single_instance_allowed": "Egyetlen közös beállítás használható.",
+      "admin_required": "Hitelesített HA-adminisztrátor szükséges."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ziko HA Tools",
+        "description": "Válaszd ki egyszerre a Házikó összes helyiségét. A további egyedi entitások megadása opcionális. Ez a bővítés csak olvas; a vezérlést továbbra is az Assist közzétételi beállításai szabályozzák. A diagnosztika a teljes HA rendszer hibáit és Core naplóját, illetve az ellenőrizhető kijelölt automatizálási futásnyomokat tartalmazza. Csak a beállításokat mentő, hitelesített HA-adminisztrátor érheti el. Névtelen hangszatellitről nem használható. A lekért eredmények a beállított AI-szolgáltatóhoz kerülhetnek.",
+        "data": {
+          "areas": "A Házikó helyiségei",
+          "entities": "További egyedi entitások",
+          "automations": "Futásnyom-olvasásra engedélyezett automatizálások",
+          "read_unexposed": "A kijelölt körben az Assist számára nem közzétett, engedélyezett entitások olvasása is",
+          "diagnostics": "Hitelesített tulajdonosi diagnosztika engedélyezése"
+        }
+      }
+    },
+    "error": {
+      "empty_scope": "Válassz ki legalább egy helyiséget vagy entitást."
+    },
+    "abort": {
+      "admin_required": "Hitelesített HA-adminisztrátor szükséges."
+    }
+  }
+}

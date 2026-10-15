@@ -1,0 +1,14 @@
+{
+  "domain": "ziko_ha_tools",
+  "name": "Ziko HA Tools",
+  "version": "0.1.0",
+  "config_flow": true,
+  "integration_type": "service",
+  "iot_class": "local_polling",
+  "dependencies": ["llm", "recorder", "homeassistant"],
+  "after_dependencies": ["logbook", "trace", "system_log"],
+  "requirements": [],
+  "codeowners": ["@habuiot"],
+  "documentation": "https://github.com/habuiot/ziko-ai",
+  "issue_tracker": "https://github.com/habuiot/ziko-ai/issues"
+}
