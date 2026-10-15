@@ -26,7 +26,9 @@ A parancs kizárólag ezt az integrációt helyezi el/frissíti. A ZIP az integr
 
 ## HACS-frissítés
 
-A forráskönyvtár HACS-kompatibilis. A GitHubra kerülő verziónál a `https://github.com/habuiot/ziko-ai` egyéni tárolóként, **Integration** kategóriában adható hozzá. Amíg a változtatás nincs a főágban, a ZIP-et használd. A korábbi, kizárólag Ziko alkalmazást tartalmazó `v0.4.0` kiadás nem telepíti ezt az új integrációt; az integrációt már tartalmazó ágat/verziót kell letölteni. HACS-forrás: https://www.hacs.xyz/docs/publish/integration/.
+Az integráció már a főágon elérhető. A HACS **⋮ → Egyéni tárolók / Custom repositories** menüjében add hozzá a `https://github.com/habuiot/ziko-ai` címet, **Integráció / Integration** típussal. Nyisd meg a **Ziko HA Tools** elemet, töltsd le, majd indítsd újra a HA-t. Első telepítés után a **Beállítások → Eszközök és szolgáltatások → Integráció hozzáadása** alatt hozd létre a Ziko HA Tools bejegyzést, és jelöld ki a helyiségeket/engedélyeket.
+
+Ha már HACS-ból letöltötted: **⋮ → Információk frissítése / Update information**, majd a felajánlott változat letöltése. Ezután a további frissítéseket HACS jelzi. GitHub-kiadások hiányában a főág tartalmát használjuk. Az alkalmazásboltos Ziko AI 0.4.0 külön komponens; annak frissítése önmagában nem telepíti ezt az integrációt. HACS-forrás: https://www.hacs.xyz/docs/faq/custom_repositories/ és https://www.hacs.xyz/docs/use/repositories/dashboard/.
 
 ## Mit kap Ziko?
 

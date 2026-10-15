@@ -1,3 +1,21 @@
+# Ziko HA Tools – HACS-integráció
+
+A Codex Assisthez csatlakozó előzmény-, statisztika-, eseménynapló- és tulajdonosi diagnosztikai eszközök már a főágon elérhetők. Integrációverzió: **0.1.0**, minimum HA Core: **2026.10.0**.
+
+## Telepítés és frissítés HACS-ból
+
+1. **HACS → ⋮ → Egyéni tárolók / Custom repositories.**
+2. Tároló: `https://github.com/habuiot/ziko-ai`, típus: **Integráció / Integration**, majd Hozzáadás.
+3. Nyisd meg a **Ziko HA Tools** elemet és válaszd a **Letöltés / Download** lehetőséget. GitHub-kiadás nélkül a főág tartalmát használjuk.
+4. Indítsd újra a Home Assistantot; utána **Beállítások → Eszközök és szolgáltatások → Integráció hozzáadása → Ziko HA Tools**.
+5. Válaszd ki a Házikó helyiségeit és az engedélyeket a [részletes útmutató](ZIKO_HA_TOOLS.md) szerint.
+
+Ha már letöltötted ezt az integrációt HACS-ból: az elem **⋮ → Információk frissítése / Update information** menüjével kérhetsz azonnali ellenőrzést, majd a felajánlott új változatot letöltheted. A HACS a további frissítéseket követi; ZIP-másolás nem szükséges.
+
+Ez külön HA-integráció. Az alább leírt korábbi **Ziko AI alkalmazás 0.4.0** telepítése önmagában nem telepíti a Codex Assist eszközeit. A működő Codex Assist-fiókkapcsolat, modell és hangbeállítások megmaradnak.
+
+---
+
 # Ziko AI – Home Assistant
 
 Magyar szöveges asszisztens, helyi beszélgetés és kézzel mentett memória, folyamatos Home Assistant állapotmegfigyelés. Saját ChatGPT-fiókkal kapcsolható. Automatikus helyi jelzések és tartós eseménynapló; eszközvezérlés és telefonos értesítés még nincs.
