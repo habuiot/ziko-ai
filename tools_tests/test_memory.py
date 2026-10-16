@@ -81,3 +81,11 @@ async def test_archive_limits_leave_write_pause_available(house,monkeypatch):
     assert len(await m.async_list('plan'))<=4
     await m.async_put('settings','writes',{'paused':True})
     assert (await m.async_get('settings','writes'))['value']['paused']
+
+
+async def test_search_does_not_match_hidden_previous_values(house):
+    from custom_components.ziko_ha_tools.memory import Memory
+    m=Memory(house.hass,'search');await m.async_load()
+    r=await m.async_put('preset','normal',{'entity_id':'light.revoked_lamp'})
+    await m.async_put('preset','normal',{'entity_id':'light.current_lamp'},r['version'])
+    assert await m.async_list('preset',search='revoked_lamp')==[]

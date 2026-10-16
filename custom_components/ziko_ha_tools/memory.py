@@ -87,7 +87,7 @@ class Memory:
         if not isinstance(limit, int) or not 1 <= limit <= 200 or len(search) > 100:
             raise HomeAssistantError('Invalid memory search limit')
         rows = [v for v in self.data['records'].values()
-                if v['kind'] == kind and search.casefold() in json.dumps(v, ensure_ascii=False).casefold()]
+                if v['kind'] == kind and search.casefold() in json.dumps({k:v[k] for k in ('key','value')}, ensure_ascii=False).casefold()]
         return deepcopy(sorted(rows, key=lambda v: v['updated_at'], reverse=True)[:limit])
 
     async def async_put(self, kind, key, value, expected_version=None):
