@@ -1,108 +1,68 @@
-# Ziko HA Tools 0.1.0
+# Ziko HA Tools 0.2.0
 
-A Codex Assist mellett futó, csak olvasó Home Assistant integráció. Ziko az engedélyezett eszközök rögzített előzményeit, statisztikáit és eseményeit kérdezheti le. Külön engedéllyel automatizálási futásnyomokat és HA-hibákat is olvashat. Nem kell minden szenzorhoz külön automatizálás vagy új AI-fiók.
+Natív Assist-bővítés Codex Assist mellé: előzmény, statisztika, napló, tulajdonosi diagnosztika, pontos élő állapotok, közös tartós memória, lámpapresetek és ellenőrzött automatizálási tervek. A működő bejelentkezést és hangot megőrzi. A régi Ziko AI 0.4.0 alkalmazás külön komponens.
 
-**Követelmény:** HA Core 2026.10.0 vagy újabb. A tesztek a valódi 2026.10.0 csomagon, Python 3.14-en futnak; későbbi HA-verziók kompatibilitását külön ellenőrizni kell. A jelenlegi Codex Assist, Ziko prompt, Whisper és Edge TTS maradhat.
+**Tesztalap:** valódi HA Core 2026.10.0, Python 3.14.8. A ZIP-telepítő alapértelmezésben a 2026.10-es Core-családot fogadja el; későbbi HA-hoz új kompatibilitási ellenőrzés szükséges.
 
-## Telepítés ZIP-ből
+## Telepítés
 
-1. Készíts HA-mentést. Töltsd le a `Ziko_HA_Tools_0.1.0.zip` csomagot.
-2. Studio Code Server vagy Samba segítségével másold a ZIP-ből a `custom_components/ziko_ha_tools` mappát a HA `/config/custom_components/` könyvtárába. A végső útvonal: `/config/custom_components/ziko_ha_tools/manifest.json`.
-3. Indítsd újra a Home Assistantot.
-4. **Beállítások → Eszközök és szolgáltatások → Integráció hozzáadása → Ziko HA Tools.** HA-adminisztrátorként végezd a beállítást.
-5. Jelöld ki egyszerre a Házikóhoz tartozó helyiségeket. Ha egy entitásnak és eszközének sincs helyisége, a „További egyedi entitások” mezőben adhatod hozzá.
-6. Kapcsold be az **Assist számára nem közzétett entitások olvasását**, ha minden engedélyezett, kijelölt helyiségben levő entitás előzménye kell. A HA-ban letiltott entitásokat ez sem aktiválja. Más házak helyiségeit ne válaszd ki.
-7. A futásnyomokhoz jelöld ki az automatizálásokat és engedélyezd a **tulajdonosi diagnosztikát**. Ez az opció a teljes HA Core hibanaplójának olvasását is lehetővé teszi. A jogosult tulajdonos a beállításokat mentő HA-adminisztrátor.
-8. Mentés után indíts új Assist-beszélgetést Zikóval. Nem kell újra bejelentkezni a ChatGPT-fiókba.
+A ZIP `KEZDD_ITT.md` fájlja tartalmazza az egyparancsos indítást és az átvételi próbákat. Teljes HA-mentés után egy feltöltés és egy helyi parancs telepíti a kódot, kódmentéssel és újraindítással. Nem szerkeszt configuration.yaml-t vagy hitelesítőket, nem aktivál letiltott entitást és nem nyit új portot.
 
-Ha a ZIP-et először a `/config/` mappába töltöd fel, Terminal & SSH alatt a fájlok elhelyezése:
+HACS: `https://github.com/habuiot/ziko-ai`, egyéni Integration-tároló. A főágban megjelent változat letölthető; ZIP-készítés és közzététel külön állapot. Régi 0.1.0 bejegyzésnél az új memória/írás/automatizálási jogokat egyszer, kifejezetten engedélyezni kell.
 
-```sh
-unzip -o /config/Ziko_HA_Tools_0.1.0.zip 'custom_components/ziko_ha_tools/*' -d /config
-ha core restart
-```
+## Jogosultságok
 
-A parancs kizárólag ezt az integrációt helyezi el/frissíti. A ZIP az integráció forrását és ezt az útmutatót tartalmazza; nem teljes HA-mentés vagy korábbi Ziko alkalmazás-frissítés.
+A meglévő olvasási scope helyiségeket és egyedi entitásokat kezel. A HA-ban letiltott entitás kimarad. Közzé nem tett, engedélyezett entitás olvasásához külön opció van. A vezérlési jog ettől külön marad.
 
-## HACS-frissítés
+Új memóriaeszközök: a konfigurált aktív tulajdonos, illetve külön engedélyezett, a Házikó helyiségéhez tartozó hangszatellit. A memória közös háztartási tudás, nem személyes napló. A prompt és a kimondott név nem jogosultság. A pipeline „acts as user” beállítása nem bizonyítja a beszélő személyazonosságát.
 
-Az integráció már a főágon elérhető. A HACS **⋮ → Egyéni tárolók / Custom repositories** menüjében add hozzá a `https://github.com/habuiot/ziko-ai` címet, **Integráció / Integration** típussal. Nyisd meg a **Ziko HA Tools** elemet, töltsd le, majd indítsd újra a HA-t. Első telepítés után a **Beállítások → Eszközök és szolgáltatások → Integráció hozzáadása** alatt hozd létre a Ziko HA Tools bejegyzést, és jelöld ki a helyiségeket/engedélyeket.
+Eszközírás: külön engedély + aktuális scope + Assist-közzététel + stabil regiszterazonosság. Alapként a háztartási lámpák; kapcsoló/termosztát/médialejátszó csak külön írási listából. A natív Assist saját eszközeit a bővítés nem fogja el, ezért érzékeny zár/riasztó/egyéb eszköz ne legyen korlátlanul közzétéve.
 
-Ha már HACS-ból letöltötted: **⋮ → Információk frissítése / Update information**, majd a felajánlott változat letöltése. Ezután a további frissítéseket HACS jelzi. GitHub-kiadások hiányában a főág tartalmát használjuk. Az alkalmazásboltos Ziko AI 0.4.0 külön komponens; annak frissítése önmagában nem telepíti ezt az integrációt. HACS-forrás: https://www.hacs.xyz/docs/faq/custom_repositories/ és https://www.hacs.xyz/docs/use/repositories/dashboard/.
+## Új eszközök és kezelőpanel
 
-## Mit kap Ziko?
+`get_state`, `remember`, `recall`, `forget`, `save_light_preset`, `restore_light_preset`, `propose_automation`, `list_automations`, mind `ziko_ha_tools__` előtaggal. A korábbi olvasóeszközök és tulajdonosi diagnosztika megmaradnak. Minden a natív Assist API-hoz csatlakozik.
 
-| Eszköz | Funkció |
-|---|---|
-| `ziko_ha_tools__list_sources` | Entitáskeresés név/helyiség szerint, mért attribútumok felderítése |
-| `ziko_ha_tools__query_history` | Állapot- vagy attribútumelőzmény; utolsó rögzített küszöbtalálat |
-| `ziko_ha_tools__query_statistics` | Tárolt numerikus statisztika, régebbi időszakok összesítése |
-| `ziko_ha_tools__query_logbook` | Kijelölt entitások HA Activity eseményei |
-| `ziko_ha_tools__list_traces` | Kijelölt automatizálás megőrzött, ellenőrizhető futásainak listája |
-| `ziko_ha_tools__read_trace` | Futáslépések eredménye/hibája; nyers változók nélkül |
-| `ziko_ha_tools__query_errors` | HA strukturált hibalista vagy rögzített Core naplófájl vége |
+A pontos állapot csak engedélyezett attribútumokat ad ki, nem teljes nyers dumpot. A lámpapreset a tényleges színmódot és fényerőt rögzíti bekapcsolt lámpán. A visszaállítás ismétlésvédett; `verified` csak visszaolvasott egyezést jelent, a többi státusz nem fizikai siker.
 
-Az eszközök a HA natív Assist API-jához csatlakoznak. A vezérlés közzétételi beállításai külön maradnak: egy entitás előzményének olvasása nem ad új vezérlési jogot. A szöveges és hangos kérdések ugyanazokat az olvasóeszközöket használhatják. A diagnosztikai eszközök csak hitelesített tulajdonosi HA-kérésekben érhetők el; egy névtelen hangszatellit nem kapja meg őket attól, hogy kimondod a neved.
+Oldalsáv → **Ziko központ** (`/ziko-tools`): állapot, memória/preset, export/törlés, függő tervek, jóváhagyás, engedélyezés és revízió-visszaállítás. A meglévő HA websocket-hitelesítést használja, további tulajdonos-ellenőrzéssel. Nincs modellből elérhető jóváhagyó eszköz és nincs böngészőben tárolt új token.
 
-## Pontosság és korlátok
+## Automatizálási szerződés
 
-- A radiátor mért hőmérséklete `current_temperature`; a `temperature` a beállított célérték. Ziko külön utasítást kap erre.
-- A HA grafikonkezdethez létrehozott mesterséges kezdőállapota külön, ismert kezdőértékként jelenik meg; nem számít új mérésnek és nem kap kitalált mérési időpontot.
-- A küszöbkeresés a feldolgozott adatsoron történik, a válasz rövidítése előtt. Az eredmény rögzített mérés ideje, nem interpolált küszöbátlépés vagy egy időszak pontos vége.
-- Egy lekérdezés legfeljebb 5 entitást, 14 napnyi részletes előzményt és 50 000 feldolgozott sort érinthet; a megjelenítés legfeljebb 200 sor. Az adatok naponként, a Recorder háttérszálában olvasódnak. Egy napi Recorder-lekérdezés több sort is betölthet, mint a feldolgozási keret; a 30 másodperces várakozási korlát nem állít le már elindult adatbázis-szálat.
-- Alapértelmezés: utolsó 24 óra. Más időszakot kérj konkrét dátummal; egy kérés legfeljebb 14 nap. Statisztika: legfeljebb 366 nap, ötperces adatoknál 14 nap.
-- A HA Recorder megőrzési idejét és kizárásait nem változtatjuk. Törölt, nem rögzített vagy hiányzó adatot nem lehet visszaállítani. Üres eredmény nem bizonyítja, hogy az esemény soha nem történt meg.
-- Az órás/napi statisztika egy időszakot igazolhat, pontos percet nem; a climate attribútumokhoz nem feltétlenül létezik hosszú távú statisztika.
-- Az eseménynapló más entitásokra utaló szülőkontextusai és egyedi szabad szöveges üzenetei kimaradnak. Ez nem teljes, korlátlan naplóexport és nem mindig mondja meg, ki okozta a változást.
-- A futásnyomokból a nyers konfiguráció, változók, felhasználói kontextus és gyermek-futásnyomok kimaradnak. A címke/emelettel célzó, vegyes helyiségű, nem ellenőrizhető vagy sablont tartalmazó futásnyomok elutasításra kerülnek. Csak a HA által megőrzött futások érhetők el.
-- **Supervisor-, HA OS- és alkalmazás/add-on-naplók ebben a verzióban nem támogatottak.** A Core fájlnapló is csak akkor olvasható, ha az adott telepítésen létezik `/config/home-assistant.log`.
-- A jelszó/tokenmaszkolás több gyakori formátumot kezel, de nem garantálja minden szabad szöveges titok felismerését. A lekért adatok a beszélgetés során a beállított AI-szolgáltatóhoz kerülhetnek; nyers hibafájlt ne tegyél közzé.
-- Ez a bővítés olvasóeszközöket ad: nem szerkeszt automatizálást vagy rendszerbeállítást és nem indít új háttérriasztásokat.
+Kötött specifikáció: állapot/numerikus/idő/nap trigger; állapot/numerikus/nap feltétel; lámpa be/ki/fényerő/CCT, engedélyezett kapcsoló, 16-26 °C közötti termosztátcél készülékhatárral, legfeljebb 70%-os médiahangerő, legfeljebb 300 s késleltetés. Nincs tetszőleges YAML, template, szolgáltatás, shell, URL vagy kód.
 
-## Első ellenőrzés a Házikóban
+Elsőként saját új Ziko-szabályok szerkeszthetők; meglévő tetszőleges szabály nem kerül automatikusan átalakításra. A tulajdonos a konkrét tervet jóváhagyja; új/módosított szabály kikapcsolva mentődik. Engedélyezés külön lépés. A HA helyben futtatja a logikát, AI-hívás nélkül.
 
-Új Ziko-beszélgetésben:
+A tényleges HA konfigurációs nézet közös írási zárát, validátorát és atomikus íróját használja. Szükséges az egyetlen szokásos `automation: !include automations.yaml` a configuration.yaml-ban. Eltérő szerkezetnél vagy hiányzó natív szerződésnél megáll; nincs másik nyers fájlátírási út. Más szabályok megmaradnak; a cél közben kézzel végzett módosítását lenyomat-ütközés védi.
 
-> Keresd meg a Nagyszoba mért hőmérsékletének naplóforrását. A radiátor aktuális hőmérsékletét használd, ne a célhőmérsékletet. Mikor volt a legutóbbi rögzített mérés 27 °C felett 2026. október 10. 00:00 és október 13. 23:59 között? Mondd meg az entitást, a mért értéket és a helyi időpontot. Jelezd a hiányzó vagy csonkolt adatot. Semmit ne kapcsolj át.
+A létrehozott műveletek helyi `ziko_ha_tools.guarded_action` kapun futnak. Minden alkalommal ellenőrzi az aktuális engedélyeket és a jóváhagyott akcióverziót. Scope-visszavonás, írásszünet vagy integrációleállás esetén nem hajtja végre az eszközműveletet. Ziko működése helyben szükséges hozzá, felhős modell nem.
 
-Hasonlítsd össze a HA Előzmények kék „Radiátor aktuális hőmérséklet” görbéjével. A jövőbeli időhatárt a bővítés a jelen pillanatra vágja.
+A reloadhiba, megkezdett és bizonytalan írás külön státusz. Nincs vak ismétlés. A mentett előző konfiguráció visszaállítható, ha a szabályt közben nem módosították máshol. A Ziko írásszünet nem állít le minden korábbi HA-automatizálást vagy natív Assist-eszközt.
 
-Második próba:
+## Vizuális adapter és hang
 
-> Mikor változott legutóbb a közlekedő lámpa állapota az elmúlt 24 órában? Az előzményből válaszolj; semmit ne kapcsolj át.
+Opcionálisan csak a név szerint támogatott Voice Satellite LLM Tools időjárás/Wikipédia/web/kép API kapcsolható be. Nincs tetszőleges API vagy Assist-visszacsatolás. A szolgáltató saját konfigurációja és az élő kioszk megjelenítési próbája szükséges. Entitáskártya és videó nincs csendben áthidalva. A `profiles/` lapjai az A9/Kiosk, további végpontok és Music Assistant/KALLSUP ellenőrzött bevezetési sorrendjét adják.
 
-Diagnosztika engedélyezése után a tulajdonos HA-böngészős beszélgetésében:
+## Adatvédelem és korlátok
 
-> Kérdezd le a HA legutóbbi strukturált hibáit. Ha nincs jogod vagy nincs ilyen naplóforrás, mondd meg; ne találj ki hibát.
+Helyi, privát és atomikus HA Store, korlátos mérettel, kulcsonként legfeljebb öt korábbi értékkel; nem titokkezelő. Az explicit emlék, a kérdés és az eszközeredmény beszélgetéskor AI-szolgáltatóhoz kerülhet. Edge TTS a válaszszöveget külső szolgáltatáshoz küldi. Nem folyamatos teljes adatbázis-stream és nem automatikus nyilvános publikálás, de nem is teljesen offline rendszer.
 
-## Visszavonás és fejlesztői ellenőrzés
+A korábbi Recorder-korlátok megmaradnak: 5 entitás/14 nap/50 000 feldolgozott sor/200 kimeneti sor; statisztika 366 nap, ötpercesnél 14 nap. A 30 s kéréskorlát nem állít le már futó adatbázisszálat. Mesterséges kezdőállapot nem új mérés, aggregátum nem pontos küszöbátlépés, törölt adat nem rekonstruálható.
 
-A bővítés kikapcsolható/törölhető az Integrációk alatt. Az egyedi eszközök ezután nem olvasnak tovább, a Codex Assist meglévő vezérlése megmarad. A helyiségek/jogosultságok a bővítés beállításainál módosíthatók.
+Supervisor/OS/app napló nincs; Core-napló az egész HA-ról szólhat. A titokmaszkolás nem tökéletes garancia. Nyers trace-konfiguráció/változó és nem ellenőrizhető vegyes/dinamikus cél kimaradhat. Korábbi appmemória nincs automatikusan importálva.
+
+## Fejlesztői ellenőrzés
 
 ```sh
 python -m pip install 'homeassistant==2026.10.0' 'pytest==9.1.1' 'pytest-asyncio==1.4.0'
 python -m pytest -c tools_tests/pytest.ini tools_tests -q
-python tools/pack_ha_tools.py
+node --check custom_components/ziko_ha_tools/frontend/ziko-panel.js
+python tools/pack_ha_tools.py --output-dir dist
 ```
 
-A tesztek között valódi SQLite Recorder-olvasás, HA-regiszterek, attribútumváltozás, natív LLM-eszközfelismerés, megőrzött HA-futásnyom és strukturált hibanapló szerepel. A helyi csomagteszt nem helyettesíti a Házikóban végzett első összehasonlítást.
+Valódi HA Store, szolgáltatás, Recorder SQLite, konfigurációs zár/validátor/író és natív eszköz/websocket-szerződés tesztelve. Ez nem helyettesíti az élő Házikó, mikrofon és Bluetooth átvételét.
 
-## Meghozott döntések és következményeik
+### Megőrzés és ismétlésvédelem (0.2.0)
 
-1. A jóváhagyott megvalósítást további általános megerősítési körök nélkül készítettem el. A beállítások módosíthatók; téves értelmezés esetén ezek korrigálhatók.
-2. A tényleges HA 2026.10 követelmény alapján Python 3.14.2 vagy újabb a tesztalap. Az előzetes 3.13-as feltételezés elavult volt; téves verzióválasztás a kompatibilitási tesztet érvénytelenítené.
-3. A közös eszközmodult használó fejlesztési részeket együtt rögzítettem, hogy a tesztelt futtatókörnyezet legyen egyben ellenőrizhető. Ennek ára a nagyobb közös kódellenőrzési egység.
-4. A natív `ziko_ha_tools__` névelőtagot használtam, amely elkerüli a HA által jelzett 2027.3-as névkövetelmény miatti törést. Külső hívóknak az új eszközneveket kell használniuk; korábbi felhasználói beállítás nem hivatkozik rájuk.
-5. A küszöbkeresés nem áll le az első találat után: a keresési keretig feldolgozza az időszakot, így az összesítések összhangban maradnak. Ennek ára több adatbázis-munka hosszú, sűrű idősoroknál.
-6. A hiányzó konfigurációjú, sablonos vagy vegyes eszköztagságú futásnyomokat elutasítom, mert ezek háztartási hatóköre végrehajtás nélkül nem bizonyítható. Ez csökkenti az elemezhető automatizálások számát.
-7. A diagnosztika jelenleg a HA strukturált hibáit és a rögzített Core naplót kezeli. Supervisor/OS/add-on naplókhoz további adapter kell; ez bővítés, nem az alap újraírása.
-8. A Recorder megőrzését és kizárásait megtartottam. Ezért régi, törölt vagy soha nem rögzített pontos események továbbra is hiányozhatnak.
-9. A valódi HA/SQLite/eszközfelismerési teszt a csomag átadását igazolja, nem az élő Házikó és a szolgáltatói kapcsolat teljes tesztjét. Telepítés után saját adatokkal összehasonlítás szükséges; telepítésfüggő eltérés javítást igényelhet.
-10. A HA 2026.10.0 ellenőrzött; későbbi HA-verziók és az éles HACS-telepítés nem. Egy későbbi interfészváltozás célzott kompatibilitási frissítést tehet szükségessé.
-11. A ZIP mellett külön GitHub-javaslat készül az aktuális közzétett alapra, a főág felülírása nélkül. Ennek ára, hogy a HACS főági telepítés a javaslat beolvasztásáig vár.
+A tények és fénybeállítások külön-külön legfeljebb 100 aktív bejegyzést tartanak, törlésük felszabadítja a helyet. A verziógeneráció megakadályozza a törlés előtti verzióval való felülírást. A tervek legfeljebb 100, a revíziók 200 bejegyzést őriznek: a régi tervek és lezárt, nem aktuális revíziók automatikusan kikerülhetnek; a bizonytalan/előkészített módosításokat a rendszer nem dobja el. Az exportot fontos változtatás előtt érdemes letölteni. A beállításoknak és az írások szüneteltetésének elkülönített keretük van.
 
-A független kódellenőrzés négy érdemi hibát talált: mesterséges kezdőállapot-időbélyeg, címke/emelet alapú futásnyom-célzás, korábbi pufferelt futás hatókörének visszavonása, idézőjeles JSON/Python titokmezők. Mind a négy javítást először hibát reprodukáló teszt, majd sikeres tesztfuttatás ellenőrizte. A végső készlet **56 sikeres tesztet** tartalmaz. Elhalasztott kisebb kódellenőrzési hibát nem jeleztek.
-
-A később beküldött „jegyezd meg a lámpa jelenlegi fehér színét” példa további igény: pontos élő színadat-olvasás és tartós beállításmemória. Ez a verzió nem állítja, hogy ilyen beállítást tartósan elmentett; a teljes értékű beállításmemória külön funkció.
-
-A tiszta GitHub-környezet további tesztjavítást tett szükségessé: a Recorder-teszt immár kifejezett tranzakciós szinkronpontra vár. A beállítófelület tényleges, hitelesített HTTP-kérése adja az adminisztrátor azonosítóját; ezt konfigurációs és beállításmódosítási próbák is ellenőrzik.
+A preset-visszaállításhoz az AI előbb a `prepare_light_restore` eszközzel öt percig érvényes kérést kér, majd ugyanazt az azonosítót használja az ismétléshez. A műveleti napló tíz perc után a következő íráskor takarítható; a lejárt azonosító ezután sem hajt végre újabb parancsot. Legfeljebb 256 aktuális művelet fér el; gyors ismétlés esetén a rendszer várakozást kér. Lejárat után új kérést csak élő állapotellenőrzés és továbbra is fennálló felhasználói kérés alapján szabad indítani.

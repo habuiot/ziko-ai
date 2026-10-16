@@ -4,13 +4,19 @@
     "step": {
       "user": {
         "title": "Ziko HA Tools",
-        "description": "Choose only rooms belonging to this household. Extra entities are optional. This integration only reads; device control continues to use Assist exposure settings. Diagnostics include whole-system HA errors/Core logs and verified selected automation traces; they require the HA administrator who saves these options. Anonymous voice satellites cannot access diagnostics. All diagnostic results may be sent to your configured AI provider when requested.",
+        "description": "Select household areas only. Disabled entities stay excluded. Memory and writes are separate opt-ins. Shared household memory may be used by allowed satellites and sent to the AI provider during conversation; do not store secrets or private diary data. Automation configuration requires owner approval on the Ziko panel. Diagnostics may include whole HA Core errors. Existing Codex Assist sign-in is preserved.",
         "data": {
           "areas": "Household rooms",
           "entities": "Additional individual entities",
           "automations": "Automations approved for traces",
           "read_unexposed": "Read enabled household entities even when not exposed to Assist",
-          "diagnostics": "Enable owner-authenticated diagnostics"
+          "diagnostics": "Enable owner-authenticated diagnostics",
+          "memory_enabled": "Enable shared persistent household memory and precise states",
+          "voice_memory": "Allow household voice satellites to use shared memory",
+          "allow_writes": "Enable Ziko preset and owner-reviewed automation writes",
+          "write_entities": "Explicit switches, thermostats and media players (exposed household lights included)",
+          "automation_drafts": "Enable structured automation drafts and owner review",
+          "visual_apis": "Optional Voice Satellite LLM Tools APIs"
         }
       }
     },
@@ -26,13 +32,19 @@
     "step": {
       "init": {
         "title": "Ziko HA Tools",
-        "description": "Choose only rooms belonging to this household. Extra entities are optional. This integration only reads; device control continues to use Assist exposure settings. Diagnostics include whole-system HA errors/Core logs and verified selected automation traces; they require the HA administrator who saves these options. Anonymous voice satellites cannot access diagnostics. All diagnostic results may be sent to your configured AI provider when requested.",
+        "description": "Select household areas only. Disabled entities stay excluded. Memory and writes are separate opt-ins. Shared household memory may be used by allowed satellites and sent to the AI provider during conversation; do not store secrets or private diary data. Automation configuration requires owner approval on the Ziko panel. Diagnostics may include whole HA Core errors. Existing Codex Assist sign-in is preserved.",
         "data": {
           "areas": "Household rooms",
           "entities": "Additional individual entities",
           "automations": "Automations approved for traces",
           "read_unexposed": "Read enabled household entities even when not exposed to Assist",
-          "diagnostics": "Enable owner-authenticated diagnostics"
+          "diagnostics": "Enable owner-authenticated diagnostics",
+          "memory_enabled": "Enable shared persistent household memory and precise states",
+          "voice_memory": "Allow household voice satellites to use shared memory",
+          "allow_writes": "Enable Ziko preset and owner-reviewed automation writes",
+          "write_entities": "Explicit switches, thermostats and media players (exposed household lights included)",
+          "automation_drafts": "Enable structured automation drafts and owner review",
+          "visual_apis": "Optional Voice Satellite LLM Tools APIs"
         }
       }
     },

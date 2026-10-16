@@ -4,13 +4,19 @@
     "step": {
       "user": {
         "title": "Ziko HA Tools",
-        "description": "Válaszd ki egyszerre a Házikó összes helyiségét. A további egyedi entitások megadása opcionális. Ez a bővítés csak olvas; a vezérlést továbbra is az Assist közzétételi beállításai szabályozzák. A diagnosztika a teljes HA rendszer hibáit és Core naplóját, illetve az ellenőrizhető kijelölt automatizálási futásnyomokat tartalmazza. Csak a beállításokat mentő, hitelesített HA-adminisztrátor érheti el. Névtelen hangszatellitről nem használható. A lekért eredmények a beállított AI-szolgáltatóhoz kerülhetnek.",
+        "description": "Válaszd ki a Házikó helyiségeit. A letiltott entitások kimaradnak, más otthont ne jelölj ki. Az új memória és az írás külön engedélyezhető. A közös emlékek az engedélyezett hangszatellitek számára is olvashatók, és beszélgetéskor az AI-szolgáltatóhoz kerülhetnek; jelszót és személyes naplót ne tárolj bennük. Az automatizálások csak a Ziko központ tulajdonosi jóváhagyásával kerülnek a HA-ba. A diagnosztika a teljes HA Core hibáit is érintheti. Mindez megőrzi a meglévő Codex Assist-bejelentkezést.",
         "data": {
           "areas": "A Házikó helyiségei",
           "entities": "További egyedi entitások",
           "automations": "Futásnyom-olvasásra engedélyezett automatizálások",
           "read_unexposed": "A kijelölt körben az Assist számára nem közzétett, engedélyezett entitások olvasása is",
-          "diagnostics": "Hitelesített tulajdonosi diagnosztika engedélyezése"
+          "diagnostics": "Hitelesített tulajdonosi diagnosztika engedélyezése",
+          "memory_enabled": "Közös tartós háztartási memória és pontos állapotok engedélyezése",
+          "voice_memory": "Közös memória használata a kijelölt helyiségek hangszatellitjeiről is",
+          "allow_writes": "Ziko-presetek és jóváhagyott automatizálások eszközírásának engedélyezése",
+          "write_entities": "Külön vezérelhető kapcsolók, termosztátok és médialejátszók (a közzétett lámpák automatikusak)",
+          "automation_drafts": "Automatizálási tervek készítése és tulajdonosi felülvizsgálata",
+          "visual_apis": "Opcionális Voice Satellite LLM Tools szolgáltatók"
         }
       }
     },
@@ -26,13 +32,19 @@
     "step": {
       "init": {
         "title": "Ziko HA Tools",
-        "description": "Válaszd ki egyszerre a Házikó összes helyiségét. A további egyedi entitások megadása opcionális. Ez a bővítés csak olvas; a vezérlést továbbra is az Assist közzétételi beállításai szabályozzák. A diagnosztika a teljes HA rendszer hibáit és Core naplóját, illetve az ellenőrizhető kijelölt automatizálási futásnyomokat tartalmazza. Csak a beállításokat mentő, hitelesített HA-adminisztrátor érheti el. Névtelen hangszatellitről nem használható. A lekért eredmények a beállított AI-szolgáltatóhoz kerülhetnek.",
+        "description": "Válaszd ki a Házikó helyiségeit. A letiltott entitások kimaradnak, más otthont ne jelölj ki. Az új memória és az írás külön engedélyezhető. A közös emlékek az engedélyezett hangszatellitek számára is olvashatók, és beszélgetéskor az AI-szolgáltatóhoz kerülhetnek; jelszót és személyes naplót ne tárolj bennük. Az automatizálások csak a Ziko központ tulajdonosi jóváhagyásával kerülnek a HA-ba. A diagnosztika a teljes HA Core hibáit is érintheti. Mindez megőrzi a meglévő Codex Assist-bejelentkezést.",
         "data": {
           "areas": "A Házikó helyiségei",
           "entities": "További egyedi entitások",
           "automations": "Futásnyom-olvasásra engedélyezett automatizálások",
           "read_unexposed": "A kijelölt körben az Assist számára nem közzétett, engedélyezett entitások olvasása is",
-          "diagnostics": "Hitelesített tulajdonosi diagnosztika engedélyezése"
+          "diagnostics": "Hitelesített tulajdonosi diagnosztika engedélyezése",
+          "memory_enabled": "Közös tartós háztartási memória és pontos állapotok engedélyezése",
+          "voice_memory": "Közös memória használata a kijelölt helyiségek hangszatellitjeiről is",
+          "allow_writes": "Ziko-presetek és jóváhagyott automatizálások eszközírásának engedélyezése",
+          "write_entities": "Külön vezérelhető kapcsolók, termosztátok és médialejátszók (a közzétett lámpák automatikusak)",
+          "automation_drafts": "Automatizálási tervek készítése és tulajdonosi felülvizsgálata",
+          "visual_apis": "Opcionális Voice Satellite LLM Tools szolgáltatók"
         }
       }
     },

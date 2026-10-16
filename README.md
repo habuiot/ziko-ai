@@ -1,18 +1,20 @@
-# Ziko HA Tools – HACS-integráció
+# Ziko HA Tools 0.2.0 - natív Assist-bővítés
 
-A Codex Assisthez csatlakozó előzmény-, statisztika-, eseménynapló- és tulajdonosi diagnosztikai eszközök már a főágon elérhetők. Integrációverzió: **0.1.0**, minimum HA Core: **2026.10.0**.
+Pontos élő eszközadatok, előzmények, közös tartós memória, fénybeállítások és ellenőrzött automatizálási tervek a működő Codex Assist mellé. A meglévő fiókkapcsolat és hang megmarad.
 
-## Telepítés és frissítés HACS-ból
+## Telepítés és frissítés
 
-1. **HACS → ⋮ → Egyéni tárolók / Custom repositories.**
-2. Tároló: `https://github.com/habuiot/ziko-ai`, típus: **Integráció / Integration**, majd Hozzáadás.
-3. Nyisd meg a **Ziko HA Tools** elemet és válaszd a **Letöltés / Download** lehetőséget. GitHub-kiadás nélkül a főág tartalmát használjuk.
-4. Indítsd újra a Home Assistantot; utána **Beállítások → Eszközök és szolgáltatások → Integráció hozzáadása → Ziko HA Tools**.
-5. Válaszd ki a Házikó helyiségeit és az engedélyeket a [részletes útmutató](ZIKO_HA_TOOLS.md) szerint.
+- HACS egyéni tároló: `https://github.com/habuiot/ziko-ai`, típus **Integration**.
+- Frissítés/letöltés után indítsd újra a HA-t. Első alkalommal add hozzá a **Ziko HA Tools** integrációt.
+- Meglévő 0.1.0 bejegyzésnél egyszer engedélyezd a kívánt új memória/írás/automatizálás funkciókat; korábbi jog nem bővül automatikusan.
+- A Házikó helyiségeit jelöld ki, más otthon eszközeit ne. Az írás az olvasási körnél szűkebb.
+- Oldalsáv → **Ziko központ**: emlékek, presetek, jóváhagyandó tervek és visszaállítások.
 
-Ha már letöltötted ezt az integrációt HACS-ból: az elem **⋮ → Információk frissítése / Update information** menüjével kérhetsz azonnali ellenőrzést, majd a felajánlott új változatot letöltheted. A HACS a további frissítéseket követi; ZIP-másolás nem szükséges.
+[Teljes működés és korlátok](ZIKO_HA_TOOLS.md) · [Gyors telepítés](install-kit/KEZDD_ITT.md) · [Változások](ZIKO_CHANGELOG.md)
 
-Ez külön HA-integráció. Az alább leírt korábbi **Ziko AI alkalmazás 0.4.0** telepítése önmagában nem telepíti a Codex Assist eszközeit. A működő Codex Assist-fiókkapcsolat, modell és hangbeállítások megmaradnak.
+Ellenőrzött alap: HA Core **2026.10.0**, Python **3.14.8**. Tetszőleges YAML/kód, korlátlan HA-admin és helyszíni hang-/Bluetooth-próba nincs késznek állítva. A modellhez továbbított kérdés és eszközeredmény külső adatkezelést jelent; a helyi tárolás nem teljes offline működés.
+
+Az alább bemutatott korábbi **Ziko AI 0.4.0 alkalmazás** külön, történeti komponens. A natív frissítés nem azt indítja újra, és nem másolja át csendben a hitelesítőit/memóriáját.
 
 ---
 
