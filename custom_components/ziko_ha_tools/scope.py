@@ -4,6 +4,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from collections.abc import Mapping
 import re
+import asyncio
 
 
 class Scope:
@@ -11,6 +12,8 @@ class Scope:
         self.hass = hass
         self._config = config
         self.active = True
+        self.memory = None
+        self.operation_lock = asyncio.Lock()
 
     @property
     def config(self):

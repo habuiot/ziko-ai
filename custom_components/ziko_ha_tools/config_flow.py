@@ -9,6 +9,7 @@ from .const import DOMAIN
 
 
 def settings_schema(defaults):
+    from .bridge import ALLOWED_APIS
     return probatio.Schema({
         probatio.Required('areas', default=defaults.get('areas', [])):
             selector.AreaSelector(selector.AreaSelectorConfig(multiple=True)),
@@ -18,6 +19,14 @@ def settings_schema(defaults):
             selector.EntitySelector(selector.EntitySelectorConfig(domain='automation', multiple=True)),
         probatio.Required('read_unexposed', default=defaults.get('read_unexposed', False)): bool,
         probatio.Required('diagnostics', default=defaults.get('diagnostics', False)): bool,
+        probatio.Required('memory_enabled', default=defaults.get('memory_enabled', False)): bool,
+        probatio.Required('voice_memory', default=defaults.get('voice_memory', False)): bool,
+        probatio.Required('allow_writes', default=defaults.get('allow_writes', False)): bool,
+        probatio.Optional('write_entities', default=defaults.get('write_entities', [])):
+            selector.EntitySelector(selector.EntitySelectorConfig(domain=['switch', 'climate', 'media_player'], multiple=True)),
+        probatio.Required('automation_drafts', default=defaults.get('automation_drafts', False)): bool,
+        probatio.Optional('visual_apis', default=defaults.get('visual_apis', [])):
+            selector.SelectSelector(selector.SelectSelectorConfig(multiple=True,options=[{'value':k,'label':v} for k,v in ALLOWED_APIS.items()])),
     })
 
 

@@ -260,4 +260,5 @@ def build_tools(scope, llm_context, adapter=None):
     classes = [ListSources, QueryHistory, QueryStatistics, QueryLogbook]
     if scope.config.get('diagnostics') and llm_context.context and llm_context.context.user_id == scope.config.get('owner_user_id'):
         classes += [ListTraces, ReadTrace, QueryErrors]
-    return [cls(scope, adapter) for cls in classes]
+    from .assistant_tools import build_assistant_tools
+    return [cls(scope, adapter) for cls in classes] + build_assistant_tools(scope, llm_context) + list(getattr(scope, 'bridge_tools', []))
