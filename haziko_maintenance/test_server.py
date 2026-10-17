@@ -44,5 +44,25 @@ class InventoryTests(unittest.TestCase):
             with mock.patch.object(module, "LOCAL", local):
                 self.assertEqual(module.legacy_source()["status"], "unexpected_slug")
 
+
+    def test_internal_api_requires_strong_secret(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as root:
+            options = Path(root) / "options.json"
+            options.write_text('{"maintenance_key": "' + "a" * 64 + '"}')
+            with mock.patch.object(module, "OPTIONS", options):
+                handler = SimpleNamespace(
+                    client_address=("172.30.33.8", 5566),
+                    headers={"X-Haziko-Maintenance-Key": "a" * 64})
+                self.assertTrue(module.authorized(handler))
+                handler.headers = {"X-Haziko-Maintenance-Key": "wrong"}
+                self.assertFalse(module.authorized(handler))
+                handler.client_address = ("10.0.0.8", 5566)
+                handler.headers = {"X-Haziko-Maintenance-Key": "a" * 64}
+                self.assertFalse(module.authorized(handler))
+                handler.client_address = ("172.30.32.2", 5566)
+                handler.headers = {}
+                self.assertTrue(module.authorized(handler))
+
 if __name__ == "__main__":
     unittest.main()
