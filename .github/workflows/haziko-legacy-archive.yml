@@ -1,0 +1,35 @@
+name: Haziko legacy archive validation
+on:
+  push:
+    paths: ['haziko_legacy_archive/**', '.github/workflows/haziko-legacy-archive.yml']
+  pull_request:
+    paths: ['haziko_legacy_archive/**', '.github/workflows/haziko-legacy-archive.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m compileall -q haziko_legacy_archive
+      - run: python -m unittest discover -s haziko_legacy_archive -p 'test_*.py' -v
+      - run: python -m pip install PyYAML==6.0.3
+      - name: Check one-shot app isolation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+          app = yaml.safe_load(Path('haziko_legacy_archive/config.yaml').read_text())
+          assert app['startup'] == 'once' and app['boot'] == 'manual_only'
+          assert app['protected'] is True
+          assert app['map'] == [
+              {'type': 'local_apps', 'read_only': False},
+              {'type': 'share', 'read_only': False},
+          ]
+          assert 'ports' not in app and not app.get('ingress', False)
+          assert app['schema'] == {'mode': 'list(archive|retire)'}
+          PY
+      - run: docker build -t haziko-legacy-archive-test haziko_legacy_archive
