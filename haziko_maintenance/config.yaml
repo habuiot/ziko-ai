@@ -1,0 +1,20 @@
+name: Házikó – karbantartási ellenőrzés
+version: "0.1.0"
+slug: haziko_maintenance
+description: Helyi Ziko-telepítések biztonságos, csak olvasható ellenőrzése.
+arch:
+  - amd64
+startup: services
+boot: manual
+init: false
+ingress: true
+ingress_port: 8096
+panel_admin: true
+panel_title: Házikó ellenőrzés
+panel_icon: mdi:shield-search
+protected: true
+map:
+  - type: local_apps
+    read_only: true
+  - type: share
+    read_only: true
