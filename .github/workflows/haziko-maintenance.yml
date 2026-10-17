@@ -1,4 +1,4 @@
-name: Házikó maintenance inventory
+name: Haziko maintenance inventory
 on:
   pull_request:
     paths: ['haziko_maintenance/**', '.github/workflows/haziko-maintenance.yml']
@@ -17,5 +17,18 @@ jobs:
       - run: python -m compileall -q haziko_maintenance
       - run: python -m unittest discover -s haziko_maintenance -p 'test_*.py' -v
       - run: python -m pip install PyYAML==6.0.3
-      - run: python -c 'import yaml; from pathlib import Path; x=yaml.safe_load(Path("haziko_maintenance/config.yaml").read_text()); assert x["map"] == [{"type": "local_apps", "read_only": True}, {"type": "share", "read_only": True}]; assert x["ingress"] is True and "ports" not in x and x["boot"] == "manual"'
+      - name: Verify strictly read-only HA app permissions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+          x = yaml.safe_load(Path('haziko_maintenance/config.yaml').read_text())
+          assert x['map'] == [
+              {'type': 'local_apps', 'read_only': True},
+              {'type': 'share', 'read_only': True},
+          ]
+          assert x['ingress'] is True
+          assert 'ports' not in x
+          assert x['boot'] == 'manual'
+          PY
       - run: docker build -t haziko-maintenance-test haziko_maintenance
