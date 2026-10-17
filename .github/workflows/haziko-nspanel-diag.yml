@@ -1,0 +1,37 @@
+name: Haziko NSPanel LAN probe validation
+on:
+  pull_request:
+    paths: ['haziko_nspanel_diag/**','.github/workflows/haziko-nspanel-diag.yml']
+  push:
+    paths: ['haziko_nspanel_diag/**','.github/workflows/haziko-nspanel-diag.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m compileall -q haziko_nspanel_diag
+      - run: python -m pip install PyYAML==6.0.3
+      - name: Verify isolation and allowlist
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          import yaml
+          sys.path.insert(0, 'haziko_nspanel_diag')
+          import probe
+          x = yaml.safe_load(Path('haziko_nspanel_diag/config.yaml').read_text())
+          assert x['startup'] == 'once'
+          assert x['boot'] == 'manual_only'
+          assert x['protected'] is True
+          assert 'map' not in x and 'ports' not in x and not x.get('ingress')
+          assert probe.TARGETS == {
+              'nspanel_pro_last_known': ('192.168.10.207', [80, 443, 8080]),
+              'home_assistant_broker': ('192.168.10.118', [1883]),
+          }
+          PY
+      - run: docker build -t haziko-nspanel-diag-test haziko_nspanel_diag
