@@ -1,0 +1,10 @@
+name: Házikó – NSPanel LAN diagnosztika
+version: "0.1.0"
+slug: haziko_nspanel_diag
+description: Egyszeri, jelszómentes NSPanel és Mosquitto hálózati elérhetőségteszt.
+arch:
+  - amd64
+startup: once
+boot: manual_only
+init: false
+protected: true
