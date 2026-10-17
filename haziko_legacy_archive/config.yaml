@@ -1,0 +1,19 @@
+name: Házikó – régi Ziko archiváló
+version: "0.1.0"
+slug: haziko_legacy_archive
+description: Egyszer futó, kétlépcsős Ziko 0.2.4 forrásarchiválás.
+arch:
+  - amd64
+startup: once
+boot: manual_only
+init: false
+protected: true
+map:
+  - type: local_apps
+    read_only: false
+  - type: share
+    read_only: false
+options:
+  mode: archive
+schema:
+  mode: list(archive|retire)
