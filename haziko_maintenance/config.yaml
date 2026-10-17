@@ -1,5 +1,5 @@
 name: Házikó – karbantartási ellenőrzés
-version: "0.1.0"
+version: "0.1.1"
 slug: haziko_maintenance
 description: Helyi Ziko-telepítések biztonságos, csak olvasható ellenőrzése.
 arch:
@@ -18,3 +18,7 @@ map:
     read_only: true
   - type: share
     read_only: true
+options:
+  maintenance_key: ""
+schema:
+  maintenance_key: password
