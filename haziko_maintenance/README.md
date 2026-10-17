@@ -21,3 +21,7 @@ Kis Home Assistant-alkalmazás a **régi helyi Ziko forrásának felméréséhez
 A fejlesztési ág nem kerül automatikusan a Home Assistant alkalmazásboltjába. Felülvizsgálat után, külön jóváhagyással egyesíthető a főággal. Ezután az alkalmazásboltot frissíteni kell, és telepíthető az új, különálló **Házikó – karbantartási ellenőrzés** alkalmazás. A meglévő Ziko AI-t és Codex Assistot nem módosítja.
 
 A 0.1.0 kizárólag diagnosztika. A régi fájlok archiválására később külön, ellenőrzött és jóváhagyott funkció készülhet, más jogosultsági profillal.
+
+## 0.1.1 – belső MCP kapcsolat
+
+Az MCP kapcsolat a Supervisor proxyval az alkalmazáshoz eltérő Docker IP-ről érkezhet, ezért az Ingress mellett egy második, szigorúan hitelesített csatorna van: kizárólag a `172.30.32.0/23` belső hálózatról, legalább 64 karakteres véletlen `maintenance_key` konfigurációval és az `X-Haziko-Maintenance-Key` fejlécben megadott pontos értékkel. A kulcs csak a Home Assistant alkalmazás beállításaiban tárolódik; a GitHub-tárolóban sosem szerepel. Rossz vagy hiányzó kulcs esetén 403, és továbbra sincs fájltörlés vagy parancsvégrehajtás.
