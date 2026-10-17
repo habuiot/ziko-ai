@@ -1,11 +1,31 @@
 """Read-only Home Assistant maintenance inventory. No command execution."""
 import json
+import hmac
+import ipaddress
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 LOCAL = Path("/local_apps/ziko_ai")
 SHARE = Path("/share")
 SUPERVISOR_INGRESS_IP = "172.30.32.2"
+INTERNAL_NETWORK = ipaddress.ip_network("172.30.32.0/23")
+OPTIONS = Path("/data/options.json")
+
+
+def authorized(handler):
+    source = ipaddress.ip_address(handler.client_address[0])
+    if str(source) == SUPERVISOR_INGRESS_IP:
+        return True
+    if source not in INTERNAL_NETWORK:
+        return False
+    try:
+        secret = json.loads(OPTIONS.read_text(encoding="utf-8")).get("maintenance_key", "")
+    except (OSError, ValueError, TypeError):
+        return False
+    presented = handler.headers.get("X-Haziko-Maintenance-Key", "")
+    return (isinstance(secret, str) and len(secret) >= 64
+            and isinstance(presented, str)
+            and hmac.compare_digest(secret, presented))
 
 
 def legacy_source():
@@ -42,7 +62,7 @@ def inventory():
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "HazikoReadOnly/0.1.0"
+    server_version = "HazikoReadOnly/0.1.1"
 
     def log_message(self, *_):
         return
@@ -58,7 +78,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_GET(self):
-        if self.client_address[0] != SUPERVISOR_INGRESS_IP:
+        if not authorized(self):
             return self.json_reply(403, {"error": "ingress_only"})
         path = self.path.split("?", 1)[0].rstrip("/")
         if path in ("", "/", "/api/v1/health"):
