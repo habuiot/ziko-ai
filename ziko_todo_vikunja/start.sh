@@ -18,7 +18,7 @@ export VIKUNJA_SERVICE_SECRET="$(cat /data/service-secret)"
 OPTIONS=/data/options.json
 if [ -f "$OPTIONS" ]; then
   export VIKUNJA_SERVICE_PUBLICURL="$(jq -r '.public_url // "http://homeassistant.local:3456/"' "$OPTIONS")"
-  export VIKUNJA_SERVICE_ENABLEREGISTRATION="$(jq -r '.enable_registration // true' "$OPTIONS")"
+  export VIKUNJA_SERVICE_ENABLEREGISTRATION="$(jq -r 'if has("enable_registration") then .enable_registration else true end' "$OPTIONS")"
   export VIKUNJA_SERVICE_TIMEZONE="$(jq -r '.timezone // "Europe/Budapest"' "$OPTIONS")"
   export VIKUNJA_LOG_LEVEL="$(jq -r '.log_level // "info"' "$OPTIONS")"
 else
