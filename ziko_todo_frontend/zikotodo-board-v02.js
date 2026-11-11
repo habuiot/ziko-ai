@@ -127,7 +127,7 @@
       const term=this._search.trim().toLocaleLowerCase("hu");
       if(term) arr=arr.filter(t=>(t.summary+" "+t.meta.project+" "+t.meta.owner+" "+t.meta.note).toLocaleLowerCase("hu").includes(term));
       const rank={"Sürgős":0,"Magas":1,"Normál":2,"Alacsony":3};
-      arr.sort((a,b)=>((a.due?0:1)-(b.due?0:1)) || String(a.due||"").localeCompare(String(b.due||"")) || ((rank[a.meta.priority]||2)-(rank[b.meta.priority]||2)) || a.summary.localeCompare(b.summary,"hu"));
+      arr.sort((a,b)=>((a.due?0:1)-(b.due?0:1)) || String(a.due||"").localeCompare(String(b.due||"")) || ((rank[a.meta.priority]??2)-(rank[b.meta.priority]??2)) || a.summary.localeCompare(b.summary,"hu"));
       return arr;
     }
     card(t,kanban){
@@ -218,7 +218,7 @@
       this._busy=true;
       try{await this._hass.callService(domain,service,data,{entity_id:entity});await this.load();}
       catch(e){this._error=e&&e.message||String(e);this.render();}
-      finally{this._busy=false;}
+      finally{this._busy=false;this.render();}
     }
     async onSubmit(e){
       if(e.target.id==="zt-create"){
