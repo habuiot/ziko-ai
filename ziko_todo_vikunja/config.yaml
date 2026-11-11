@@ -1,0 +1,31 @@
+name: "Ziko™ ● Todo (Vikunja)"
+version: "2.8.0-1"
+slug: "ziko_todo_vikunja"
+description: "ZIKO multi-user task and project management powered by upstream Vikunja 2.8.0"
+url: "https://vikunja.io"
+arch:
+  - amd64
+  - aarch64
+startup: services
+boot: manual
+init: false
+full_access: false
+host_network: false
+homeassistant_api: false
+hassio_api: false
+ingress: false
+ports:
+  3456/tcp: 3456
+ports_description:
+  3456/tcp: "Local Vikunja web app and REST API. Do not expose publicly."
+webui: "http://[HOST]:[PORT:3456]/"
+options:
+  public_url: "http://homeassistant.local:3456/"
+  enable_registration: true
+  timezone: "Europe/Budapest"
+  log_level: "info"
+schema:
+  public_url: str
+  enable_registration: bool
+  timezone: str
+  log_level: list(debug|info|warning|error)
