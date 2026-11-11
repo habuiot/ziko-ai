@@ -94,8 +94,8 @@
       if(!this._loaded) this.render();
       try{
         const responses=await Promise.all(LISTS.map(async l=>{
-          const r=await this._hass.callService("todo","get_items",{status:["needs_action","completed"]},{entity_id:l.id},false,true);
-          const list=r && r[l.id] && r[l.id].items || (r && r.items) || [];
+          const r=await this._hass.callWS({type:"todo/item/list",entity_id:l.id});
+          const list=(r && r.items) || [];
           if(!Array.isArray(list)) throw Error("A feladatlista válasza hibás: "+l.name);
           return list.map(t=>Object.assign({},t,{list:l.key,entity:l.id,key:l.key+":"+(t.uid||t.summary),meta:info(t.description,t.status==="completed")}));
         }));
