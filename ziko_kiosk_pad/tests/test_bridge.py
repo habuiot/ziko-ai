@@ -50,7 +50,7 @@ class TestBridge(unittest.TestCase):
         self.assertEqual(self.pair()[0],200)
         code,data=self.req('GET','/api/state');self.assertEqual(code,200)
         self.assertEqual(len(data['items']['lights']),5)
-        self.assertEqual(len(data['items']['contacts']),7)
+        self.assertEqual(len(data['items']['contacts']),8)
         self.assertEqual(data['items']['locks'][0]['state'],'locked')
         self.assertTrue(all('token' not in str(x) for x in data['items']))
     def test_actions_are_restricted(self):
