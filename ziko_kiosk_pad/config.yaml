@@ -1,5 +1,5 @@
 name: "ZIKO Kiosk Pad"
-version: "0.3.0"
+version: "0.3.1"
 slug: ziko_kiosk_pad
 description: "Legacy iPad 2 HMI bridge to Home Assistant (lights, contacts, media)"
 arch:
@@ -11,8 +11,8 @@ homeassistant_api: true
 ingress: false
 ports:
   "8096/tcp": 8096
-  "8097/tcp": 8097
-  "8098/tcp": 8098
+  "8097/tcp": 18497
+  "8098/tcp": 18498
 ports_description:
   "8096/tcp": "Legacy HTTP HMI (no unlock)"
   "8097/tcp": "HTTPS HMI with PIN-protected door unlock"
