@@ -22,7 +22,7 @@ DATA = Path(os.environ.get("ZIKO_DATA_DIR", "/data"))
 PORT = int(os.environ.get("ZIKO_PORT", "8096"))
 HA_BASE = os.environ.get("ZIKO_HA_URL", "http://supervisor/core/api").rstrip("/")
 HA_TOKEN = os.environ.get("SUPERVISOR_TOKEN") or os.environ.get("ZIKO_HA_TOKEN", "")
-CACHE_TTL = 12.0
+CACHE_TTL = 5.0
 SESSION_AGE = 90 * 24 * 3600
 
 LIGHTS = (
@@ -35,6 +35,7 @@ LIGHTS = (
 CONTACTS = (
     ("binary_sensor.ewelink_snzb_04p_contact", "Bejarati ajto"),
     ("binary_sensor.ewelink_snzb_04p_contact_2", "Erkelyajto"),
+    ("binary_sensor.door_sensor_ajto", "Furdoszoba ajto"),
     ("binary_sensor.nagyszoba_kis_ablak_ajto", "Nagyszoba kis ablak"),
     ("binary_sensor.nagyszoba_nagyszoba_nagy_ablak_ajto", "Nagyszoba nagy ablak"),
     ("binary_sensor.myggbett_door_window_sensor_ajto", "Nappali nagy ablak"),
@@ -195,7 +196,7 @@ HTML = Path(__file__).with_name("index.html").read_bytes()
 
 def make_handler(bridge):
     class Handler(BaseHTTPRequestHandler):
-        server_version = "ZIKO Kiosk Bridge/0.1"
+        server_version = "ZIKO Kiosk Bridge/0.2"
         sys_version = ""
 
         def log_message(self, fmt, *args):
@@ -272,6 +273,15 @@ def make_handler(bridge):
                     return
                 ck = "zkp_session=" + token + "; HttpOnly; Path=/; Max-Age=" + str(SESSION_AGE) + "; SameSite=Strict"
                 self.send_json(200, {"ok": True}, {"Set-Cookie": ck})
+                return
+            if path == "/api/unlock":
+                pad = bridge.authenticate(self.headers.get("Cookie"))
+                if not pad:
+                    self.send_json(401, {"error": "Parositas szukseges"})
+                    return
+                # Legacy iPad plain HTTP transport is not secure for exterior-door unlock.
+                # Do not activate this service until TLS and stronger authentication exist.
+                self.send_json(423, {"error": "Zárnyitás védett HTTPS kapcsolat és további hitelesítés nélkül tiltva."})
                 return
             if path == "/api/command":
                 if not bridge.authenticate(self.headers.get("Cookie")):

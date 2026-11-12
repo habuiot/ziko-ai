@@ -1,4 +1,4 @@
-# ZIKO Kiosk Pad 0.1 — Legacy iPad HMI
+# ZIKO Kiosk Pad 0.2 — Legacy iPad HMI
 
 Separate Home Assistant App for legacy iPad 2/iOS 9 Safari. No external JS packages or CDNs.
 
@@ -18,3 +18,9 @@ Separate Home Assistant App for legacy iPad 2/iOS 9 Safari. No external JS packa
 4. Pair as KIOSK-01 and test bidirectional light control. Never expose HTTP beyond trusted LAN.
 
 HA Supervisor provides server-only token via SUPERVISOR_TOKEN. Physical iPad verification is not yet complete.
+
+## 0.2.0
+- Unified entrance overview containing doors, windows, front-door lock state.
+- Touch drag swipe bar with animated progression. Door unlocking is **not enabled**: endpoint /api/unlock replies 423 until TLS and secondary authentication are provided.
+- Per-KIOSK home quick controls and last tab memory; larger touch targets; faster state refresh with foreground wake refresh.
+- Includes bathroom door contact. Previous 0.1 version at archive/kiosk-pad-v0.1.0.

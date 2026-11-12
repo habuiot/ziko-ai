@@ -65,6 +65,13 @@ class TestBridge(unittest.TestCase):
         self.assertEqual(self.req('POST','/api/command',{'id':zkp.LIGHTS[0][0],'action':'off'}, {'X-ZIKO-Request':'no'})[0],403)
     def test_pair_code_wrong(self):
         self.assertEqual(self.req('POST','/api/pair',{'code':'00000000' if self.bridge.pairing_code != '00000000' else '11111111','pad':'KIOSK-02'})[0],403)
+    def test_unlock_swipe_requires_pairing(self):
+        self.assertEqual(self.req('POST', '/api/unlock', {'confirm': 'slide'})[0], 401)
+    def test_unlock_does_not_operate_hardware(self):
+        self.pair()
+        status, payload = self.req('POST', '/api/unlock', {'confirm': 'slide'})
+        self.assertEqual(status, 423)
+        self.assertEqual(self.fake.calls, [])
     def test_session_survives_bridge_restart(self):
         self.pair()
         b=zkp.Bridge(data_dir=self.tmp.name,ha=self.fake)
