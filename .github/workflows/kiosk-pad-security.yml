@@ -1,0 +1,26 @@
+name: Kiosk Pad secure unlock tests
+on:
+  push:
+    branches:
+      - feature/kiosk-secure-unlock
+    paths:
+      - 'ziko_kiosk_pad/**'
+      - '.github/workflows/kiosk-pad-security.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kiosk-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse Python
+        run: python -m compileall -q ziko_kiosk_pad
+      - name: Run original and security tests
+        run: python -m unittest discover -s ziko_kiosk_pad/tests -p 'test_*.py' -v
