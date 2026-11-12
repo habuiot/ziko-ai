@@ -59,3 +59,13 @@ On this Házikó, host ports 8097/8098 were occupied or reserved. Internal HTTPS
 - Secure iPad HMI: `https://homeassistant.local:18497`
 
 Do not use the container-internal port numbers 8097/8098 in Safari. Verify the CA fingerprint independently in the App logs before installing. Do not enter unlock PIN on HTTP. The pin is not yet configured.
+
+## 0.3.2 — Belső nyitó: PIN nélküli csúsztatás
+
+- The iPad's PIN prompt has been removed. Complete swipe on the HTTPS HMI triggers the U200 lock request.
+- PIN-free mode requires the App's explicit `swipe_without_pin: true` configuration, HTTPS, KIOSK-01 secure session and a matching pairing IP. Old unbound sessions are deliberately invalidated, requiring one new secure pairing.
+- Limit repeated swipe unlock attempts to at most one per 12 seconds (per paired client IP). Backend refuses lock state changes when actual lock state is unknown; waits for confirmed unlocked state.
+- The original PIN remains as an optional fallback if swipe_without_pin is disabled. Existing unlock PIN is never displayed and is not sent by the browser.
+- Legacy port 8096 still has **no physical unlock**; 18497 is for the paired HTTPS terminal, not for port-forwarding.
+- Risk: anybody with access to the trusted paired wall iPad can now unlock the door without another authentication factor. Protect physical access and use this only on your private local network.
+- Rollback: archive/kiosk-pad-v0.3.1.

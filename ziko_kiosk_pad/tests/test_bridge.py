@@ -161,6 +161,47 @@ class TestSecureBridge(unittest.TestCase):
         self.assertEqual(self.secure.unlock('KIOSK-01', '127.0.0.1', '12345678')[0], 403)
         self.assertEqual(self.fake.calls, [])
 
+    def enable_swipe_mode(self):
+        (Path(self.tmp.name) / 'options.json').write_text('{"swipe_without_pin": true}')
+
+    def test_pinless_mode_is_off_by_default(self):
+        self.assertFalse(self.secure.swipe_without_pin())
+        self.assertEqual(self.secure.unlock('KIOSK-01', '127.0.0.1', None)[0], 423)
+        self.assertEqual(self.fake.calls, [])
+
+    def test_paired_ip_required_in_pinless_mode(self):
+        self.enable_swipe_mode()
+        token = self.secure.pair(self.bridge.pairing_code, 'KIOSK-01', '192.168.10.164')
+        self.assertIsNotNone(token)
+        self.assertEqual(self.secure.identity('zkp_tls=' + token, '192.168.10.164'), 'KIOSK-01')
+        self.assertIsNone(self.secure.identity('zkp_tls=' + token, '192.168.10.165'))
+
+    def test_old_unbound_https_session_rejected_in_pinless_mode(self):
+        token = self.secure.pair(self.bridge.pairing_code, 'KIOSK-01', '192.168.10.164')
+        self.enable_swipe_mode()
+        # Emulate a session from previous versions without an IP binding.
+        for item in self.secure.sessions.values():
+            item.pop('ip', None)
+        self.assertIsNone(self.secure.identity('zkp_tls=' + token, '192.168.10.164'))
+
+    def test_pinless_swipe_unlocks_exact_lock_with_fake_ha(self):
+        self.enable_swipe_mode()
+        self.assertEqual(self.secure.unlock('KIOSK-01', '127.0.0.1', None)[0], 200)
+        self.assertEqual(self.fake.calls, [('lock', 'unlock', secure.LOCK_ENTITY)])
+
+    def test_pinless_repeat_is_throttled(self):
+        self.enable_swipe_mode()
+        self.assertEqual(self.secure.unlock('KIOSK-01', '127.0.0.1', None)[0], 200)
+        self.fake.lock_state = 'locked'
+        code, _ = self.secure.unlock('KIOSK-01', '127.0.0.1', None)
+        self.assertEqual(code, 429)
+        self.assertEqual(len(self.fake.calls), 1)
+
+    def test_other_terminal_blocked_in_pinless_mode(self):
+        self.enable_swipe_mode()
+        self.assertEqual(self.secure.unlock('KIOSK-02', '127.0.0.1', None)[0], 403)
+        self.assertEqual(self.fake.calls, [])
+
     def test_tls_assets_valid_ca_and_profile(self):
         import os
         import plistlib

@@ -25,7 +25,7 @@ from pathlib import Path
 
 LOG = logging.getLogger("ziko-kiosk-secure")
 LOCK_ENTITY = "lock.eloszoba_bejarati_ajto_also_zar"
-SESSION_TTL = 24 * 3600
+SESSION_TTL = 30 * 24 * 3600
 MAX_ATTEMPTS = 3
 WINDOW = 15 * 60
 
@@ -104,6 +104,7 @@ class Security:
             self.sessions = {}
         self.failed_pair = {}
         self.failed_pin = {}
+        self.last_swipe_unlock = {}
 
     def _attempt(self, table, ip, ok, limit):
         now = time.time()
@@ -129,14 +130,22 @@ class Security:
         digest = hashlib.sha256(token.encode("ascii")).hexdigest()
         with self.lock:
             self.sessions = {k: v for k, v in self.sessions.items() if v.get("expires", 0) > time.time()}
-            self.sessions[digest] = {"pad": pad, "expires": time.time() + SESSION_TTL}
+            self.sessions[digest] = {"pad": pad, "expires": time.time() + SESSION_TTL, "ip": ip}
             tmp = self.sessions_path.with_suffix(".tmp")
             tmp.write_text(json.dumps(self.sessions), encoding="utf-8")
             os.chmod(tmp, 0o600)
             os.replace(tmp, self.sessions_path)
         return token
 
-    def identity(self, cookie):
+    def swipe_without_pin(self):
+        """PIN-free mode is explicitly enabled by the owner, not by the web client."""
+        try:
+            value = json.loads((self.data / "options.json").read_text(encoding="utf-8")).get("swipe_without_pin", False)
+            return value is True
+        except (OSError, ValueError, TypeError):
+            return False
+
+    def identity(self, cookie, ip=None):
         try:
             c = cookies.SimpleCookie()
             c.load(cookie or "")
@@ -146,7 +155,13 @@ class Security:
             return None
         with self.lock:
             s = self.sessions.get(digest)
-            return s.get("pad") if s and s.get("expires", 0) > time.time() else None
+            if not s or s.get("expires", 0) <= time.time():
+                return None
+            if s.get("pad") == "KIOSK-01" and self.swipe_without_pin():
+                # IP-bind the HTTPS pairing. Legacy unbound sessions must re-pair.
+                if not ip or s.get("ip") != ip:
+                    return None
+            return s.get("pad")
 
     def expected_pin(self):
         try:
@@ -158,13 +173,22 @@ class Security:
     def unlock(self, pad, ip, supplied):
         if pad != "KIOSK-01":
             return 403, {"error": "Csak KIOSK-01 terminalon lehet nyitni"}
-        expected = self.expected_pin()
-        if not expected:
-            return 423, {"error": "Allits be 8-12 szamjegyu nyitasi PIN-t a Házikó alkalmazas beallitasainal"}
-        correct = isinstance(supplied, str) and hmac.compare_digest(supplied, expected)
-        if not self._attempt(self.failed_pin, ip, correct, MAX_ATTEMPTS):
-            return 403, {"error": "Hibas PIN vagy tul sok probalkozas; varj 15 percet"}
+        no_pin = self.swipe_without_pin()
+        if not no_pin:
+            expected = self.expected_pin()
+            if not expected:
+                return 423, {"error": "Allits be 8-12 szamjegyu nyitasi PIN-t az alkalmazasban"}
+            correct = isinstance(supplied, str) and hmac.compare_digest(supplied, expected)
+            if not self._attempt(self.failed_pin, ip, correct, MAX_ATTEMPTS):
+                return 403, {"error": "Hibas PIN vagy tul sok probalkozas; varj 15 percet"}
         with self.unlock_mutex:
+            if no_pin:
+                # Deliberate swipes only; guard accidental repeated/replayed requests.
+                now = time.monotonic()
+                last = self.last_swipe_unlock.get(ip, 0)
+                if now - last < 12:
+                    return 429, {"error": "Varj 12 masodpercet a kovetkezo nyitasig"}
+                self.last_swipe_unlock[ip] = now
             try:
                 previous = self.bridge.ha.request("/states/" + LOCK_ENTITY).get("state")
                 if previous == "unlocked":
@@ -190,7 +214,7 @@ def secure_handler(security, html):
     bridge = security.bridge
 
     class Handler(BaseHTTPRequestHandler):
-        server_version = "ZIKO Kiosk Secure/0.3"
+        server_version = "ZIKO Kiosk Secure/0.3.2"
         sys_version = ""
 
         def log_message(self, fmt, *args):
@@ -225,12 +249,12 @@ def secure_handler(security, html):
                 self.wfile.write(html)
                 return
             if path == "/api/status":
-                pad = security.identity(self.headers.get("Cookie"))
+                pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
                 self.json_result(200, {"paired": bool(pad), "pad": pad,
-                                       "secure": True, "unlock_ready": bool(security.expected_pin())})
+                                       "secure": True, "unlock_ready": bool(security.swipe_without_pin() or security.expected_pin())})
                 return
             if path == "/api/state":
-                pad = security.identity(self.headers.get("Cookie"))
+                pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
                 if not pad:
                     self.json_result(401, {"error": "HTTPS terminalparositas szukseges"})
                     return
@@ -269,7 +293,7 @@ def secure_handler(security, html):
                 cookie = "zkp_tls=" + token + "; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=" + str(SESSION_TTL)
                 self.json_result(200, {"ok": True}, cookie=cookie)
                 return
-            pad = security.identity(self.headers.get("Cookie"))
+            pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
             if not pad:
                 self.json_result(401, {"error": "HTTPS terminalparositas szukseges"})
                 return
@@ -329,5 +353,5 @@ def start_secure(bridge, html, port=8097, profile_port=8098):
     threading.Thread(target=profile_server.serve_forever, daemon=True, name="ziko-kiosk-ca").start()
     LOG.info("Secure local HTTPS ready at :%s, certificate installer at :%s", port, profile_port)
     LOG.info("ZIKO Kiosk CA SHA256 fingerprint: %s", material["ca_sha256"])
-    LOG.info("Unlock PIN configured: %s; do not forward these ports to the internet", bool(security.expected_pin()))
+    LOG.info("Unlock mode: %s; do not forward these ports to the internet", "paired KIOSK-01 swipe" if security.swipe_without_pin() else "PIN required")
     return server, profile_server
