@@ -1,6 +1,7 @@
 import http.client
 import json
 import tempfile
+import shutil
 import threading
 import unittest
 from http.server import ThreadingHTTPServer
@@ -76,5 +77,103 @@ class TestBridge(unittest.TestCase):
         self.pair()
         b=zkp.Bridge(data_dir=self.tmp.name,ha=self.fake)
         self.assertEqual(b.authenticate(self.cookie),'KIOSK-01')
+
+
+# Security tests: use a fake lock so NO physical door is opened during CI.
+SECURE_SOURCE = Path(__file__).resolve().parents[1] / 'secure.py'
+sec_spec = importlib.util.spec_from_file_location('ziko_secure', SECURE_SOURCE)
+secure = importlib.util.module_from_spec(sec_spec)
+sec_spec.loader.exec_module(secure)
+
+
+class FakeLockHa(FakeHa):
+    def __init__(self):
+        super().__init__()
+        self.lock_state = 'locked'
+
+    def request(self, path):
+        if path != '/states/' + secure.LOCK_ENTITY:
+            raise AssertionError('Unexpected HA API path: ' + path)
+        return {'state': self.lock_state}
+
+    def service(self, domain, action, entity_id):
+        super().service(domain, action, entity_id)
+        if (domain, action, entity_id) == ('lock', 'unlock', secure.LOCK_ENTITY):
+            self.lock_state = 'unlocked'
+
+
+class TestSecureBridge(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.fake = FakeLockHa()
+        self.bridge = zkp.Bridge(data_dir=self.tmp.name, ha=self.fake)
+        self.secure = secure.Security(self.bridge)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def configure_pin(self):
+        (Path(self.tmp.name) / 'options.json').write_text('{"unlock_pin":"12345678"}')
+
+    def test_pin_disabled_until_configured(self):
+        self.assertEqual(self.secure.expected_pin(), '')
+        status, _ = self.secure.unlock('KIOSK-01', '127.0.0.1', '12345678')
+        self.assertEqual(status, 423)
+        self.assertEqual(self.fake.calls, [])
+
+    def test_https_session_separate_from_legacy_cookie(self):
+        legacy = self.bridge.pair(self.bridge.pairing_code, 'KIOSK-01', '127.0.0.1')
+        self.assertIsNone(self.secure.identity('zkp_session=' + legacy))
+        token = self.secure.pair(self.bridge.pairing_code, 'KIOSK-01', '127.0.0.1')
+        self.assertEqual(self.secure.identity('zkp_tls=' + token), 'KIOSK-01')
+        self.assertIsNone(self.bridge.authenticate('zkp_tls=' + token))
+
+    def test_wrong_pin_never_unlocks(self):
+        self.configure_pin()
+        status, _ = self.secure.unlock('KIOSK-01', '127.0.0.1', '00000000')
+        self.assertEqual(status, 403)
+        self.assertEqual(self.fake.calls, [])
+
+    def test_non_entry_pad_cannot_unlock_even_with_valid_pin(self):
+        self.configure_pin()
+        status, _ = self.secure.unlock('KIOSK-02', '127.0.0.1', '12345678')
+        self.assertEqual(status, 403)
+        self.assertEqual(self.fake.calls, [])
+
+    def test_successful_pin_calls_exact_u200_service(self):
+        self.configure_pin()
+        status, data = self.secure.unlock('KIOSK-01', '127.0.0.1', '12345678')
+        self.assertEqual(status, 200)
+        self.assertTrue(data['ok'])
+        self.assertEqual(self.fake.calls, [('lock', 'unlock', secure.LOCK_ENTITY)])
+
+    def test_lock_already_unlocked_does_not_call_service(self):
+        self.configure_pin()
+        self.fake.lock_state = 'unlocked'
+        status, _ = self.secure.unlock('KIOSK-01', '127.0.0.1', '12345678')
+        self.assertEqual(status, 200)
+        self.assertEqual(self.fake.calls, [])
+
+    def test_failing_three_times_blocks_valid_pin(self):
+        self.configure_pin()
+        for _ in range(3):
+            self.assertEqual(self.secure.unlock('KIOSK-01', '127.0.0.1', '00000000')[0], 403)
+        self.assertEqual(self.secure.unlock('KIOSK-01', '127.0.0.1', '12345678')[0], 403)
+        self.assertEqual(self.fake.calls, [])
+
+    def test_tls_assets_valid_ca_and_profile(self):
+        import os
+        import plistlib
+        import subprocess
+        if not shutil.which('openssl'):
+            self.skipTest('openssl not installed')
+        assets = secure.tls_assets(self.tmp.name)
+        profile = plistlib.loads(assets['profile'])
+        self.assertEqual(profile['PayloadType'], 'Configuration')
+        self.assertTrue(assets['ca_sha256'])
+        tls = Path(self.tmp.name) / 'tls'
+        subprocess.run(['openssl', 'verify', '-CAfile', str(tls / 'ca.pem'), str(tls / 'server.pem')],
+                       check=True, stdout=subprocess.DEVNULL)
+
 
 if __name__ == '__main__': unittest.main()
