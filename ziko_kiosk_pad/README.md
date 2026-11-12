@@ -31,3 +31,9 @@ HA Supervisor provides server-only token via SUPERVISOR_TOKEN. Physical iPad ver
 - No loss of controls: door/window/lock panel, slide gesture, lights, media and system remain.
 - Existing sessions and backend untouched; security gate on exterior-door unlock remains in place.
 - Backup branch: archive/kiosk-pad-v0.2.0.
+
+## 0.2.2: Bejárat page simplified
+- KIOSK-01 Bejárat only: remove/hide the second "KIOSK-01 · BEJÁRAT" quick-control container; the doors/windows/front-lock/swipe overview now fills the available width.
+- Other pads retain their own quick-control panels; lights and media tabs are unchanged.
+- Lock opening remains disabled on HTTP while an authenticated HTTPS path is prepared.
+- Rollback branch: archive/kiosk-pad-v0.2.1.

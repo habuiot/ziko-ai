@@ -1,5 +1,5 @@
 name: "ZIKO Kiosk Pad"
-version: "0.2.1"
+version: "0.2.2"
 slug: ziko_kiosk_pad
 description: "Legacy iPad 2 HMI bridge to Home Assistant (lights, contacts, media)"
 arch:
