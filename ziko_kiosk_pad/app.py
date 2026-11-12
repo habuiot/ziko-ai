@@ -307,7 +307,7 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     bridge = Bridge()
     LOG.info("ZIKO Kiosk Pad active; setup pairing code: %s", bridge.pairing_code)
-    LOG.info("Safety: no lock/unlock and no alarm services are exposed")
+    LOG.info("Legacy HTTP exposes no lock/unlock or alarm actions; HTTPS requires KIOSK-01 + PIN")
     # Preserve legacy HTTP and keep physical unlock exclusively on independent HTTPS.
     try:
         from secure import start_secure
