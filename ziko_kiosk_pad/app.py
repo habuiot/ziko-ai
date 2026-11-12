@@ -308,6 +308,12 @@ def main():
     bridge = Bridge()
     LOG.info("ZIKO Kiosk Pad active; setup pairing code: %s", bridge.pairing_code)
     LOG.info("Safety: no lock/unlock and no alarm services are exposed")
+    # Preserve legacy HTTP and keep physical unlock exclusively on independent HTTPS.
+    try:
+        from secure import start_secure
+        start_secure(bridge, HTML)
+    except Exception as exc:
+        LOG.error("HTTPS unavailable, legacy HTTP still available: %s", type(exc).__name__)
     server = ThreadingHTTPServer(("0.0.0.0", PORT), make_handler(bridge))
     server.serve_forever(poll_interval=0.5)
 
