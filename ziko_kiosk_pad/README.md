@@ -24,3 +24,10 @@ HA Supervisor provides server-only token via SUPERVISOR_TOKEN. Physical iPad ver
 - Touch drag swipe bar with animated progression. Door unlocking is **not enabled**: endpoint /api/unlock replies 423 until TLS and secondary authentication are provided.
 - Per-KIOSK home quick controls and last tab memory; larger touch targets; faster state refresh with foreground wake refresh.
 - Includes bathroom door contact. Previous 0.1 version at archive/kiosk-pad-v0.1.0.
+
+## 0.2.1: Non-scrolling iPad pages
+- Fixed viewport for every screen; compact text, tiles and buttons.
+- Both iPad landscape and portrait mode layouts, with dynamic shrink-to-fit and resize/orientation support.
+- No loss of controls: door/window/lock panel, slide gesture, lights, media and system remain.
+- Existing sessions and backend untouched; security gate on exterior-door unlock remains in place.
+- Backup branch: archive/kiosk-pad-v0.2.0.
