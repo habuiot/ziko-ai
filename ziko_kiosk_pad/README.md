@@ -49,3 +49,13 @@ Legacy HTTP :8096 remains for light and media, but cannot open locks. HTTPS :809
 5. Swipe fully left-to-right and enter PIN. Only this combination requests `lock.unlock` on `lock.eloszoba_bejarati_ajto_also_zar` and checks feedback from HA.
 
 Never expose ports 8096/8097/8098 to the internet; keep on trusted LAN. Physical iOS 9 certificate compatibility remains to be tested. Private TLS keys persist only inside the HA App data. Rollback branch: `archive/kiosk-pad-v0.2.2`.
+
+## 0.3.1 Házikó port mapping
+
+On this Házikó, host ports 8097/8098 were occupied or reserved. Internal HTTPS 8097/TCP maps to **LAN host 18497**; internal certificate installer 8098/TCP maps to **LAN host 18498**. The legacy HTTP remains 8096.
+
+**Correct user-facing URLs**
+- Certificate profile: `http://homeassistant.local:18498/ca.mobileconfig`
+- Secure iPad HMI: `https://homeassistant.local:18497`
+
+Do not use the container-internal port numbers 8097/8098 in Safari. Verify the CA fingerprint independently in the App logs before installing. Do not enter unlock PIN on HTTP. The pin is not yet configured.
