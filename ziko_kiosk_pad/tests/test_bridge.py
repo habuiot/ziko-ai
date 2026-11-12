@@ -1,0 +1,73 @@
+import http.client
+import json
+import tempfile
+import threading
+import unittest
+from http.server import ThreadingHTTPServer
+from pathlib import Path
+import importlib.util
+
+SOURCE = Path(__file__).resolve().parents[1] / 'app.py'
+spec = importlib.util.spec_from_file_location('zkp', SOURCE)
+zkp = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(zkp)
+
+class FakeHa:
+    def __init__(self):
+        self.calls=[]
+    def states(self):
+        return [dict(entity_id=e,state=('locked' if e.startswith('lock.') else 'on'),attributes={'brightness':120}) for e,n in zkp.VISIBLE]
+    def service(self,domain,action,entity_id):
+        self.calls.append((domain,action,entity_id))
+
+class TestBridge(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory()
+        self.fake=FakeHa()
+        self.bridge=zkp.Bridge(data_dir=self.tmp.name,ha=self.fake)
+        self.http=ThreadingHTTPServer(('127.0.0.1',0),zkp.make_handler(self.bridge))
+        self.thread=threading.Thread(target=self.http.serve_forever,daemon=True);self.thread.start()
+        self.cookie=None
+    def tearDown(self):
+        self.http.shutdown();self.http.server_close();self.thread.join(timeout=2);self.tmp.cleanup()
+    def req(self,method,path,body=None,headers=None):
+        h={'X-ZIKO-Request':'1'};h.update(headers or {})
+        if self.cookie:h['Cookie']=self.cookie
+        if body is not None:h['Content-Type']='application/json'
+        c=http.client.HTTPConnection('127.0.0.1',self.http.server_port,timeout=3)
+        c.request(method,path,json.dumps(body).encode() if body is not None else None,h)
+        r=c.getresponse();d=json.loads(r.read().decode()) if path!='/index.html' else {}
+        ck=r.getheader('Set-Cookie');status=r.status;c.close()
+        if ck:self.cookie=ck.split(';')[0]
+        return status,d
+    def pair(self):
+        return self.req('POST','/api/pair',{'code':self.bridge.pairing_code,'pad':'KIOSK-01'})
+    def test_requires_pairing(self):
+        self.assertEqual(self.req('GET','/api/state')[0],401)
+        self.assertEqual(self.req('POST','/api/command',{'id':zkp.LIGHTS[0][0],'action':'on'})[0],401)
+    def test_pair_and_read_real_allowlist(self):
+        self.assertEqual(self.pair()[0],200)
+        code,data=self.req('GET','/api/state');self.assertEqual(code,200)
+        self.assertEqual(len(data['items']['lights']),5)
+        self.assertEqual(len(data['items']['contacts']),7)
+        self.assertEqual(data['items']['locks'][0]['state'],'locked')
+        self.assertTrue(all('token' not in str(x) for x in data['items']))
+    def test_actions_are_restricted(self):
+        self.pair()
+        self.assertEqual(self.req('POST','/api/command',{'id':'lock.eloszoba_bejarati_ajto_also_zar','action':'unlock'})[0],403)
+        self.assertEqual(self.req('POST','/api/command',{'id':zkp.LIGHTS[0][0],'action':'on'})[0],200)
+        self.assertEqual(self.fake.calls[-1],('light','turn_on',zkp.LIGHTS[0][0]))
+        self.assertEqual(self.req('POST','/api/command',{'id':zkp.MEDIA[0][0],'action':'play_pause'})[0],200)
+        self.assertEqual(self.fake.calls[-1],('media_player','media_play_pause',zkp.MEDIA[0][0]))
+    def test_csrf_defense(self):
+        self.pair()
+        self.assertEqual(self.req('POST','/api/command',{'id':zkp.LIGHTS[0][0],'action':'off'}, {'Origin':'http://evil.example'})[0],403)
+        self.assertEqual(self.req('POST','/api/command',{'id':zkp.LIGHTS[0][0],'action':'off'}, {'X-ZIKO-Request':'no'})[0],403)
+    def test_pair_code_wrong(self):
+        self.assertEqual(self.req('POST','/api/pair',{'code':'00000000' if self.bridge.pairing_code != '00000000' else '11111111','pad':'KIOSK-02'})[0],403)
+    def test_session_survives_bridge_restart(self):
+        self.pair()
+        b=zkp.Bridge(data_dir=self.tmp.name,ha=self.fake)
+        self.assertEqual(b.authenticate(self.cookie),'KIOSK-01')
+
+if __name__ == '__main__': unittest.main()
