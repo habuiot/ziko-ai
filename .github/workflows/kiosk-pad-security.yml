@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feature/kiosk-secure-unlock
+      - main
     paths:
       - 'ziko_kiosk_pad/**'
       - '.github/workflows/kiosk-pad-security.yml'
