@@ -1,0 +1,65 @@
+name: ZIKO Command safety and boot tests
+on:
+  push:
+    paths:
+      - 'ziko_command/**'
+      - '.github/workflows/ziko-command.yml'
+  pull_request:
+    paths:
+      - 'ziko_command/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Compile and test coordinator
+        run: |
+          set -e
+          python -m compileall -q ziko_command
+          cd ziko_command
+          python -m unittest discover -v -p 'test_*.py'
+      - name: Validate frontend JavaScript syntax
+        run: node --check ziko_command/web/app.js
+      - name: Docker build and isolated startup
+        run: |
+          set -e
+          docker build -t ziko-command:ci ziko_command
+          docker run -d --name ziko-command-ci ziko-command:ci
+          trap 'docker rm -f ziko-command-ci >/dev/null 2>&1 || true' EXIT
+          for i in $(seq 1 25); do
+            if docker exec ziko-command-ci test -f /data/command.sqlite3; then
+              break
+            fi
+            sleep 1
+          done
+          docker exec ziko-command-ci python -c '
+          import os
+          import sqlite3
+          import urllib.request
+          import urllib.error
+          db="/data/command.sqlite3"
+          assert os.path.exists(db), "Persistent DB not created"
+          assert (os.stat(db).st_mode & 0o777)==0o600
+          with sqlite3.connect(db) as con:
+              assert con.execute("SELECT COUNT(*) FROM runtime WHERE key=?",
+                                 ("last_heartbeat",)).fetchone()[0]==1
+          try:
+              urllib.request.urlopen(
+                  urllib.request.Request("http://127.0.0.1:8100/api/status",
+                      headers={"X-Remote-User-Id":"fake_admin"}),
+                  timeout=4)
+          except urllib.error.HTTPError as err:
+              assert err.code == 403, err.code
+          else:
+              raise AssertionError("Direct forged request was accepted")
+          print("ZIKO Command startup, heartbeat, SQLite permissions, ingress reject: OK")
+          '
