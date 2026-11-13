@@ -33,7 +33,15 @@ Ingress közvetítő: `172.30.32.2`, a belépett felhasználó stabil `X-Remote-
 
 A Command HTTP-API-ja **csak saját üzenetet** fogad, jóváhagyást, szerverfeladatot, Home Assistant műveletet és AI-hívást **nem** hajt végre.
 
-A korábbi Házikó-fagyások miatt a telepítés utáni kezdeti működés `boot:manual`, `watchdog:false`. Az automatikus újraindítás és állandó üzem csak a Házikó terhelési és visszaállítási ellenőrzése után aktiválható.
+Az alapértelmezett friss telepítés `boot:manual`, `watchdog:false` az első tesztig. **A jelenlegi Házikón 2026-11-13-án** sikeres 37/37 egységteszt és konténer-indulási próba után a Supervisor beállítása **`boot:auto`, `watchdog:true`**, és a Command app elindult. Ez az alkalmazás szintjén biztosít újraindítási felügyeletet, de nem garantálja a teljes Házikó hardverének vagy hálózatának folyamatos működését.
+
+## Valós kiadási állapot (2026-11-13)
+
+- **37/37 automatikus Python-teszt és Docker konténerindítás sikeres**, kézi webes teljes körű teszt még nem történt.
+- A Házikó egyetlen új appot kapott: `29b31cdc_ziko_command` 0.1.0, **started**.
+- Közvetlen, Home Assistant-Ingress nélküli API-lekérdezés **HTTP 403** választ kapott. A tényleges Android böngészős, jóváhagyott HA-session teszt még hátra van.
+- A ZikoTodo dashboard új **Parancsnokság** nézetében közvetlen indítógomb és a meglévő natív AI Todo-lista található, az OldTodo változatlan.
+- A Ziko AI app nincs élesben futó példányként regisztrálva; az önálló LLM-feladatvégrehajtó továbbra is hiányzik. A naplózott Command üzenetek önmagukban nem indítanak végrehajtást.
 
 ## Fejlesztési sorrend
 
