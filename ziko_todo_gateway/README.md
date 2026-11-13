@@ -1,6 +1,8 @@
-# Ziko™ ● Todo · Home Assistant Ingress Identity Gateway (v0.1)
+# Ziko™ ● Todo · Home Assistant Ingress + Project ACL Gateway (v0.2)
 
-**Status: SOURCE ONLY / NOT INSTALLED.** The Vikunja add-on currently reports `state: error`. This separate identity bridge can be tested and reviewed without modifying existing task data.
+**Current status (2026-11-13): installed and started on Házikó as `29b31cdc_ziko_todo_gateway`.** The Vikunja app remains in `error` state and was not restarted. This gateway is a separate read-only component; the existing ZikoTodo frontend and all native tasks remain untouched.
+
+**Verification:** GitHub Actions: **28/28 Python security tests passed**; Docker container boot and direct spoofed-header rejection passed. A live direct API request was rejected with HTTP 403, as designed. **Authenticated ingress via the owner's actual browser has NOT yet been confirmed**, and no project memberships exist in the live gateway database.
 
 ## First milestone — no second login
 
@@ -10,17 +12,21 @@
 - Refuses requests with missing, control-character or oversized user IDs. It does not infer a default administrator.
 - `GET /`: safe minimal identity-view UI.
 - `GET /api/me`: authenticated identity check (no role or permission claims).
-- `GET /api/backend`: Vikunja health probe only, returns a boolean status with **connected=false**.
+- `GET /api/backend`: Vikunja health probe only, returns availability and **connected=false**.
+- `GET /api/projects`: read-only projects filtered by the Home Assistant stable user ID.
+- `GET /api/projects/<slug>`: read-only per-project access; unauthorized projects return 404 without leaking their existence.
+- Role levels are `viewer` (read), `editor` (read, future task writes) and `manager` (read, future task writes, future membership management); **no write HTTP endpoints exist today**.
+- Project ACL is stored in the gateway's private `/data/acl.sqlite3` database; no automatic owner, no default grants, no shared administrator token.
 - All mutating HTTP methods return 405. No user provisioning, API tokens, project reads or task writes yet.
-- No network port exposure, no /config mount, no HA API token, no secrets in frontend.
+- No host port exposure, no /config mount, no HA API token, no secrets in frontend. Runs under an unprivileged container user after preparing private /data.
 - No background agent or monitoring implied.
 - HTML-escapes display names; no cache, no CORS, restrictive CSP; no sensitive URL/header logging.
 
-## Security gate for v0.2
+## Security gate for full project and task API (v0.3+)
 
 Before any project/task endpoints:
-1. Confirm the real Ingress peer IP / headers on the deployed environment. The IP is taken from Home Assistant official docs, not yet runtime-tested locally.
-2. Implement separate **server-enforced project ACL** keyed by HA stable user ID with deny-by-default. Do not derive roles from display names.
+1. Confirm the authenticated Ingress peer IP / headers on the owner's actual Házikó browser session. The direct-client rejection is tested, but valid end-to-end ingress is not yet verified.
+2. **Done at source level:** server-enforced, read-only project ACL keyed by Home Assistant stable user ID, deny-by-default. Require additional authenticated UI and multi-user tests before enabling mutations.
 3. Decide whether to provision per-user Vikunja identities or to keep identity and authorization in the ZIKO gateway. No single shared token may bypass authorization.
 4. Store server-to-server secrets in restricted /data (never in browser or GitHub).
 5. Do not offer a raw arbitrary upstream reverse proxy to Vikunja; use explicit path allowlists and operations.
@@ -32,7 +38,7 @@ Before any project/task endpoints:
 
 ```sh
 cd ziko_todo_gateway
-python3 -m unittest -v test_server.py
+python3 -m unittest discover -v -p 'test_*.py'
 ```
 
 Upstream docs:
@@ -41,4 +47,6 @@ Upstream docs:
 - Vikunja API v2: https://vikunja.io/docs/api-v2/
 
 ## Important
-No change to `/ziko-todo`, OldTodo, existing local_todo entities, Vikunja app, app boot settings or HA host resources. Installing this app is a separate gate after security and actual device tests. No restart was requested or performed.
+Installed and started **only** the new read-only gateway after CI and container smoke verification. No change to `/ziko-todo`, OldTodo, existing native todo entities or Vikunja's stopped app. The gateway remains `boot: manual`, `watchdog: false`, with no public mapped port.
+
+A trusted, local administrative bootstrap can later use `admin_cli.py` to create a project and grant an explicit stable Home Assistant user ID, e.g. `python admin_cli.py create-project haziko "Házikó"` and `python admin_cli.py grant haziko <HA_USER_ID> manager`. This is intentionally **not** accessible to browsers, and no real user ID has been assigned yet.
