@@ -103,3 +103,14 @@ The native app initially enabled unauthenticated signups for first-admin creatio
 - A Vikunja 2.8.0-2 jelenlegi Supervisor-állapota `error`; API nem elérhető; a naplók nem adnak friss, egyértelmű hibaokot. **Újraindítás vagy új app telepítés nem történt.** A korábbi helyi feladatlisták működnek.
 - A korábbi dokumentumban szereplő Vikunja-felhasználói regisztrációs folyamat **felülírt, elvetett megoldás**. A felhasználó nem kíván külön fiókot létrehozni. Belső technikai szolgáltatásfiók később automatizálható a Vikunja CLI-vel, de nincs még létrehozva és nincs tokenje.
 - További szükséges lépések: gateway jogosultsági térkép, Vikunja-futás helyreállítása külön jóváhagyott, célzott művelettel; token-védelem; read-only projekt-API; elutasításos és többfelhasználós tesztek; óvatos, visszaellenőrzött adatmigráció.
+
+
+## 2026-11-13 — ZikoTodo Gateway 0.2 installed and started (read-only)
+
+- Dedicated app `29b31cdc_ziko_todo_gateway` installed from the ZIKO GitHub app store. At verification, Supervisor `state=started`, `version=0.2.0`, `boot=manual`, `watchdog=false`, no published host port, no Házikó/Supervisor API privileges.
+- Home Assistant Ingress uses its authenticated session user headers, filtered to connections from the trusted proxy `172.30.32.2`, per the official 2026-10-12 Home Assistant contributor guide.
+- ACL implementation `ziko_todo_gateway/acl.py`: private SQLite database inside gateway /data, explicitly granted `viewer`/`editor`/`manager` roles, strict per-project read checks. No user or project is granted by default. Access administration currently only possible via an offline CLI.
+- Read-only APIs: `GET /api/me`, `GET /api/projects`, `GET /api/projects/<slug>`, `GET /api/backend`. All write methods return 405.
+- CI run `43460417603`: 28/28 security and API tests passed, plus Docker image build, startup and direct spoofed-header request rejection. Live API request via MCP proxy returned 403 as designed; this tests denial, **not** the actual user's trusted Ingress browser session.
+- No claim of complete Vikunja integration, actual multi-user sharing, credential-free Vikunja account provisioning, task import, or autonomous ChatGPT work. Those remain explicitly pending. Vikunja `29b31cdc_ziko_todo_vikunja` remains stopped/error; it was not restarted.
+- The existing dashboard and all Home Assistant-native lists remain unchanged; OldTodo is untouched.
