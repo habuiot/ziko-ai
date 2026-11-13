@@ -78,6 +78,16 @@ class CommandStore:
                     actor TEXT NOT NULL,
                     detail TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS messages (
+                    id TEXT PRIMARY KEY,
+                    user_id TEXT NOT NULL,
+                    text TEXT NOT NULL,
+                    client_key TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'awaiting_ai',
+                    created_at INTEGER NOT NULL,
+                    UNIQUE(user_id, client_key)
+                );
+                CREATE INDEX IF NOT EXISTS messages_by_user ON messages(user_id,created_at);
                 CREATE TABLE IF NOT EXISTS proposals (
                     id TEXT PRIMARY KEY,
                     title TEXT NOT NULL,
@@ -309,6 +319,63 @@ class CommandStore:
                 con.execute("ROLLBACK")
                 raise
         return {"id": pid, "title": title.strip(), "state": "proposed"}
+
+
+    def submit_message(self, user_id: str, text: str,
+                       client_key: str, now: int | None = None) -> dict:
+        """User-to-commander inbox, NOT a Todo task or an AI execution claim."""
+        now = now_ts() if now is None else now
+        if not isinstance(user_id,str) or not SOURCE_ID.fullmatch(user_id):
+            raise ValueError("invalid Home Assistant identity")
+        if not isinstance(text,str) or not 1<=len(text.strip())<=2000:
+            raise ValueError("message must be 1–2000 characters")
+        if not isinstance(client_key,str) or not SOURCE_ID.fullmatch(client_key):
+            raise ValueError("client idempotency key required")
+        start = now-86400
+        with closing(connect(self.path)) as con:
+            con.execute("BEGIN IMMEDIATE")
+            try:
+                found=con.execute(
+                    "SELECT * FROM messages WHERE user_id=? AND client_key=?",
+                    (user_id,client_key)
+                ).fetchone()
+                if found:
+                    con.execute("COMMIT")
+                    return dict(found)
+                num=con.execute(
+                    "SELECT COUNT(*) FROM messages WHERE user_id=? AND created_at>=?",
+                    (user_id,start)
+                ).fetchone()[0]
+                if num >= 40:
+                    raise ValueError("daily command limit reached")
+                mid=str(uuid.uuid4())
+                con.execute(
+                    "INSERT INTO messages(id,user_id,text,client_key,created_at) "
+                    "VALUES(?,?,?,?,?)",
+                    (mid,user_id,text.strip(),client_key,now),
+                )
+                con.execute(
+                    "INSERT INTO events(at,kind,job_id,actor,detail) VALUES (?,?,?,?,?)",
+                    (now,"message_recorded",None,user_id,"awaiting_ziko_ai"),
+                )
+                con.execute("COMMIT")
+            except BaseException:
+                con.execute("ROLLBACK")
+                raise
+        return {"id":mid,"text":text.strip(),"status":"awaiting_ai",
+                "created_at":now}
+
+    def messages(self, user_id: str, limit: int = 30) -> list[dict]:
+        """Never disclose a different user's messages."""
+        if not isinstance(user_id,str) or not SOURCE_ID.fullmatch(user_id):
+            return []
+        limit=max(1,min(int(limit),100))
+        with closing(connect(self.path)) as con:
+            return [dict(x) for x in con.execute(
+                "SELECT id,text,status,created_at FROM messages "
+                "WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT ?",
+                (user_id,limit)
+            )]
 
     def briefing(self, now: int | None = None) -> dict:
         now = now_ts() if now is None else now
