@@ -1,8 +1,8 @@
-# Ziko™ ● Todo · Home Assistant Ingress + Project ACL Gateway (v0.2)
+# Ziko™ ● Todo · Home Assistant Ingress + Project ACL Gateway (v0.3)
 
-**Current status (2026-11-13): installed and started on Házikó as `29b31cdc_ziko_todo_gateway`.** The Vikunja app remains in `error` state and was not restarted. This gateway is a separate read-only component; the existing ZikoTodo frontend and all native tasks remain untouched.
+**Current status (2026-11-13): installed and started on Házikó as `29b31cdc_ziko_todo_gateway`, version **0.3.0**.** The Vikunja app remains in `error` state and was not restarted. This gateway is a separate read-only component; the existing ZikoTodo frontend and all native tasks remain untouched.
 
-**Verification:** GitHub Actions: **28/28 Python security tests passed**; Docker container boot and direct spoofed-header rejection passed. A live direct API request was rejected with HTTP 403, as designed. **Authenticated ingress via the owner's actual browser has NOT yet been confirmed**, and no project memberships exist in the live gateway database.
+**Verification:** GitHub Actions: **38/38 Python security and UI tests passed**; Docker container boot and direct spoofed-header rejection passed. Live direct and spoofed-header API requests were rejected with HTTP 403, as designed. **Authenticated ingress via the owner's actual browser has NOT yet been confirmed**, and no project memberships exist in the live gateway database.
 
 ## First milestone — no second login
 
@@ -50,3 +50,16 @@ Upstream docs:
 Installed and started **only** the new read-only gateway after CI and container smoke verification. No change to `/ziko-todo`, OldTodo, existing native todo entities or Vikunja's stopped app. The gateway remains `boot: manual`, `watchdog: false`, with no public mapped port.
 
 A trusted, local administrative bootstrap can later use `admin_cli.py` to create a project and grant an explicit stable Home Assistant user ID, e.g. `python admin_cli.py create-project haziko "Házikó"` and `python admin_cli.py grant haziko <HA_USER_ID> manager`. This is intentionally **not** accessible to browsers, and no real user ID has been assigned yet.
+
+
+## User workspace and dashboard entry (v0.3)
+
+- New mobile-first, dark/neon server-rendered project access portal: `panel.py`. No external assets or browser-side JavaScript.
+- Displays the logged-in HA display name, stable user ID and only projects granted to that ID in the local SQLite ACL. Roles: viewer / editor / manager. A new user sees a clearly labeled empty state, not other people's projects.
+- Uses a single-pass template replacement to prevent token interpolation and HTML markup injection; markup and identity values are escaped.
+- Added test suite: `test_panel.py`, 10 UI/rendering/authorization tests; cumulative **38/38** verified via GitHub Actions. Container boot and private SQLite file permissions passed as well.
+- Installed Supervisor gateway version **0.3.0** with Ingress; no mapped host ports and `boot: manual`, `watchdog: false`.
+- HA ZikoTodo dashboard now includes **Hozzáférések** view (`/ziko-todo/hozzaferesek`), which links to the gateway add-on page. From there select **Open Web UI / Webes felület megnyitása**; this opens the authenticated Ingress portal.
+- Live direct API requests with forged `X-Remote-User-Id` headers to `/api/me` and `/api/projects` both returned HTTP 403 as designed.
+- **Not yet verified:** authenticated end-user ingress session on the owner's Android browser, actual per-user membership assignment in the live database, and end-to-end task interaction with Vikunja.
+- Vikunja remains `state:error` and was **not** restarted or modified. Neither the ZikoTodo Kanban nor OldTodo records were migrated or modified.
