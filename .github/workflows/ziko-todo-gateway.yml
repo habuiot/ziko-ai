@@ -27,3 +27,30 @@ jobs:
           python -m compileall -q ziko_todo_gateway
           cd ziko_todo_gateway
           python -m unittest discover -v -p 'test_*.py'
+      - name: Container boot / private database smoke test
+        run: |
+          set -e
+          docker build -t zikotodo-gateway:test ziko_todo_gateway
+          docker run -d --name zikotodo-gateway-ci zikotodo-gateway:test
+          trap 'docker rm -f zikotodo-gateway-ci >/dev/null 2>&1 || true' EXIT
+          for i in $(seq 1 30); do
+            if docker exec zikotodo-gateway-ci test -f /data/acl.sqlite3; then
+              break
+            fi
+            sleep 1
+          done
+          docker exec zikotodo-gateway-ci python -c '
+          import os
+          import urllib.request
+          import urllib.error
+          assert (os.stat("/data/acl.sqlite3").st_mode & 0o777) == 0o600
+          try:
+              urllib.request.urlopen(
+                  urllib.request.Request("http://127.0.0.1:8099/api/projects",
+                      headers={"X-Remote-User-Id":"fake_admin"}), timeout=5)
+          except urllib.error.HTTPError as err:
+              assert err.code == 403, err.code
+          else:
+              raise AssertionError("Direct request was accepted")
+          print("Container boot and direct-request rejection: OK")
+          '
