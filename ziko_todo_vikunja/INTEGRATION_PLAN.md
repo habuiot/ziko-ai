@@ -91,3 +91,15 @@ The native app initially enabled unauthenticated signups for first-admin creatio
 5. No raw Vikunja port is internet-accessible, and direct access to the integration gateway with forged headers is denied.
 6. Task import is idempotent and does not delete HA source records.
 7. Mobile UI, backup/restore and HA restarts tested without affecting existing Házikó applications.
+
+
+## 2026-11-13 — Implementált SSO-előkészítés és teszt
+
+- Elindult a valódi HA-Ingress identitáshíd fejlesztése: `ziko_todo_gateway/` (külön, saját, **még nem telepített** kiegészítő).
+- A jelenlegi gateway csak azonosítást, alap GET végpontokat és Vikunja health próbát végez. Minden módosító kérés 405-öt kap; semmilyen közös Vikunja-token vagy feladathozzáférés nincs kiadva.
+- Az első ZIKO gateway forráskód **8/8 GitHub Actions egységteszten átment** (2026-11-13, `ZikoTodo gateway tests`, run 43436357626). Tesztek: valódi ingress azonosítás, hiányzó/felhamisított/hibás azonosító elutasítása, HTML escape, offline backend, URL kezelés.
+- A Supervisor-hitelesítési fejlécek hivatalos forrása: https://contributors.home-assistant.io/apps/guides/ingress/
+- Az engedélyezett hálózati peer a hivatalos leírás szerint `172.30.32.2`. Éles környezetben ezt telepítés után külön ellenőrizni kell.
+- A Vikunja 2.8.0-2 jelenlegi Supervisor-állapota `error`; API nem elérhető; a naplók nem adnak friss, egyértelmű hibaokot. **Újraindítás vagy új app telepítés nem történt.** A korábbi helyi feladatlisták működnek.
+- A korábbi dokumentumban szereplő Vikunja-felhasználói regisztrációs folyamat **felülírt, elvetett megoldás**. A felhasználó nem kíván külön fiókot létrehozni. Belső technikai szolgáltatásfiók később automatizálható a Vikunja CLI-vel, de nincs még létrehozva és nincs tokenje.
+- További szükséges lépések: gateway jogosultsági térkép, Vikunja-futás helyreállítása külön jóváhagyott, célzott művelettel; token-védelem; read-only projekt-API; elutasításos és többfelhasználós tesztek; óvatos, visszaellenőrzött adatmigráció.
