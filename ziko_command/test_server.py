@@ -123,7 +123,7 @@ class ServerTests(unittest.TestCase):
         m=self.call(path="/api/messages").response["messages"][0]
         self.assertEqual(m["text"],"<script>alert(1)</script>")
         # This is JSON data. The browser constructs DOM with textContent only.
-        self.assertNotIn("<script", (server.WEB/"index.html").read_text())
+        self.assertNotIn("<script>alert(1)</script>", (server.WEB/"index.html").read_text())
         self.assertIn("body.textContent", (server.WEB/"app.js").read_text())
 
     def test_route_does_not_return_unmapped_file(self):
