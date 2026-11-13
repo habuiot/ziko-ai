@@ -3,7 +3,7 @@ RUN apk add --no-cache su-exec \
  && addgroup -S -g 1000 zikotodo \
  && adduser -S -D -u 1000 -G zikotodo zikotodo
 WORKDIR /opt/zikotodo
-COPY server.py acl.py admin_cli.py ./
+COPY server.py panel.py acl.py admin_cli.py ./
 COPY start.sh /usr/local/bin/start-zikotodo.sh
 RUN chmod 0755 /usr/local/bin/start-zikotodo.sh \
  && chown -R zikotodo:zikotodo /opt/zikotodo
