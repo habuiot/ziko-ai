@@ -1,7 +1,7 @@
 name: "Ziko™ ● Todo – Ingress gateway (EXPERIMENTAL)"
-version: "0.1.0"
+version: "0.2.0"
 slug: "ziko_todo_gateway"
-description: "Identity-check-only ingress bridge; NO Vikunja writes or user provisioning"
+description: "Read-only project ACL through HA ingress; no upstream writes"
 arch:
   - amd64
   - aarch64
@@ -11,7 +11,7 @@ init: false
 ingress: true
 ingress_port: 8099
 ingress_entry: /
-panel_admin: true
+panel_admin: false
 stage: experimental
 full_access: false
 host_network: false
