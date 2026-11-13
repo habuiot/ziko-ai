@@ -24,7 +24,7 @@
       result.project = m.Projekt || result.project;
       result.owner = m["Felelős"] || "";
       result.priority = m["Prioritás"] || "Normál";
-      result.stage = completed ? "Kész" : m.Folyamat || "Beérkezett";
+      result.stage = completed ? "Kész" : m.Folyamat==="Kész" ? "Ellenőrzés" : m.Folyamat || "Beérkezett";
       result.note = parts.join("\n---\n");
     } else {
       const p = raw.match(/Projekt:\s*([^|\n]+)/i);
