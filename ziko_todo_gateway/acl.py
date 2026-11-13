@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 import re
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 DEFAULT_DB = Path(os.environ.get("ZIKO_ACL_DB", "/data/acl.sqlite3"))
@@ -38,7 +39,7 @@ def db_connect(path: str | Path = DEFAULT_DB) -> sqlite3.Connection:
 def init_db(path: str | Path = DEFAULT_DB) -> None:
     location = Path(path)
     location.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-    with db_connect(location) as con:
+    with closing(db_connect(location)) as con, con:
         con.executescript("""
         CREATE TABLE IF NOT EXISTS projects (
             slug TEXT PRIMARY KEY NOT NULL,
@@ -59,14 +60,14 @@ def init_db(path: str | Path = DEFAULT_DB) -> None:
 def create_project(path: str | Path, slug: str, title: str) -> None:
     if not valid_slug(slug) or not isinstance(title, str) or not 1 <= len(title.strip()) <= 150:
         raise ValueError("invalid project")
-    with db_connect(path) as con:
+    with closing(db_connect(path)) as con, con:
         con.execute("INSERT INTO projects(slug,title) VALUES (?,?)", (slug, title.strip()))
 
 
 def grant(path: str | Path, slug: str, ha_user_id: str, role: str) -> None:
     if not valid_slug(slug) or not valid_user(ha_user_id) or role not in ROLES:
         raise ValueError("invalid membership")
-    with db_connect(path) as con:
+    with closing(db_connect(path)) as con, con:
         con.execute(
             "INSERT INTO memberships(project_slug,ha_user_id,role) VALUES (?,?,?) "
             "ON CONFLICT(project_slug,ha_user_id) DO UPDATE SET role=excluded.role",
@@ -77,7 +78,7 @@ def grant(path: str | Path, slug: str, ha_user_id: str, role: str) -> None:
 def revoke(path: str | Path, slug: str, ha_user_id: str) -> None:
     if not valid_slug(slug) or not valid_user(ha_user_id):
         raise ValueError("invalid membership")
-    with db_connect(path) as con:
+    with closing(db_connect(path)) as con, con:
         con.execute("DELETE FROM memberships WHERE project_slug=? AND ha_user_id=?",
                     (slug, ha_user_id))
 
@@ -86,7 +87,7 @@ def accessible_projects(path: str | Path, ha_user_id: str) -> list[dict]:
     """Every read is restricted by the session's stable Home Assistant ID."""
     if not valid_user(ha_user_id) or not Path(path).is_file():
         return []
-    with db_connect(path) as con:
+    with closing(db_connect(path)) as con, con:
         rows = con.execute(
             "SELECT p.slug, p.title, m.role FROM projects p "
             "JOIN memberships m ON m.project_slug=p.slug "
@@ -100,7 +101,7 @@ def get_project(path: str | Path, ha_user_id: str, slug: str) -> dict | None:
     """Missing/unauthorized projects are deliberately indistinguishable."""
     if not valid_user(ha_user_id) or not valid_slug(slug) or not Path(path).is_file():
         return None
-    with db_connect(path) as con:
+    with closing(db_connect(path)) as con, con:
         row = con.execute(
             "SELECT p.slug, p.title, m.role FROM projects p "
             "JOIN memberships m ON m.project_slug=p.slug "
