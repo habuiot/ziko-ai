@@ -56,16 +56,37 @@
     ".editor{background:#15293b;border:1px solid #52849a;border-radius:14px;padding:16px;margin:14px 0}.editor h3{margin:0 0 12px;font-size:16px}.editor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.editor label{display:block;color:#b2c8d8;font-size:11px;margin-bottom:3px}.editor label input,.editor label select,.editor label textarea{margin-top:5px}.editor .wide{grid-column:span 3}.editor textarea{height:92px;resize:vertical}.editor-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.danger{color:#ffb5b5;border-color:#7a4141}.loading{padding:30px;text-align:center;color:#85b4c7}",
     "@media(max-width:900px){.compose-grid{grid-template-columns:1fr 1fr}.compose-grid .fulltitle{grid-column:span 2}.compose-extra{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.kanban{grid-template-columns:repeat(4,minmax(220px,1fr))}}",
     "@media(max-width:560px){.app{border-radius:12px;padding:13px}.header{gap:9px}.kpi{padding:11px}.compose-grid,.compose-extra{grid-template-columns:1fr}.compose-grid .fulltitle{grid-column:span 1}.editor-grid{grid-template-columns:1fr}.editor .wide{grid-column:span 1}.task{grid-template-columns:23px 1fr auto;padding:10px 8px}.task-actions button{padding:5px}.live{padding:7px 9px}.brand{font-size:30px}.sub{font-size:11px}.kpis{gap:7px}}"
-  ].join("");
+  ].join("") + "\n/* ZIKO Kanban / premium neon skin */\n:host{color-scheme:dark} .app{background:radial-gradient(ellipse at 0 0,#16354a 0,transparent 48%),radial-gradient(ellipse at 100% 0,#2d234f 0,transparent 49%),#090f19;border:1px solid #324e68;border-radius:20px;box-shadow:0 16px 42px #0006,inset 0 1px #ffffff10}\n.header{border-bottom:1px solid #2d4457;padding-bottom:14px;margin-bottom:14px}.eyebrow{display:flex;align-items:center;gap:7px;color:#84ddec}.eyebrow ha-icon{--mdc-icon-size:16px}.brand{letter-spacing:-1.4px;text-shadow:0 0 22px #59dff622}.brand b{background:linear-gradient(90deg,#7df0ff,#bfb0ff);-webkit-background-clip:text;background-clip:text;color:transparent}.live{font-weight:800;letter-spacing:.6px;border-color:#2f766b;color:#8effd2;background:#102923}\n.kpis{gap:8px}.kpi{background:linear-gradient(145deg,#132535,#101e2d);border:1px solid #2c465b;border-radius:11px;padding:11px 13px}.kpi .num{font-size:clamp(24px,3vw,30px);margin:3px 0}.kpi .label{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.2px}.kpi ha-icon{--mdc-icon-size:16px}\n.kpi.cyan .num{color:#80ecff}.kpi.lime .num{color:#d0f3a0}.kpi.violet .num{color:#d4c0ff}.kpi.gold .num{color:#ffe1a4}\n.nav{background:#101d2c;padding:6px;margin:0 0 14px;border:1px solid #263d52;border-radius:12px;gap:4px;scrollbar-width:thin}.nav button{display:flex;align-items:center;gap:6px;border:1px solid transparent;background:transparent;padding:8px 11px;border-radius:8px;min-height:36px}.nav button ha-icon{--mdc-icon-size:18px}.nav button[aria-current='page']{background:#173c51;color:#8eebfc;border-color:#438ba2;box-shadow:inset 0 0 0 1px #27485b}\n.compose{border-color:#305a6d;background:linear-gradient(118deg,#132a3c,#141a2f);padding:12px 13px}.compose .comp-title{color:#9aecff}.primary{background:linear-gradient(105deg,#7ae5f7,#b9adfa);border-color:transparent;color:#092032}.primary:hover{filter:brightness(1.1)}.field{background:#0b1928;border-color:#304a60}.field:focus{border-color:#7deaff}\n.kanban{display:grid;grid-template-columns:repeat(4,minmax(205px,1fr));gap:9px;overflow-x:auto;scrollbar-width:thin;padding-bottom:8px;align-items:stretch}.lane{--lane:#7deaff;min-width:0;background:#0e1a29;border:1px solid #30475c;border-top:3px solid var(--lane);border-radius:13px;padding:9px;min-height:220px;transition:background 140ms,border-color 140ms,box-shadow 140ms}\n.lane-cyan{--lane:#73e9ff}.lane-gold{--lane:#f8cf86}.lane-violet{--lane:#baa8ff}.lane-rose{--lane:#f4a6b8}.lane h3{display:flex;align-items:center;gap:7px;margin:3px 4px 11px;color:var(--lane);font-size:12px;font-weight:800}.lane h3 ha-icon{--mdc-icon-size:18px}.lane-count{margin-left:auto;background:#233545;color:#d6e7f1;border-radius:7px;padding:3px 7px;font-size:11px}\n.lane.drop-target{background:#193747;border-color:#83edff;box-shadow:0 0 0 2px #80eafa55,inset 0 0 30px #40bbd91c}.task.dragging{opacity:.35}.lane .task[draggable]{cursor:grab}.lane .task[draggable]:active{cursor:grabbing}.lane .task{display:block;background:linear-gradient(145deg,#15293a,#131f2d);border:1px solid #2b475c;border-left:2px solid var(--lane);border-radius:9px;padding:10px;margin-bottom:8px;transition:border-color 130ms,transform 130ms}\n.lane .task:hover{border-color:#83d4e9;transform:translateY(-1px)}.lane .task .task-main{margin:8px 0 0}.lane .task .task-title{font-size:12px}.lane .task .meta{gap:4px}.lane .task .task-actions{margin:5px 0 0}.lane .task .check{display:inline-flex;align-items:center;justify-content:center;float:right}\n.empty-lane{border:1px dashed #334e61;border-radius:10px;padding:18px 8px;color:#7495ac;font-size:11px;text-align:center;line-height:1.5}.stage-select{margin-top:8px;font-size:11px;padding:8px 10px;width:100%;border-radius:8px;min-height:36px;color:#bfeef5}\n.task-actions button{font-size:16px}.pill{border-radius:6px;font-size:10px}.pill.ai{color:#84e9ff}.pill.human{color:#d7fca8}.pill.team{color:#e1caff}.pill.urgent{color:#ffb8a9}\n@media(max-width:760px){.kanban{grid-auto-flow:column;grid-auto-columns:minmax(235px,80vw);grid-template-columns:none;scroll-snap-type:x proximity;overscroll-behavior-x:contain}.lane{scroll-snap-align:start}.header{margin-bottom:10px}.kpis{gap:6px}.kpi{padding:9px}.kpi .num{font-size:24px}.nav{margin-bottom:10px}.compose{margin-bottom:11px}}\n@media(prefers-reduced-motion:reduce){.lane,.lane .task,.app *{animation:none!important;transition:none!important}}\n";
   class ZikoTodoBoard extends HTMLElement {
     constructor(){
       super();
       this.attachShadow({mode:"open"});
       this._hass = null; this._config={}; this._items=[];
       this._loaded=false; this._fetching=false; this._busy=false;
-      this._view="all"; this._search=""; this._project=""; this._edit=null;
+      this._view="kanban"; this._search=""; this._project=""; this._edit=null;
       this._signature=""; this._error=""; this._lastLoaded=0;
       this.shadowRoot.addEventListener("click", e => this.onClick(e));
+      this.shadowRoot.addEventListener("dragstart", e => {
+        const card=e.target.closest(".task[draggable]");
+        if(!card || this._busy || !e.dataTransfer)return;
+        this._dragKey=card.dataset.key;
+        e.dataTransfer.effectAllowed="move";
+        e.dataTransfer.setData("text/plain",this._dragKey);
+        card.classList.add("dragging");
+      });
+      this.shadowRoot.addEventListener("dragend",()=>this.clearDrag());
+      this.shadowRoot.addEventListener("dragover",e=>{
+        const lane=e.target.closest(".lane[data-stage]");
+        if(lane&&!this._busy){e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect="move";this.shadowRoot.querySelectorAll(".lane").forEach(x=>x.classList.toggle("drop-target",x===lane));}
+      });
+      this.shadowRoot.addEventListener("drop",e=>{
+        const lane=e.target.closest(".lane[data-stage]");if(!lane)return;
+        e.preventDefault();const key=this._dragKey||(e.dataTransfer&&e.dataTransfer.getData("text/plain"));
+        this.clearDrag();if(key)this.moveStage(key,lane.dataset.stage);
+      });
+      this.shadowRoot.addEventListener("change",e=>{
+        const el=e.target.closest(".stage-select");if(el)this.moveStage(el.dataset.key,el.value);
+      });
       this.shadowRoot.addEventListener("submit", e => this.onSubmit(e));
       this.shadowRoot.addEventListener("input", e => {
         if(e.target && e.target.id==="zt-search"){this._search=e.target.value;this.drawResults();}
@@ -136,7 +157,7 @@
       const urgent=t.meta.priority==="Sürgős"||t.meta.priority==="Magas";
       const note=t.meta.note&&t.meta.note!==t.summary?'<div class="textnote" title="'+escapeHtml(t.meta.note)+'">'+escapeHtml(t.meta.note.slice(0,140))+'</div>':"";
       const overdue=t.due && new Date(String(t.due).slice(0,10)+"T12:00:00")<new Date(new Date().toDateString()) && !done;
-      return '<article class="task'+(done?' done':'')+'">' +
+      return '<article class="task'+(done?' done':'')+'"'+(kanban?' draggable="true" data-key="'+escapeHtml(t.key)+'"':'')+'>' +
         '<button class="check" data-action="toggle" data-key="'+escapeHtml(t.key)+'" aria-label="'+(done?'Újranyitás':'Készre jelölés')+'">'+(done?'✓':'')+'</button>' +
         '<div class="task-main"><div class="task-title">'+escapeHtml(t.summary)+'</div>'+
         '<div class="meta"><span class="pill '+l.color+' '+l.key+'">'+escapeHtml(l.short)+'</span>'+
@@ -148,7 +169,7 @@
         '</div>'+note+'</div>'+
         '<div class="task-actions"><button data-action="edit" data-key="'+escapeHtml(t.key)+'" aria-label="Szerkesztés" title="Szerkesztés">✎</button>'+
         (!done?'<button data-action="advance" data-key="'+escapeHtml(t.key)+'" aria-label="Következő munkafázis" title="Következő munkafázis">→</button>':'')+
-        '</div></article>';
+        '</div>'+(kanban?'<select class="field stage-select" data-key="'+escapeHtml(t.key)+'" aria-label="Feladat áthelyezése">'+FLOW.map(x=>'<option value="'+escapeHtml(x)+'"'+(x===t.meta.stage?' selected':'')+'>'+escapeHtml(x)+'</option>').join('')+'</select>':'')+'</article>';
     }
     drawResults(){
       const el=this.shadowRoot.getElementById("zt-results");if(!el)return;
@@ -159,8 +180,11 @@
       }
       const arr=this.filtered();
       if(this._view==="kanban"){
-        const lanes=["Beérkezett","Folyamatban","Ellenőrzés","Blokkolt"];
-        el.innerHTML='<div class="kanban">'+lanes.map(s=>'<section class="lane"><h3>'+escapeHtml(s)+' · '+arr.filter(t=>t.meta.stage===s).length+'</h3>'+(arr.filter(t=>t.meta.stage===s).map(t=>this.card(t,true)).join("")||'<div class="hint">Nincs feladat</div>')+'</section>').join("")+'</div>';
+        const lanes=[["Beérkezett","mdi:tray-arrow-down","cyan"],["Folyamatban","mdi:progress-wrench","gold"],["Ellenőrzés","mdi:clipboard-check-outline","violet"],["Blokkolt","mdi:alert-circle-outline","rose"]];
+        el.innerHTML='<div class="kanban">'+lanes.map(([stage,icon,tone])=>{
+          const tasks=arr.filter(t=>t.meta.stage===stage);
+          return '<section class="lane lane-'+tone+'" data-stage="'+escapeHtml(stage)+'"><h3><ha-icon icon="'+icon+'"></ha-icon><span>'+escapeHtml(stage)+'</span><b class="lane-count">'+tasks.length+'</b></h3><div class="lane-items">'+(tasks.map(t=>this.card(t,true)).join("")||'<div class="empty-lane">+ Ide húzhatsz feladatot</div>')+'</div></section>';
+        }).join("")+'</div>';
         return;
       }
       el.innerHTML=arr.length?'<div class="rows">'+arr.map(t=>this.card(t,false)).join("")+'</div>':'<div class="no-items">Itt még nincs megjeleníthető feladat. Az új feladatot felül tudod felvenni.</div>';
@@ -183,15 +207,15 @@
     render(){
       if(!this.isConnected)return;
       const s=this.stats();
-      const tabs=[["all","Összes"],["ai","🤖 AI"],["human","👤 Saját"],["team","👥 Csapat"],["kanban","▤ Kanban"],["projects","◈ Projektek"],["completed","✓ Kész"]];
+      const tabs=[["kanban","mdi:view-column-outline","Kanban"],["all","mdi:format-list-bulleted","Lista"],["ai","mdi:robot-outline","AI"],["human","mdi:account-outline","Saját"],["team","mdi:account-group-outline","Csapat"],["projects","mdi:folder-multiple-outline","Projektek"],["completed","mdi:check-circle-outline","Kész"]];
       const prjs=this.projectNames().map(p=>'<option value="'+escapeHtml(p)+'"></option>').join("");
       this.shadowRoot.innerHTML='<style>'+CSS+'</style><section class="app">'+
-        '<header class="header"><div><div class="eyebrow">ZIKO TECHNOLOGY / WORKSPACE</div><h1 class="brand"><span class="name">'+escapeHtml(this.brand)+'</span> <b>● Todo</b></h1><div class="sub">Egy helyen minden teendő · tervezés, követés, végrehajtás</div></div>'+
-        '<div class="live"><span></span> Home Assistant · saját adatok</div></header>'+
-        '<section class="kpis"><div class="kpi cyan"><div class="label">AI-feladatok</div><div class="num">'+s.ai+'</div><div class="label">Nyitott</div></div>'+
-        '<div class="kpi lime"><div class="label">Saját teendők</div><div class="num">'+s.human+'</div><div class="label">Nyitott</div></div>'+
-        '<div class="kpi violet"><div class="label">Csapat</div><div class="num">'+s.team+'</div><div class="label">Közös lista</div></div>'+
-        '<div class="kpi gold"><div class="label">Elkészült</div><div class="num">'+s.done+'</div><div class="label">'+(s.overdue?s.overdue+" lejárt határidejű":"Minden listában")+'</div></div></section>'+
+        '<header class="header"><div><div class="eyebrow"><ha-icon icon="mdi:check-decagram-outline"></ha-icon> ZIKO TECHNOLOGY / COMMAND CENTER</div><h1 class="brand"><span class="name">'+escapeHtml(this.brand)+'</span> <b>● Todo</b></h1><div class="sub">Egy helyen minden teendő · tervezés, követés, végrehajtás</div></div>'+
+        '<div class="live"><span></span> LIVE · HOME ASSISTANT</div></header>'+
+        '<section class="kpis"><div class="kpi cyan"><div class="label"><ha-icon icon="mdi:robot-outline"></ha-icon> AI-feladatok</div><div class="num">'+s.ai+'</div><div class="label">Nyitott</div></div>'+
+        '<div class="kpi lime"><div class="label"><ha-icon icon="mdi:account-outline"></ha-icon> Saját teendők</div><div class="num">'+s.human+'</div><div class="label">Nyitott</div></div>'+
+        '<div class="kpi violet"><div class="label"><ha-icon icon="mdi:account-group-outline"></ha-icon> Csapat</div><div class="num">'+s.team+'</div><div class="label">Közös lista</div></div>'+
+        '<div class="kpi gold"><div class="label"><ha-icon icon="mdi:check-all"></ha-icon> Elkészült</div><div class="num">'+s.done+'</div><div class="label">'+(s.overdue?s.overdue+" lejárt határidejű":"Minden listában")+'</div></div></section>'+
         '<form class="compose" id="zt-create"><div class="comp-title">＋ ÚJ FELADAT</div><div class="compose-grid">'+
         '<input class="field fulltitle" name="title" maxlength="230" placeholder="Mit kell elvégezni?" required aria-label="Feladat neve">'+
         '<select class="field" name="list" aria-label="Feladat felelősi csoportja">'+LISTS.map(l=>'<option value="'+l.key+'">'+escapeHtml(l.short)+' · '+escapeHtml(l.name)+'</option>').join('')+'</select>'+
@@ -202,7 +226,7 @@
         '<input class="field" name="due" type="date" aria-label="Határidő">'+
         '<input class="field" name="note" placeholder="Rövid részletek / megjegyzés" aria-label="Feladat leírása"></div>'+
         '<datalist id="zt-projects">'+prjs+'</datalist><div class="hint">A feladat azonnal mentődik a Házikóba. Az AI-listára helyezés <b>nem</b> indít automatikus AI-munkát.</div></form>'+
-        '<nav class="nav" aria-label="Feladatszűrők">'+tabs.map(p=>'<button type="button" data-action="tab" data-tab="'+p[0]+'" aria-current="'+(this._view===p[0]?'page':'false')+'">'+p[1]+'</button>').join('')+'</nav>'+
+        '<nav class="nav" aria-label="Feladatszűrők">'+tabs.map(p=>'<button type="button" data-action="tab" data-tab="'+p[0]+'" aria-current="'+(this._view===p[0]?'page':'false')+'"><ha-icon icon="'+p[1]+'"></ha-icon>'+p[2]+'</button>').join('')+'</nav>'+
         '<div class="tools"><input id="zt-search" class="field search" placeholder="⌕  Keresés feladatokban, projektekben..." value="'+escapeHtml(this._search)+'" aria-label="Keresés">'+
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+(this._project?'<button class="btn" data-action="reset-project">✕ '+escapeHtml(this._project)+'</button>':'')+
         '<button class="btn" data-action="refresh">↻ Frissítés</button></div></div>'+
@@ -238,6 +262,27 @@
         if(due)data.due_date=due;
         this._edit=null;await this.call("todo","update_item",data,t.entity);return;
       }
+    }
+    clearDrag(){
+      this._dragKey=null;
+      this.shadowRoot.querySelectorAll(".lane").forEach(x=>x.classList.remove("drop-target"));
+      this.shadowRoot.querySelectorAll(".dragging").forEach(x=>x.classList.remove("dragging"));
+    }
+    async moveStage(key,stage){
+      const task=this._items.find(t=>t.key===key);
+      if(!task||this._busy||!FLOW.includes(stage)||task.meta.stage===stage)return;
+      this._busy=true;
+      try{
+        await this._hass.callService("todo","update_item",{
+          item:task.uid||task.summary,
+          description:description(Object.assign({},task.meta,{stage})),
+          status:stage==="Kész"?"completed":"needs_action"
+        },{entity_id:task.entity});
+        this._error="";
+        this._busy=false;
+        await this.load();
+      }catch(e){this._error=(e&&e.message)||String(e);}
+      finally{this._busy=false;this.render();}
     }
     async onClick(e){
       const button=e.target.closest("[data-action]");if(!button)return;
