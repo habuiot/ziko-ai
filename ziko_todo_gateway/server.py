@@ -18,6 +18,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Mapping
 from urllib.parse import urlsplit
 from acl import DEFAULT_DB, init_db, accessible_projects, get_project
+from panel import dashboard
 
 PORT = int(os.environ.get("ZIKO_GATEWAY_PORT", "8099"))
 TRUSTED_PROXY = os.environ.get("ZIKO_TRUSTED_PROXY", "172.30.32.2")
@@ -66,34 +67,6 @@ def safe_path(raw_path: str) -> str:
     return parsed.path.rstrip("/") or "/"
 
 
-def dashboard(name: str) -> bytes:
-    user = html.escape(name or "Home Assistant-felhasználó", quote=True)
-    page = """<!doctype html>
-<html lang="hu"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ZikoTodo · Kapcsolat</title>
-<style>
-:root{color-scheme:dark}*{box-sizing:border-box}
-body{background:#0c1622;color:#e2f7fb;font:14px system-ui,Arial;margin:0;padding:22px}
-main{max-width:700px;margin:0 auto;border:1px solid #345063;
-border-radius:16px;padding:24px;background:linear-gradient(145deg,#142b3b,#151b30)}
-header{color:#86dcf0;font-size:12px;letter-spacing:.12em}
-h1{font-size:30px;letter-spacing:-.04em;margin:8px 0 18px}
-strong{color:#a2f0e0}p{line-height:1.5;color:#bed2dd}
-small{color:#8ca8b8}.tag{padding:7px 11px;border-radius:9px;background:#244051;
-display:inline-block;font-size:12px}.badge{color:#98e2f5}
-</style></head><body><main><header>ZIKO TECHNOLOGY / INTERNAL INGRESS</header>
-<h1>Ziko™ ● Todo <span class="badge">· API-híd</span></h1>
-<div class="tag">Home Assistant-bejelentkezés ellenőrizve</div>
-<p>Belépett felhasználó: <strong>__USERNAME__</strong></p>
-<p>Ez a biztonsági ellenőrző felület még nem a Vikunja teljes
-projektkezelője. A projektek, feladatok és csapatjogosultságok
-bekötése külön, ellenőrzött fejlesztés.</p>
-<small>Külön Vikunja-fiókot a felület használatához nem kérünk.</small>
-</main></body></html>"""
-    return page.replace("__USERNAME__", user).encode("utf-8")
-
-
 class App(BaseHTTPRequestHandler):
     server_version = "ZikoTodoGateway"
     sys_version = ""
@@ -126,7 +99,7 @@ class App(BaseHTTPRequestHandler):
 
         path = safe_path(self.path)
         if path == "/":
-            self._reply(200, dashboard(ident["display_name"]),
+            self._reply(200, dashboard(ident["display_name"], accessible_projects(DEFAULT_DB, ident["id"]), ident["id"]),
                         "text/html; charset=utf-8")
         elif path == "/api/me":
             self._json(200, {"user_id": ident["id"],
