@@ -10,7 +10,7 @@ allowed only when an independently authenticated executor connects.
 from __future__ import annotations
 
 from contextlib import closing
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import json
@@ -37,7 +37,7 @@ def now_ts() -> int:
 
 
 def connect(path: str | Path) -> sqlite3.Connection:
-    conn = sqlite3.connect(str(path), timeout=5, isolation_level=None)
+    conn = sqlite3.connect(str(path), timeout=5, isolation_level='DEFERRED')
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     conn.execute("PRAGMA busy_timeout=5000")
@@ -288,7 +288,7 @@ class CommandStore:
             raise ValueError("invalid rationale")
         day = datetime.fromtimestamp(now, TZ).strftime("%Y-%m-%d")
         start = int(datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=TZ).timestamp())
-        end = start + 86400
+        end = int((datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=TZ) + timedelta(days=1)).timestamp())
         pid = str(uuid.uuid4())
         with closing(connect(self.path)) as con:
             con.execute("BEGIN IMMEDIATE")
