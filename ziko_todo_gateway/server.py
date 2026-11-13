@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ZikoTodo ingress identity bridge.
 
-Read-only v0.1. Ingress is the only accepted entry point.
+Read-only v0.2 with project-level ACL. Ingress is the only entry point.
 No arbitrary Vikunja proxy and no access tokens in browser.
 """
 from __future__ import annotations
@@ -17,6 +17,7 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Mapping
 from urllib.parse import urlsplit
+from acl import DEFAULT_DB, init_db, accessible_projects, get_project
 
 PORT = int(os.environ.get("ZIKO_GATEWAY_PORT", "8099"))
 TRUSTED_PROXY = os.environ.get("ZIKO_TRUSTED_PROXY", "172.30.32.2")
@@ -132,7 +133,16 @@ class App(BaseHTTPRequestHandler):
                              "display_name": ident["display_name"]})
         elif path == "/api/backend":
             self._json(200, {"vikunja": "online" if check_backend() else "unavailable",
-                             "bridge": "identity-only", "connected": False})
+                             "bridge": "read-only-project-acl", "connected": False})
+        elif path == "/api/projects":
+            self._json(200, {"projects": accessible_projects(DEFAULT_DB, ident["id"])})
+        elif path.startswith("/api/projects/"):
+            slug = path[len("/api/projects/"):]
+            project = get_project(DEFAULT_DB, ident["id"], slug)
+            if project is None:
+                self._json(404, {"error": "not_found"})
+            else:
+                self._json(200, {"project": project})
         else:
             self._json(404, {"error": "not_found"})
 
@@ -155,5 +165,6 @@ class App(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    init_db(DEFAULT_DB)
     # Intentionally bind only inside the Docker network; no host port exposed.
     ThreadingHTTPServer(("0.0.0.0", PORT), App).serve_forever()
