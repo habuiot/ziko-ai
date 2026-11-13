@@ -1,0 +1,29 @@
+name: ZikoTodo gateway tests
+on:
+  push:
+    paths:
+      - 'ziko_todo_gateway/**'
+      - '.github/workflows/ziko-todo-gateway.yml'
+  pull_request:
+    paths:
+      - 'ziko_todo_gateway/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate and run unit tests
+        run: |
+          python -m compileall -q ziko_todo_gateway
+          cd ziko_todo_gateway
+          python -m unittest -v test_server.py
