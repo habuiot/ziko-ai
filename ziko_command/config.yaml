@@ -1,0 +1,25 @@
+name: "ZIKO Command – Parancsnokság (ALPHA)"
+version: "0.1.0"
+slug: ziko_command
+description: "Ingress-only control plane, durable command inbox and scheduled local briefing; AI execution not connected"
+arch:
+  - amd64
+startup: application
+boot: manual
+init: false
+ingress: true
+ingress_port: 8100
+ingress_entry: /
+panel_icon: mdi:radar
+panel_title: "ZIKO Command"
+panel_admin: true
+stage: experimental
+full_access: false
+host_network: false
+homeassistant_api: false
+hassio_api: false
+auth_api: false
+docker_api: false
+ports: {}
+options: {}
+schema: {}
