@@ -6,6 +6,7 @@ current user or project role is trusted from a browser parameter.
 from __future__ import annotations
 
 from html import escape
+import re
 from typing import Sequence, Mapping
 
 ROLE_LABELS = {
@@ -135,8 +136,11 @@ __PROJECTS__</section>
 <span>Projektadatok: helyi ACL · Vikunja-feladatkapcsolat fejlesztés alatt</span></footer>
 </main></body></html>"""
 
-    page = (page.replace("__NAME__", safe_name)
-                .replace("__USERID__", safe_id)
-                .replace("__COUNT__", str(len(records)))
-                .replace("__PROJECTS__", project_html))
-    return page.encode("utf-8")
+    # Resolve placeholders in one pass. Sequential replace would let display
+    # names such as "__PROJECTS__" accidentally expand into HTML markup.
+    values = {
+        "NAME": safe_name, "USERID": safe_id,
+        "COUNT": str(len(records)), "PROJECTS": project_html,
+    }
+    return re.sub(r"__(NAME|USERID|COUNT|PROJECTS)__",
+                  lambda match: values[match.group(1)], page).encode("utf-8")
