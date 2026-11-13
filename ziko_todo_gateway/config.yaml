@@ -11,7 +11,8 @@ init: false
 ingress: true
 ingress_port: 8099
 ingress_entry: /
-ingress_panel: false
+panel_admin: true
+stage: experimental
 full_access: false
 host_network: false
 homeassistant_api: false
