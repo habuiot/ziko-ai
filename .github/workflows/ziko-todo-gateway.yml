@@ -26,4 +26,4 @@ jobs:
         run: |
           python -m compileall -q ziko_todo_gateway
           cd ziko_todo_gateway
-          python -m unittest -v test_server.py
+          python -m unittest discover -v -p 'test_*.py'
