@@ -1,7 +1,7 @@
 name: "Ziko™ ● Todo – Ingress gateway (EXPERIMENTAL)"
-version: "0.2.0"
+version: "0.3.0"
 slug: "ziko_todo_gateway"
-description: "Read-only project ACL through HA ingress; no upstream writes"
+description: "Secure HA SSO project access portal, deny-by-default ACL; read-only"
 arch:
   - amd64
   - aarch64
@@ -12,6 +12,8 @@ ingress: true
 ingress_port: 8099
 ingress_entry: /
 panel_admin: false
+panel_title: "Ziko™ ● Todo · Hozzáférések"
+panel_icon: "mdi:account-key-outline"
 stage: experimental
 full_access: false
 host_network: false
