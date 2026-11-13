@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080f19">
+<title>ZIKO Command · Parancsnokság</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<main class="shell">
+  <header class="top">
+    <div class="identity">
+      <div class="kicker"><span class="mark">◈</span> ZIKO TECHNOLOGY / MISSION CONTROL</div>
+      <h1>ZIKO <span>COMMAND</span></h1>
+      <p>Parancsnokság · Ziko AI · ZikoTodo — közös irányítási központ</p>
+    </div>
+    <div class="topStatus"><span class="pulse" id="pulse-dot"></span><span id="pulse-title">Kapcsolódás…</span></div>
+  </header>
+
+  <section class="tiles" aria-label="Állapotok">
+    <article class="tile cyan"><div class="tileLabel">◌ PARANCSNOKSÁG</div><strong id="engine-state">Ellenőrzés…</strong><small>Ütemező / tartós munkanapló</small></article>
+    <article class="tile violet"><div class="tileLabel">◇ ZIKO AI</div><strong id="ai-state">Kapcsolat ellenőrzése</strong><small>Önálló végrehajtó</small></article>
+    <article class="tile gold"><div class="tileLabel">▣ ZIKOTODO</div><strong id="todo-state">Előkészítés</strong><small>Központi feladatforrás</small></article>
+    <article class="tile green"><div class="tileLabel">✉ KÖVETKEZŐ JELENTÉS</div><strong id="digest-time">19:00</strong><small>Tervezett helyi összefoglaló</small></article>
+  </section>
+
+  <div class="content">
+    <section class="panel primary">
+      <div class="sectionHead"><div><span class="micro">01 / KAPCSOLAT</span><h2>Parancsok Zikónak</h2></div><span class="pill" id="inbox-count">0 üzenet</span></div>
+      <div class="disclosure" role="note"><span class="disclosure-icon">!</span>
+        <span><b>Fejlesztési üzemmód:</b> az üzenetek tartósan rögzülnek, de a Ziko AI végrehajtó még nincs összekapcsolva. Semmi nem indul el a háttérben pusztán egy beküldött parancstól.</span></div>
+      <div class="feed" id="feed" aria-live="polite">
+        <div class="placeholder">A parancsnoki üzeneteid itt jelennek meg. A feldolgozási állapot minden esetben látható marad.</div>
+      </div>
+      <form id="form" class="composer">
+        <label for="message">Új parancs vagy feladatötlet</label>
+        <textarea id="message" maxlength="2000" rows="3" placeholder="Ziko, nézd át a fejlesztési feladatokat, és készíts prioritási javaslatot…" required></textarea>
+        <div class="composeActions"><small>Max. 2000 karakter · külön bejelentkezés nélkül</small><button type="submit" id="send">Parancs rögzítése <span>↗</span></button></div>
+      </form>
+      <div class="notice" id="notice" role="status"></div>
+    </section>
+
+    <aside class="side">
+      <section class="panel pulsePanel">
+        <div class="sectionHead"><div><span class="micro">02 / SZOLGÁLAT</span><h2>Ziko állapota</h2></div><span class="chip">CORE 0.1</span></div>
+        <div class="statusRow"><span class="statusGlyph green">✓</span><div><strong>Command ütemező</strong><small id="last-heartbeat">Állapotlekérés…</small></div></div>
+        <div class="statusRow"><span class="statusGlyph amber">!</span><div><strong>Ziko AI végrehajtó</strong><small id="executor-detail">Még nincs összekapcsolva</small></div></div>
+        <div class="statusRow"><span class="statusGlyph violet">◷</span><div><strong>Automatikus egyeztetés</strong><small id="digest-detail">19:00 · helyi jelentés, értesítés nélkül</small></div></div>
+        <div class="divider"></div>
+        <div class="policy">◈ Az ütemező ébren lehet anélkül, hogy AI-hívásokat vagy kockázatos műveleteket indítana.</div>
+      </section>
+
+      <section class="panel linksPanel">
+        <div class="sectionHead"><div><span class="micro">03 / MODULOK</span><h2>Összekapcsolt munkaterületek</h2></div></div>
+        <a href="/ziko-todo/attekintes" class="module"><span class="moduleIcon">▦</span><span><strong>Ziko™ ● Todo</strong><small>Feladatok, Kanban, prioritások</small></span><i>↗</i></a>
+        <a href="/ziko-todo/ai" class="module"><span class="moduleIcon">◇</span><span><strong>AI feladatok</strong><small>Házikóban nyilvántartott teendők</small></span><i>↗</i></a>
+        <a href="/ziko-todo/hozzaferesek" class="module"><span class="moduleIcon">♙</span><span><strong>Hozzáférések</strong><small>ZikoTodo Gateway / projektjogok</small></span><i>↗</i></a>
+      </section>
+    </aside>
+  </div>
+
+  <footer><span>Command = koordináció · Ziko AI = parancsnok · ZikoTodo = feladatok hiteles nyilvántartása</span><span class="footRight">0.1 · HÁZIKÓ INGRESS · BIZTONSÁGOS MÓD</span></footer>
+</main>
+</body></html>
