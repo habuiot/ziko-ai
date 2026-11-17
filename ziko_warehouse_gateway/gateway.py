@@ -64,13 +64,15 @@ def cookie_for_browser(original, prefix, secure=False):
         return None
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = 'ZIKO-Warehouse-Ingress/0.1.0'
+    server_version = 'ZIKO-Warehouse-Ingress/0.1.1'
     sys_version = ''
 
     def log_message(self, fmt, *args):
         pass  # Never log Ingress session tokens, filenames or passwords.
 
     def deny(self, code, reason):
+        if self.command == 'POST':
+            print('WAREHOUSE_INGRESS_POST_DENIED', code, reason, flush=True)
         body = reason.encode('utf-8')
         self.send_response(code)
         self.send_header('Content-Type', 'text/plain; charset=utf-8')
@@ -130,6 +132,8 @@ class Handler(BaseHTTPRequestHandler):
             conn = http.client.HTTPConnection(BACKEND_HOST, BACKEND_PORT, timeout=25)
             conn.request(self.command, path, body=data, headers=headers)
             upstream = conn.getresponse()
+            if self.command == 'POST':
+                print('WAREHOUSE_INGRESS_POST_UPSTREAM', upstream.status, flush=True)
             body = upstream.read(MAX_RESPONSE + 1)
             if len(body) > MAX_RESPONSE:
                 return self.deny(502, 'upstream_response_too_large')
