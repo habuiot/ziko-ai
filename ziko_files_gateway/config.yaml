@@ -1,0 +1,25 @@
+name: "Ziko™ ● Files – Commander"
+version: "0.1.0"
+slug: "ziko_files_gateway"
+description: "HA Ingress gateway to the isolated ZikoFiles Proxmox file manager"
+arch:
+  - amd64
+startup: application
+boot: auto
+init: false
+ingress: true
+ingress_port: 8098
+ingress_entry: /
+panel_admin: true
+panel_title: "Ziko™ ● Files"
+panel_icon: "mdi:folder-multiple-outline"
+stage: experimental
+full_access: false
+host_network: false
+homeassistant_api: false
+hassio_api: false
+auth_api: false
+docker_api: false
+ports: {}
+options: {}
+schema: {}
