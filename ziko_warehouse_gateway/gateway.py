@@ -15,7 +15,8 @@ PREFIX_RE = re.compile(r'^/api/hassio_ingress/[A-Za-z0-9_-]{8,200}/$')
 UID_RE = re.compile(r'^/i/[0-9a-f]{24}$')
 ASSETS = frozenset({'/', '/index.html', '/health', '/app.js', '/app.css',
     '/vision2126.js', '/vision2126.css', '/photo-station.js',
-    '/photo-station.css', '/usability2126.js', '/usability2126.css'})
+    '/photo-station.css', '/usability2126.js', '/usability2126.css',
+    '/account2126.js', '/account2126.css'})
 MAX_REQUEST = 11 * 1024 * 1024
 MAX_RESPONSE = 15 * 1024 * 1024
 
@@ -124,7 +125,7 @@ def cookie_for_browser(original, prefix, secure=False):
         return None
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = 'ZIKO-Warehouse-Ingress/0.1.2'
+    server_version = 'ZIKO-Warehouse-Ingress/0.1.3'
     sys_version = ''
 
     def log_message(self, fmt, *args):
