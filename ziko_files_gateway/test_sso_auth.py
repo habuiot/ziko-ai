@@ -35,6 +35,35 @@ class SSOTests(unittest.TestCase):
             self.assertEqual(r.role(self.uid),"owner")
             self.assertEqual(os.stat(r.path).st_mode & 0o777,0o600)
             with self.assertRaises(PermissionError):r.enroll_owner("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+
+    def test_request_approval_and_revoke(self):
+        with tempfile.TemporaryDirectory() as d:
+            r=sso_auth.RoleRegistry(Path(d)/"private"/"roles.json")
+            owner=self.uid
+            viewer="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            self.assertEqual(r.request_viewer(viewer,"Tami"),"pending")
+            self.assertEqual(r.request_viewer(viewer,"Tami"),"pending")
+            self.assertEqual(len(r.view_for_owner()["pending"]),1)
+            self.assertEqual(r.enroll_owner(owner),"owner")
+            self.assertEqual(r.approve_viewer(viewer),"viewer")
+            self.assertEqual(r.role(viewer),"viewer")
+            self.assertEqual(r.role(owner),"owner")
+            self.assertFalse(r.view_for_owner()["pending"])
+            with self.assertRaises(PermissionError):r.approve_viewer(viewer)
+            self.assertTrue(r.revoke_viewer(viewer))
+            self.assertIsNone(r.role(viewer))
+            with self.assertRaises(PermissionError):r.revoke_viewer(owner)
+            self.assertEqual(os.stat(r.path).st_mode & 0o777,0o600)
+
+    def test_pending_label_and_limit(self):
+        with tempfile.TemporaryDirectory() as d:
+            r=sso_auth.RoleRegistry(Path(d)/"roles.json")
+            for label in ("x\\ny","x"*65,42):
+                with self.assertRaises(ValueError):r.request_viewer(self.uid,label)
+            for n in range(25):
+                self.assertEqual(r.request_viewer(f"viewer{n:08d}","User"),"pending")
+            with self.assertRaises(PermissionError):r.request_viewer("viewer99999999","User")
+
     def test_uid_validation(self):
         for bad in ("","a","x"*129,"../admin","x\\nyyyyyyyyy"):
             self.assertFalse(sso_auth.valid_id(bad))
