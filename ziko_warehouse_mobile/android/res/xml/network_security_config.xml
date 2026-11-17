@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <!-- HTTP exists only for private LAN/VPN endpoints. MainActivity enforces
+       address validation and same-origin navigation; use private HTTPS ASAP. -->
+  <base-config cleartextTrafficPermitted="true">
+    <trust-anchors><certificates src="system"/></trust-anchors>
+  </base-config>
+</network-security-config>

@@ -1,0 +1,27 @@
+name: Warehouse Android source QA (unsigned)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android platform and build tools
+        run: sdkmanager "platforms;android-35" "build-tools;36.0.0"
+      - name: Compile unsigned APK without signing secrets
+        env:
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
+        run: bash ziko_warehouse_mobile/android/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ziko-warehouse-unsigned-qa
+          path: ziko_warehouse_mobile/android/out/*-UNSIGNED.apk
+          if-no-files-found: error
