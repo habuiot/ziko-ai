@@ -275,7 +275,35 @@ def secure_handler(security, html):
             self.wfile.write(data)
 
         def do_GET(self):
-            path = urllib.parse.urlsplit(self.path).path
+            parsed = urllib.parse.urlsplit(self.path)
+            path = parsed.path
+            if path == "/api/camera":
+                pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
+                if pad != "KIOSK-01":
+                    self.json_result(401, {"error": "HTTPS KIOSK-01 pairing required"})
+                    return
+                ids = urllib.parse.parse_qs(parsed.query).get("id", [])
+                if len(ids) != 1:
+                    self.json_result(400, {"error": "Camera id required"})
+                    return
+                try:
+                    mime, image_data = bridge.camera_image(ids[0])
+                except ValueError:
+                    self.json_result(403, {"error": "Camera not allowed"})
+                    return
+                except Exception as exc:
+                    LOG.warning("Camera snapshot unavailable: %s", type(exc).__name__)
+                    self.json_result(503, {"error": "Camera unavailable"})
+                    return
+                self.send_response(200)
+                self.headers_common(mime)
+                self.send_header("Content-Length", str(len(image_data)))
+                self.end_headers()
+                try:
+                    self.wfile.write(image_data)
+                except (OSError, ssl.SSLError):
+                    pass
+                return
             if path in ("/", "/index.html"):
                 self.send_response(200)
                 self.headers_common("text/html; charset=utf-8")
