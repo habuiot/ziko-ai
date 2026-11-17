@@ -58,7 +58,7 @@ class SSOTests(unittest.TestCase):
     def test_pending_label_and_limit(self):
         with tempfile.TemporaryDirectory() as d:
             r=sso_auth.RoleRegistry(Path(d)/"roles.json")
-            for label in ("x\ny","x"*65,42):
+            for label in ("x"+chr(10)+"y", "x"*65, 42):
                 with self.assertRaises(ValueError):r.request_viewer(self.uid,label)
             for n in range(25):
                 self.assertEqual(r.request_viewer(f"viewer{n:08d}","User"),"pending")
