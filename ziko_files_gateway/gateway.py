@@ -57,7 +57,7 @@ def rewritten_cookie(cookie: str, prefix: str, secure: bool) -> str | None:
     return "; ".join(parts)
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "ZikoFiles-Ingress/0.1.0"
+    server_version = "ZikoFiles-Ingress/0.1.1"
     sys_version = ""
     def log_message(self, fmt, *args):
         LOG.info("request completed")  # Never log bearer-like ingress URLs or file paths.
@@ -89,9 +89,14 @@ class Handler(BaseHTTPRequestHandler):
         if not prefix:
             return self.reply(403, b"missing_ingress_context")
         parsed = urlsplit(self.path)
-        if not allowed_upstream_path(parsed.path):
+        # Supervisor can forward the application's root as "//".  Accept
+        # that root only; reject authority-form URLs such as "//evil".
+        if parsed.scheme or parsed.netloc:
             return self.reply(400, b"invalid_path")
-        endpoint = parsed.path + ("?" + parsed.query if parsed.query else "")
+        route = parsed.path or "/"
+        if not allowed_upstream_path(route):
+            return self.reply(400, b"invalid_path")
+        endpoint = route + ("?" + parsed.query if parsed.query else "")
         try:
             length = int(self.headers.get("Content-Length", "0"))
             if length < 0 or length > UPLOAD_LIMIT:
