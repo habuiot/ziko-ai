@@ -12,6 +12,8 @@ import ssl
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
+import json
+import sso_auth
 
 BACKEND_HOST = "192.168.10.100"
 BACKEND_PORT = 8787
@@ -56,8 +58,16 @@ def rewritten_cookie(cookie: str, prefix: str, secure: bool) -> str | None:
         parts += ["Secure"]
     return "; ".join(parts)
 
+def load_sso_key():
+    # Supervisor keeps this secret in /data/options.json, not in GitHub.
+    settings = json.loads(Path("/data/options.json").read_text("utf-8"))
+    key = settings.get("sso_key", "")
+    if not isinstance(key, str) or (key and (len(key) != 64 or any(x not in "0123456789abcdef" for x in key))):
+        raise ValueError("invalid SSO configuration")
+    return key
+
 class Handler(BaseHTTPRequestHandler):
-    server_version = "ZikoFiles-Ingress/0.1.1"
+    server_version = "ZikoFiles-Ingress/0.2.0"
     sys_version = ""
     def log_message(self, fmt, *args):
         LOG.info("request completed")  # Never log bearer-like ingress URLs or file paths.
@@ -121,6 +131,14 @@ class Handler(BaseHTTPRequestHandler):
                 val = self.headers.get(key)
                 if val is not None:
                     conn.putheader(key, val)
+            # The caller cannot supply these headers: they are minted here
+            # after HA Supervisor has authenticated the HA identity.
+            key = load_sso_key()
+            if key:
+                identity = self.headers.get("X-Remote-User-Id", "")
+                claim = sso_auth.signed_headers(key, identity, self.command, endpoint)
+                for header, value in claim.items():
+                    conn.putheader(header, value)
             conn.endheaders()
             remaining = length
             while remaining:
