@@ -1,5 +1,5 @@
 name: "Ziko™ ● Files – Commander"
-version: "0.1.0"
+version: "0.1.1"
 slug: "ziko_files_gateway"
 description: "HA Ingress gateway to the isolated ZikoFiles Proxmox file manager"
 arch:
@@ -9,6 +9,7 @@ boot: auto
 init: false
 ingress: true
 ingress_port: 8098
+ingress_stream: true
 ingress_entry: /
 panel_admin: true
 panel_title: "Ziko™ ● Files"
