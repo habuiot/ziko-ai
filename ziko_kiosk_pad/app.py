@@ -194,6 +194,26 @@ class Bridge:
 HTML = Path(__file__).with_name("index.html").read_bytes()
 
 
+def secure_html():
+    """Owner-controlled private HTTPS-only HMI. Source stays in /data, not GitHub.
+
+    The legacy HTTP listener must continue serving the old safe HTML. On invalid
+    owner content, fall back to the shipped, already-tested interface.
+    """
+    path = DATA / "kiosk_2126_live.html"
+    try:
+        content = path.read_bytes()
+        if 1024 <= len(content) <= 2_000_000 and content.lstrip().lower().startswith(b"<!doctype html>") and b"ACCESS 2126 LIVE" in content:
+            LOG.info("Private HTTPS 2126 HMI loaded from persistent addon data")
+            return content
+        LOG.warning("Invalid private HTTPS HMI, using default instead")
+    except FileNotFoundError:
+        LOG.info("Private HTTPS HMI not installed, using default")
+    except OSError as exc:
+        LOG.warning("Private HTTPS HMI not readable: %s", type(exc).__name__)
+    return HTML
+
+
 def make_handler(bridge):
     class Handler(BaseHTTPRequestHandler):
         server_version = "ZIKO Kiosk Bridge/0.2"
@@ -311,7 +331,7 @@ def main():
     # Preserve legacy HTTP and keep physical unlock exclusively on independent HTTPS.
     try:
         from secure import start_secure
-        start_secure(bridge, HTML)
+        start_secure(bridge, secure_html())
     except Exception as exc:
         LOG.error("HTTPS unavailable, legacy HTTP still available: %s", type(exc).__name__)
     server = ThreadingHTTPServer(("0.0.0.0", PORT), make_handler(bridge))
