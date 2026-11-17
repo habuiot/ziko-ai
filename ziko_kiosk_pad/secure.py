@@ -8,11 +8,13 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import ipaddress
 import json
 import logging
 import os
 import plistlib
 import secrets
+import shutil
 import ssl
 import subprocess
 import threading
@@ -36,12 +38,23 @@ def tls_assets(directory):
     ca_key, ca_cert = root / "ca.key", root / "ca.pem"
     key, cert = root / "server.key", root / "server.pem"
     required = (ca_key, ca_cert, key, cert)
+    lan_ip = str(ipaddress.ip_address(os.environ.get("ZIKO_KIOSK_LAN_IP", "192.168.10.230")))
+    ext = root / "extensions.cnf"
+
+    def cmd(args):
+        subprocess.run(args, cwd=str(root), check=True, timeout=40,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+
+    def write_extensions():
+        ext.write_text(
+            "subjectAltName=DNS:homeassistant.local,IP:" + lan_ip + "\n"
+            "basicConstraints=critical,CA:FALSE\n"
+            "keyUsage=critical,digitalSignature,keyEncipherment\n"
+            "extendedKeyUsage=serverAuth\n", encoding="ascii")
+
     if not all(p.exists() for p in required):
         if any(p.exists() for p in required):
             raise RuntimeError("Incomplete TLS material: not regenerating over existing files")
-        def cmd(args):
-            subprocess.run(args, cwd=str(root), check=True, timeout=40,
-                           stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         cmd(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes",
              "-sha256", "-days", "3650", "-keyout", "ca.key", "-out", "ca.pem",
              "-subj", "/CN=ZIKO Kiosk Pad Local CA",
@@ -50,12 +63,7 @@ def tls_assets(directory):
         cmd(["openssl", "req", "-new", "-newkey", "rsa:2048", "-nodes",
              "-sha256", "-keyout", "server.key", "-out", "server.csr",
              "-subj", "/CN=homeassistant.local"])
-        ext = root / "extensions.cnf"
-        ext.write_text(
-            "subjectAltName=DNS:homeassistant.local\n"
-            "basicConstraints=critical,CA:FALSE\n"
-            "keyUsage=critical,digitalSignature,keyEncipherment\n"
-            "extendedKeyUsage=serverAuth\n", encoding="ascii")
+        write_extensions()
         cmd(["openssl", "x509", "-req", "-in", "server.csr",
              "-CA", "ca.pem", "-CAkey", "ca.key", "-CAcreateserial",
              "-out", "server.pem", "-days", "730", "-sha256",
@@ -64,6 +72,33 @@ def tls_assets(directory):
             os.chmod(private, 0o600)
         (root / "server.csr").unlink(missing_ok=True)
         ext.unlink(missing_ok=True)
+    else:
+        # Preserve the existing CA and its trusted fingerprint; only refresh the
+        # server leaf certificate when old versions lack the LAN IP address.
+        sans = ssl._ssl._test_decode_cert(str(cert)).get("subjectAltName", [])
+        if ("IP Address", lan_ip) not in sans:
+            pending_cert = root / "server.pem.next"
+            try:
+                write_extensions()
+                cmd(["openssl", "req", "-new", "-key", "server.key",
+                     "-out", "server.csr", "-subj", "/CN=homeassistant.local"])
+                cmd(["openssl", "x509", "-req", "-in", "server.csr",
+                     "-CA", "ca.pem", "-CAkey", "ca.key", "-CAcreateserial",
+                     "-out", "server.pem.next", "-days", "730", "-sha256",
+                     "-extfile", "extensions.cnf"])
+                cmd(["openssl", "verify", "-CAfile", "ca.pem", "server.pem.next"])
+                issued_sans = ssl._ssl._test_decode_cert(str(pending_cert)).get("subjectAltName", [])
+                if ("IP Address", lan_ip) not in issued_sans:
+                    raise RuntimeError("Reissued certificate lacks the expected LAN IP")
+                backup = root / "server.pem.pre-ip-san"
+                if not backup.exists():
+                    shutil.copy2(cert, backup)
+                os.replace(pending_cert, cert)
+                LOG.info("HTTPS certificate updated for local IP %s; original CA preserved", lan_ip)
+            finally:
+                (root / "server.csr").unlink(missing_ok=True)
+                ext.unlink(missing_ok=True)
+                pending_cert.unlink(missing_ok=True)
     ca_der = ssl.PEM_cert_to_DER_cert(ca_cert.read_text(encoding="ascii"))
     profile = {
         "PayloadContent": [{
