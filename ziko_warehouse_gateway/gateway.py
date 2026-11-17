@@ -19,6 +19,66 @@ ASSETS = frozenset({'/', '/index.html', '/health', '/app.js', '/app.css',
 MAX_REQUEST = 11 * 1024 * 1024
 MAX_RESPONSE = 15 * 1024 * 1024
 
+class BodyError(ValueError):
+    def __init__(self, code, reason):
+        super().__init__(reason)
+        self.code = code
+        self.reason = reason
+
+def read_body(headers, stream):
+    """Decode a bounded HTTP/1.1 request body before forwarding as Content-Length.
+
+    Supervisor Ingress streams browser JSON POSTs using Transfer-Encoding: chunked.
+    Reject ambiguous CL+TE framing, non-chunked transfer codings and trailers.
+    """
+    transfer = headers.get_all('Transfer-Encoding', [])
+    lengths = headers.get_all('Content-Length', [])
+    if transfer:
+        if len(transfer) != 1 or transfer[0].strip().lower() != 'chunked' or lengths:
+            raise BodyError(400, 'invalid_transfer_framing')
+        chunks = []
+        received = 0
+        while True:
+            line = stream.readline(128)
+            if not line.endswith(b'\r\n'):
+                raise BodyError(400, 'invalid_chunk_header')
+            # Reject chunk extensions to avoid an unnecessarily broad parser.
+            size_text = line[:-2]
+            if not re.fullmatch(rb'[0-9A-Fa-f]{1,16}', size_text):
+                raise BodyError(400, 'invalid_chunk_size')
+            length = int(size_text, 16)
+            if length == 0:
+                if stream.read(2) != b'\r\n':
+                    raise BodyError(400, 'unsupported_chunk_trailers')
+                return b''.join(chunks)
+            if length > MAX_REQUEST - received:
+                raise BodyError(413, 'request_too_large')
+            data = stream.read(length)
+            if len(data) != length:
+                raise BodyError(400, 'incomplete_chunk')
+            if stream.read(2) != b'\r\n':
+                raise BodyError(400, 'missing_chunk_delimiter')
+            received += length
+            chunks.append(data)
+    if len(lengths) > 1:
+        raise BodyError(400, 'ambiguous_content_length')
+    if not lengths:
+        return None
+    try:
+        size = int(lengths[0])
+    except ValueError:
+        raise BodyError(400, 'invalid_length')
+    if size < 0:
+        raise BodyError(400, 'invalid_length')
+    if size > MAX_REQUEST:
+        raise BodyError(413, 'request_too_large')
+    if size == 0:
+        return None
+    data = stream.read(size)
+    if len(data) != size:
+        raise BodyError(400, 'incomplete_body')
+    return data
+
 def authorized(peer, headers):
     try:
         if ipaddress.ip_address(peer) != ipaddress.ip_address(SUPERVISOR_PEER):
@@ -64,7 +124,7 @@ def cookie_for_browser(original, prefix, secure=False):
         return None
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = 'ZIKO-Warehouse-Ingress/0.1.1'
+    server_version = 'ZIKO-Warehouse-Ingress/0.1.2'
     sys_version = ''
 
     def log_message(self, fmt, *args):
@@ -99,15 +159,6 @@ class Handler(BaseHTTPRequestHandler):
         if u.scheme or u.netloc or not valid_path(u.path or '/') or len(u.query) > 3000:
             return self.deny(400, 'invalid_route')
         path = (u.path or '/') + (('?' + u.query) if u.query else '')
-        try:
-            size = int(self.headers.get('Content-Length', '0'))
-        except ValueError:
-            return self.deny(400, 'invalid_length')
-        if size < 0 or size > MAX_REQUEST:
-            return self.deny(413, 'request_too_large')
-        if self.headers.get('Transfer-Encoding'):
-            return self.deny(400, 'chunked_request_not_supported')
-
         # Supervisor verifies the HA user. Do not forward HA auth cookies.
         # Warehouse keeps HttpOnly session cookies + explicit CSRF checks.
         # HA Origin is not passed to the different private upstream hostname.
@@ -121,12 +172,10 @@ class Handler(BaseHTTPRequestHandler):
         cookie = cookie_for_backend(self.headers.get('Cookie'))
         if cookie:
             headers['Cookie'] = cookie
-        if size:
-            data = self.rfile.read(size)
-            if len(data) != size:
-                return self.deny(400, 'incomplete_body')
-        else:
-            data = None
+        try:
+            data = read_body(self.headers, self.rfile)
+        except BodyError as error:
+            return self.deny(error.code, error.reason)
         conn = None
         try:
             conn = http.client.HTTPConnection(BACKEND_HOST, BACKEND_PORT, timeout=25)
