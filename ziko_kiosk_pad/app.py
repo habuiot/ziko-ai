@@ -42,11 +42,22 @@ CONTACTS = (
     ("binary_sensor.nappali_nappali_kis_ablak_bal_ajto_2", "Nappali bal ablak"),
     ("binary_sensor.nappali_jobb_kis_ablak_ajto", "Nappali jobb ablak"),
 )
-MEDIA = (("media_player.nagyszoba_nagyszoba_tv", "Nagyszoba TV"),)
+MEDIA = (
+    ("media_player.nagyszoba_nagyszoba_tv", "Nagyszoba TV"),
+    ("media_player.nagyszoba_nagyoszoba_tv_felso", "Nagyszoba felso TV"),
+    ("media_player.iroda_iroda_tv", "Iroda TV"),
+    ("media_player.nagyszoba_smartbox", "Telekom SmartBox"),
+)
+CAMERAS = (
+    ("camera.p2", "Kukucskalo"),
+    ("camera.nagyszoba_kamera_2_mainstream", "Nagyszoba kamera"),
+    ("camera.nappali_kamera_mainstream", "Nappali kamera"),
+)
 LOCKS = (("lock.eloszoba_bejarati_ajto_also_zar", "Bejarati zar"),)
-VISIBLE = LIGHTS + CONTACTS + MEDIA + LOCKS
+VISIBLE = LIGHTS + CONTACTS + MEDIA + CAMERAS + LOCKS
 LIGHT_IDS = {item[0] for item in LIGHTS}
 MEDIA_IDS = {item[0] for item in MEDIA}
+CAMERA_IDS = {item[0] for item in CAMERAS}
 
 
 def _atomic_json(path: Path, data):
@@ -79,6 +90,25 @@ class HaClient:
 
     def states(self):
         return self.request("/states")
+
+    def camera_image(self, entity_id):
+        if not self.token:
+            raise RuntimeError("Missing Home Assistant API token")
+        if entity_id not in CAMERA_IDS:
+            raise ValueError("Camera not allowed")
+        url = self.base + "/camera_proxy/" + entity_id
+        req = urllib.request.Request(url, headers={
+            "Authorization": "Bearer " + self.token, "Accept": "image/jpeg,image/png",
+        }, method="GET")
+        with urllib.request.urlopen(req, timeout=8) as response:
+            mime = response.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
+            if mime not in ("image/jpeg", "image/png"):
+                raise RuntimeError("Invalid camera response content type")
+            data = response.read(3 * 1024 * 1024 + 1)
+            if len(data) > 3 * 1024 * 1024:
+                raise RuntimeError("Camera image too large")
+            return mime, data
+
 
     def service(self, domain, action, entity_id):
         return self.request("/services/%s/%s" % (domain, action), {"entity_id": entity_id})
@@ -168,7 +198,7 @@ class Bridge:
                     self.last_error = "A Haziko nem erheto el"
             items = {}
             if self.cache is not None:
-                for typ, collection in (("lights", LIGHTS), ("contacts", CONTACTS), ("media", MEDIA), ("locks", LOCKS)):
+                for typ, collection in (("lights", LIGHTS), ("contacts", CONTACTS), ("media", MEDIA), ("cameras", CAMERAS), ("locks", LOCKS)):
                     items[typ] = []
                     for entity_id, label in collection:
                         s = self.cache.get(entity_id, {})
@@ -181,14 +211,35 @@ class Bridge:
     def command(self, entity_id, action):
         if entity_id in LIGHT_IDS and action in ("on", "off"):
             domain, service = "light", "turn_on" if action == "on" else "turn_off"
-        elif entity_id in MEDIA_IDS and action in ("play_pause", "volume_up", "volume_down"):
-            domain, service = "media_player", "media_" + action if action == "play_pause" else action
+        elif entity_id in MEDIA_IDS and action in ("on", "off", "play_pause", "volume_up", "volume_down"):
+            domain = "media_player"
+            service = {"on": "turn_on", "off": "turn_off",
+                       "play_pause": "media_play_pause",
+                       "volume_up": "volume_up", "volume_down": "volume_down"}[action]
         else:
             raise ValueError("Operation not allowed")
+        snapshot = self.snapshot()
+        if not snapshot.get("ok"):
+            raise RuntimeError("No live HA state")
+        group = "lights" if domain == "light" else "media"
+        item = next((x for x in snapshot["items"][group] if x["id"] == entity_id), None)
+        if not item or item["state"] in ("unavailable", "unknown", None):
+            raise RuntimeError("Entity not available")
         self.ha.service(domain, service, entity_id)
         with self.lock:
             self.last_read = 0
         return True
+
+    def camera_image(self, entity_id):
+        if entity_id not in CAMERA_IDS:
+            raise ValueError("Camera not allowed")
+        snapshot = self.snapshot()
+        if not snapshot.get("ok"):
+            raise RuntimeError("No live HA state")
+        item = next((x for x in snapshot["items"]["cameras"] if x["id"] == entity_id), None)
+        if not item or item["state"] in ("unavailable", "unknown", None):
+            raise RuntimeError("Camera unavailable")
+        return self.ha.camera_image(entity_id)
 
 
 HTML = Path(__file__).with_name("index.html").read_bytes()
