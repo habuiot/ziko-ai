@@ -1,5 +1,5 @@
 name: "Ziko™ ● Files – Commander"
-version: "0.1.1"
+version: "0.2.0"
 slug: "ziko_files_gateway"
 description: "HA Ingress gateway to the isolated ZikoFiles Proxmox file manager"
 arch:
@@ -22,5 +22,7 @@ hassio_api: false
 auth_api: false
 docker_api: false
 ports: {}
-options: {}
-schema: {}
+options:
+  sso_key: ""
+schema:
+  sso_key: password
