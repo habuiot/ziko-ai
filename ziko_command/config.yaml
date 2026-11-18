@@ -1,7 +1,7 @@
 name: "ZIKO Command – Parancsnokság (ALPHA)"
-version: "0.1.0"
+version: "0.2.0-rc1"
 slug: ziko_command
-description: "Ingress-only control plane, durable command inbox and scheduled local briefing; AI execution not connected"
+description: "Ingress Command with signed Workflow feed and owner-only decision contract; AI execution not connected"
 arch:
   - amd64
 startup: application
@@ -21,5 +21,8 @@ hassio_api: false
 auth_api: false
 docker_api: false
 ports: {}
-options: {}
-schema: {}
+options:
+  owner_user_id: ""
+schema:
+  owner_user_id: str?
+

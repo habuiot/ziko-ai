@@ -87,13 +87,76 @@ $("message").addEventListener("keydown",event=>{
  }
 });
 
+
+function addWfText(parent,tag,value,className){
+ const el=document.createElement(tag);
+ if(className)el.className=className;
+ el.textContent=String(value==null?"":value);
+ parent.append(el);
+ return el;
+}
+async function refreshWorkflow(){
+ const roles=$("wf-agents"),jobs=$("wf-jobs");
+ try{
+  const answer=await readJson("api/work");
+  const data=answer.workflow||{};
+  roles.replaceChildren();jobs.replaceChildren();
+  text("wf-state",String(data.job_count||0)+" feladat · "+(data.model_state==="not_installed"?"Helyi AI nincs":data.model_state||"Nem ismert"));
+  for(const agent of Array.isArray(data.roles)?data.roles:[]){
+   const card=document.createElement("div");card.className="wf-agent";
+   addWfText(card,"strong",agent.role||agent.role_id||"Ügynök");
+   addWfText(card,"small",agent.confirmed_active?"Aktív (igazolt)":"Nem aktív");
+   roles.append(card);
+  }
+  for(const job of Array.isArray(data.jobs)?data.jobs:[]){
+   const card=document.createElement("article");card.className="wf-job";
+   const side=document.createElement("div");
+   addWfText(side,"strong",job.work_id||job.project_id||job.job_id);
+   addWfText(side,"small",(job.phase_label||job.phase||"")+
+      (job.scheduler_gate?" · "+job.scheduler_gate:""));
+   card.append(side);
+   if(job.phase==="meeting_ready"&&!job.approved&&job.artifact_sha&&answer.approval_ready){
+    const button=addWfText(card,"button","Elfogadom","wf-approve");
+    button.type="button";
+    button.addEventListener("click",()=>approveWorkflow(job,button));
+   }
+   jobs.append(card);
+  }
+  if(!data.jobs||!data.jobs.length) addWfText(jobs,"div","Nincs aktív Workflow-feladat.","wf-status");
+ }catch(error){
+  roles.replaceChildren();jobs.replaceChildren();
+  text("wf-state",error.message==="workflow_feed_unavailable"?"Workflow-forrás nem elérhető":
+       error.message==="owner_only"?"Tulajdonosi hozzáférés szükséges":
+       "Workflow: "+error.message);
+ }
+}
+async function approveWorkflow(job,button){
+ const shortHash=job.artifact_sha.slice(0,12);
+ if(!window.confirm("Elfogadod a "+job.work_id+" feladat "+shortHash+"… verzióját?"))return;
+ button.disabled=true;
+ try{
+  const r=await readJson("api/work/approve",{
+   method:"POST",
+   headers:{"Content-Type":"application/json","X-Ziko-Request":"1"},
+   body:JSON.stringify({job_id:job.job_id,artifact_sha:job.artifact_sha})
+  });
+  text("wf-state",r.state==="approval_recorded_not_deployed"?
+      "Döntés rögzítve. Élesítés nem indult.":"Döntés ellenőrzése szükséges");
+  await refreshWorkflow();
+ }catch(error){
+  text("wf-state","Jóváhagyás sikertelen: "+error.message);
+ }finally{button.disabled=false;}
+}
+$("wf-refresh").addEventListener("click",refreshWorkflow);
+
 async function refresh(){
  if(document.hidden)return;
- await Promise.all([refreshStatus(),refreshMessages()]);
+ await Promise.all([refreshStatus(),refreshMessages(),refreshWorkflow()]);
  state.lastRefresh=Date.now();
 }
 refresh();
-setInterval(()=>{if(!document.hidden)refreshStatus();},30000);
+setInterval(()=>{if(!document.hidden){refreshStatus();refreshWorkflow();}},30000);
 document.addEventListener("visibilitychange",()=>{
  if(!document.hidden&&Date.now()-state.lastRefresh>15000)refresh();
 });
+

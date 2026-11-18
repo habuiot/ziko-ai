@@ -63,3 +63,15 @@ node --check web/app.js
 A GitHub Actions külön ellenőrzi a Docker indulását, a privát adatbázis létrehozását, az életjelet és a közvetlen, hamis hitelesítéssel küldött kérés megtagadását.
 
 **Nem kész még**: saját magát fejlesztő, 24/7 AI-ügynök; Ziko AI a Házikó alkalmazások között jelenleg nincs működő példányként telepítve. A Command 0.1 valódi, de *nem* hajt végre AI-munkát, és nem küld értesítést. Az önműködést csak a fenti biztonsági és integrációs lépések után kapcsoljuk be.
+
+
+---
+
+## ZIKO Command ↔ Workflow 0.2.0-rc1 (developed, not deployed)
+
+Optional owner-only Workflow state board and signed, version-specific approval
+receipt contract are developed on an isolated branch. The original Command
+inbox and read-only security posture remain. No real HA-to-Proxmox transport,
+LLM, automatic deployment or unattended Todo integration is active.
+See [WORKFLOW_INTEGRATION.md](WORKFLOW_INTEGRATION.md) for security
+provisioning, tests, deployment gates and rollback.

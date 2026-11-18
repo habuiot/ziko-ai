@@ -15,6 +15,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
 from engine import CommandStore, now_ts
+from workflow_bridge import CommandWorkflowBridge, BridgeUnavailable, ApprovalDenied
 
 log=logging.getLogger("ziko-command")
 PORT=int(os.environ.get("ZIKO_COMMAND_PORT","8100"))
@@ -23,6 +24,7 @@ DATA=Path(os.environ.get("ZIKO_COMMAND_DB","/data/command.sqlite3"))
 WEB=Path(__file__).parent / "web"
 STORE=None
 RUNNER=None
+WORKFLOW=CommandWorkflowBridge.from_environment()
 
 
 def trusted(peer: str, headers) -> str | None:
@@ -121,8 +123,17 @@ class App(BaseHTTPRequestHandler):
                 "automatic_updates":"A belső jelentés előkészül, de értesítést még nem küld.",
             })
         elif path=="/api/work":
-            # Don't expose other users' task/run metadata before user ACL is connected.
-            self.json(403,{"error":"work_access_not_configured"})
+            try:
+                feed=WORKFLOW.read_feed(user)
+            except ApprovalDenied:
+                self.json(403,{"error":"owner_only"})
+            except BridgeUnavailable:
+                self.json(503,{"error":"workflow_feed_unavailable"})
+            else:
+                self.json(200,{"schema":"ziko-command-owner-view/v1",
+                               "workflow":feed,"source_status":"signed_and_fresh",
+                               "can_deploy":False,
+                               "approval_ready":WORKFLOW.approval_ready()})
         else:
             self.json(404,{"error":"not_found"})
 
@@ -135,7 +146,8 @@ class App(BaseHTTPRequestHandler):
                 "Sec-Fetch-Site","").lower()=="cross-site":
             self.json(403,{"error":"request_origin_denied"})
             return
-        if safe_route(self.path)!="/api/messages":
+        route=safe_route(self.path)
+        if route not in ("/api/messages","/api/work/approve"):
             self.json(405,{"error":"write_not_supported"})
             return
         rawsize=self.headers.get("Content-Length","")
@@ -144,6 +156,23 @@ class App(BaseHTTPRequestHandler):
             return
         if self.headers.get("Content-Type","").split(";")[0].strip()!="application/json":
             self.json(415,{"error":"json_required"})
+            return
+        if route=="/api/work/approve":
+            try:
+                payload=json.loads(self.rfile.read(int(rawsize)))
+                if not isinstance(payload,dict) or set(payload)!={"job_id","artifact_sha"}:
+                    raise ValueError("Invalid request")
+                receipt=WORKFLOW.issue_approval(user,payload["job_id"],payload["artifact_sha"])
+            except ApprovalDenied:
+                self.json(403,{"error":"approval_denied"})
+                return
+            except BridgeUnavailable:
+                self.json(503,{"error":"workflow_feed_unavailable"})
+                return
+            except (ValueError,TypeError,UnicodeError,RecursionError):
+                self.json(400,{"error":"invalid_approval_request"})
+                return
+            self.json(202,receipt)
             return
         try:
             payload=json.loads(self.rfile.read(int(rawsize)))
@@ -191,3 +220,4 @@ def main():
 
 if __name__=="__main__":
     main()
+
