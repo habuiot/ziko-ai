@@ -2,6 +2,7 @@
 """ZIKO Kiosk Pad bridge: limited HA surface for legacy iPad Safari (ES5)."""
 from __future__ import annotations
 
+import datetime
 import hashlib
 import hmac
 import json
@@ -54,7 +55,20 @@ CAMERAS = (
     ("camera.nappali_kamera_mainstream", "Nappali kamera"),
 )
 LOCKS = (("lock.eloszoba_bejarati_ajto_also_zar", "Bejarati zar"),)
-VISIBLE = LIGHTS + CONTACTS + MEDIA + CAMERAS + LOCKS
+CLIMATE = (("climate.sonoff_trvzb", "Nagyszoba radiator"),)
+SCENES = (("scene.lampak_fel", "Lampak fel"), ("scene.lampak_ki_2", "Lampak ki"))
+ENERGY = (
+    ('sensor.kozlekedo_legtisztito_teljesitmeny', 'Média felső fogyasztásmérő'),
+    ('sensor.szimulator_teljesitmeny', 'Ágy fogyasztásmérő'),
+    ('sensor.eloszoba_szerver_fogyasztasmero_teljesitmeny', 'Szerver fogyasztásmérő'),
+    ('sensor.konyha_huto_teljesitmeny', 'Hűtő fogyasztásmérő'),
+    ('sensor.eloszoba_consuela_fogyasztasmero_teljesitmeny', 'Consuela fogyasztásmérő'),
+    ('sensor.nagyszoba_fokapcsolo_teljesitmeny', 'Törölközőszárító fogyasztásmérő'),
+    ('sensor.eloszoba_3d_nyomtato_fogyasztasmero_teljesitmeny', '3D nyomtató fogyasztásmérő'),
+    ('sensor.3d_nyomtato_teljesitmeny', 'Média alsó fogyasztásmérő'),
+)
+SCENE_IDS = {x[0] for x in SCENES}
+VISIBLE = LIGHTS + CONTACTS + MEDIA + CAMERAS + LOCKS + CLIMATE + SCENES + ENERGY
 LIGHT_IDS = {item[0] for item in LIGHTS}
 MEDIA_IDS = {item[0] for item in MEDIA}
 CAMERA_IDS = {item[0] for item in CAMERAS}
@@ -184,45 +198,78 @@ class Bridge:
             return session["pad"]
 
     def snapshot(self):
+        """Read only explicitly approved HA entities. Never infer unknown readings."""
         with self.lock:
             now = self.clock()
             if self.cache is None or now - self.last_read >= CACHE_TTL:
                 self.last_read = now
                 try:
                     states = self.ha.states()
-                    self.cache = {r["entity_id"]: r for r in states if r.get("entity_id") in {i[0] for i in VISIBLE}}
+                    allowed = {entity_id for entity_id, _ in VISIBLE}
+                    self.cache = {r["entity_id"]: r for r in states if r.get("entity_id") in allowed}
                     self.last_error = ""
-                except (Exception,) as exc:
+                except Exception as exc:
                     LOG.warning("Home Assistant state read failed: %s", type(exc).__name__)
                     self.cache = None
                     self.last_error = "A Haziko nem erheto el"
             items = {}
             if self.cache is not None:
-                for typ, collection in (("lights", LIGHTS), ("contacts", CONTACTS), ("media", MEDIA), ("cameras", CAMERAS), ("locks", LOCKS)):
+                groups = (("lights", LIGHTS), ("contacts", CONTACTS),
+                          ("media", MEDIA), ("cameras", CAMERAS), ("locks", LOCKS),
+                          ("climate", CLIMATE), ("scenes", SCENES), ("energy", ENERGY))
+                subtotal, fresh_count = 0.0, 0
+                for typ, collection in groups:
                     items[typ] = []
                     for entity_id, label in collection:
-                        s = self.cache.get(entity_id, {})
-                        attrs = s.get("attributes") or {}
-                        items[typ].append({"id": entity_id, "label": label, "state": s.get("state", "unavailable"),
-                                           "brightness": attrs.get("brightness") if typ == "lights" else None})
+                        src = self.cache.get(entity_id, {})
+                        attrs = src.get("attributes") or {}
+                        record = {"id": entity_id, "label": label,
+                                  "state": src.get("state", "unavailable"),
+                                  "brightness": attrs.get("brightness") if typ == "lights" else None}
+                        if typ == "climate":
+                            record["current_temperature"] = attrs.get("current_temperature")
+                            record["target_temperature"] = attrs.get("temperature")
+                        if typ == "energy":
+                            record["unit"] = attrs.get("unit_of_measurement")
+                            record["last_updated"] = src.get("last_updated")
+                            record["watts"] = None
+                            record["fresh"] = False
+                            try:
+                                value = float(src.get("state"))
+                                stamp = datetime.datetime.fromisoformat(str(src.get("last_updated", "")).replace("Z", "+00:00"))
+                                age = now - stamp.timestamp()
+                                if 0 <= value <= 100000 and -60 <= age <= 900 and record["unit"] == "W":
+                                    record["watts"], record["fresh"] = round(value, 2), True
+                                    fresh_count += 1
+                                    subtotal += value
+                            except (TypeError, ValueError, OverflowError):
+                                pass
+                        items[typ].append(record)
+                items["energy_summary"] = {
+                    "partial_w": round(subtotal, 1) if fresh_count else None,
+                    "fresh_meters": fresh_count,
+                    "known_meters": len(ENERGY),
+                    "scope": "known_independent_meter_partial_not_whole_home",
+                }
             return {"ok": self.cache is not None, "error": self.last_error,
                     "ts": int(self.clock()), "items": items}
 
     def command(self, entity_id, action):
         if entity_id in LIGHT_IDS and action in ("on", "off"):
-            domain, service = "light", "turn_on" if action == "on" else "turn_off"
+            domain, service, group = "light", ("turn_on" if action == "on" else "turn_off"), "lights"
         elif entity_id in MEDIA_IDS and action in ("on", "off", "play_pause", "volume_up", "volume_down"):
-            domain = "media_player"
+            domain, group = "media_player", "media"
             service = {"on": "turn_on", "off": "turn_off",
                        "play_pause": "media_play_pause",
                        "volume_up": "volume_up", "volume_down": "volume_down"}[action]
+        elif entity_id in SCENE_IDS and action == "activate":
+            domain, service, group = "scene", "turn_on", "scenes"
         else:
             raise ValueError("Operation not allowed")
-        snapshot = self.snapshot()
-        if not snapshot.get("ok"):
+        snap = self.snapshot()
+        if not snap.get("ok"):
             raise RuntimeError("No live HA state")
-        group = "lights" if domain == "light" else "media"
-        item = next((x for x in snapshot["items"][group] if x["id"] == entity_id), None)
+        item = next((x for x in snap["items"][group] if x["id"] == entity_id), None)
         if not item or item["state"] in ("unavailable", "unknown", None):
             raise RuntimeError("Entity not available")
         self.ha.service(domain, service, entity_id)
@@ -391,3 +438,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
