@@ -1,0 +1,345 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="mapStage" viewBox="0 0 950 675" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Consuela 6 eredeti zónája és a tulajdonos által megerősített 7. erkély terület; 2.5D lakásmodell"><defs>
+  <pattern id="floor-grid" patternUnits="userSpaceOnUse" width="28" height="28"><path d="M28 0H0V28" fill="none" stroke="#b5e5ed" stroke-opacity=".16" stroke-width=".7"/></pattern>
+  <radialGradient id="space-glow" cx="50%" cy="42%" r="75%"><stop offset="0" stop-color="#123453"/><stop offset=".57" stop-color="#08192c"/><stop offset="1" stop-color="#030b16"/></radialGradient>
+  <linearGradient id="stage-floor" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#1d4a58" stop-opacity=".3"/><stop offset="1" stop-color="#071625" stop-opacity=".13"/></linearGradient>
+  <filter id="floor-shadow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="16"/></filter>
+</defs>
+  <ellipse cx="476" cy="573" rx="385" ry="60" fill="#2f829b" fill-opacity=".09" filter="url(#floor-shadow)"/>
+  <g id="zoomWrap"><g id="tiltedScene" transform="rotate(180 475 332)"><polygon points="142.3,187.7 207.3,173.0 207.3,190.0 142.3,204.7" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="207.3,173.0 205.3,169.6 205.3,186.6 207.3,190.0" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="205.3,169.6 259.7,157.4 259.7,174.4 205.3,186.6" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="259.7,157.4 257.0,152.6 257.0,169.6 259.7,174.4" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="257.0,152.6 278.3,147.8 278.3,164.8 257.0,169.6" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="278.3,147.8 392.8,345.9 392.8,362.9 278.3,164.8" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="392.8,345.9 244.8,379.3 244.8,396.3 392.8,362.9" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="244.8,379.3 212.8,322.8 212.8,339.8 244.8,396.3" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="212.8,322.8 172.4,332.0 172.4,349.0 212.8,339.8" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="172.4,332.0 137.3,270.1 137.3,287.1 172.4,349.0" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="137.3,270.1 183.1,259.8 183.1,276.8 137.3,287.1" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="183.1,259.8 142.3,187.7 142.3,204.7 183.1,276.8" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<g data-zone="eloszoba" class="zone-layer">
+<polygon class="floor-halo" points="142.3,187.7 207.3,173.0 205.3,169.6 259.7,157.4 257.0,152.6 278.3,147.8 392.8,345.9 244.8,379.3 212.8,322.8 172.4,332.0 137.3,270.1 183.1,259.8" fill="#edc9a0" opacity="0.10"/>
+<polygon class="floor-fill" points="142.3,187.7 207.3,173.0 205.3,169.6 259.7,157.4 257.0,152.6 278.3,147.8 392.8,345.9 244.8,379.3 212.8,322.8 172.4,332.0 137.3,270.1 183.1,259.8" fill="#edc9a0" fill-opacity="0.22" stroke="#f2caa4" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="142.3,187.7 207.3,173.0 205.3,169.6 259.7,157.4 257.0,152.6 278.3,147.8 392.8,345.9 244.8,379.3 212.8,322.8 172.4,332.0 137.3,270.1 183.1,259.8" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="glass-wall" points="142.3,187.7 207.3,173.0 207.3,148.0 142.3,162.7" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 142.3 162.7 L 207.3 148.0" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="207.3,173.0 205.3,169.6 205.3,144.6 207.3,148.0" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 207.3 148.0 L 205.3 144.6" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="205.3,169.6 259.7,157.4 259.7,132.4 205.3,144.6" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 205.3 144.6 L 259.7 132.4" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="259.7,157.4 257.0,152.6 257.0,127.6 259.7,132.4" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 259.7 132.4 L 257.0 127.6" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="257.0,152.6 278.3,147.8 278.3,122.8 257.0,127.6" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 257.0 127.6 L 278.3 122.8" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="278.3,147.8 392.8,345.9 392.8,320.9 278.3,122.8" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 278.3 122.8 L 392.8 320.9" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="392.8,345.9 244.8,379.3 244.8,354.3 392.8,320.9" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 392.8 320.9 L 244.8 354.3" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="244.8,379.3 212.8,322.8 212.8,297.8 244.8,354.3" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 244.8 354.3 L 212.8 297.8" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="212.8,322.8 172.4,332.0 172.4,307.0 212.8,297.8" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 212.8 297.8 L 172.4 307.0" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="172.4,332.0 137.3,270.1 137.3,245.1 172.4,307.0" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 172.4 307.0 L 137.3 245.1" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="137.3,270.1 183.1,259.8 183.1,234.8 137.3,245.1" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 137.3 245.1 L 183.1 234.8" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="183.1,259.8 142.3,187.7 142.3,162.7 183.1,234.8" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 183.1 234.8 L 142.3 162.7" stroke="#f2caa4" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="eloszoba" points="142.3,187.7 207.3,173.0 205.3,169.6 259.7,157.4 257.0,152.6 278.3,147.8 392.8,345.9 244.8,379.3 212.8,322.8 172.4,332.0 137.3,270.1 183.1,259.8" fill="transparent" />
+<g class="zone-caption" transform="translate(240.5 269.8) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#f2caa4" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#f2caa4"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Előszoba</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 06</text></g>
+</g>
+<polygon points="282.6,149.2 636.2,69.5 636.2,86.5 282.6,166.2" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="636.2,69.5 745.9,263.3 745.9,280.3 636.2,86.5" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="745.9,263.3 392.3,343.0 392.3,360.0 745.9,280.3" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="392.3,343.0 282.6,149.2 282.6,166.2 392.3,360.0" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<g data-zone="nagyszoba" class="zone-layer is-selected">
+<polygon class="floor-halo" points="282.6,149.2 636.2,69.5 745.9,263.3 392.3,343.0" fill="#9c9bf0" opacity="0.10"/>
+<polygon class="floor-fill" points="282.6,149.2 636.2,69.5 745.9,263.3 392.3,343.0" fill="#9c9bf0" fill-opacity="0.22" stroke="#b3b8ff" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="282.6,149.2 636.2,69.5 745.9,263.3 392.3,343.0" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="glass-wall" points="282.6,149.2 636.2,69.5 636.2,44.5 282.6,124.2" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 282.6 124.2 L 636.2 44.5" stroke="#b3b8ff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="636.2,69.5 745.9,263.3 745.9,238.3 636.2,44.5" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 636.2 44.5 L 745.9 238.3" stroke="#b3b8ff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="745.9,263.3 392.3,343.0 392.3,318.0 745.9,238.3" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 745.9 238.3 L 392.3 318.0" stroke="#b3b8ff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="392.3,343.0 282.6,149.2 282.6,124.2 392.3,318.0" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 392.3 318.0 L 282.6 124.2" stroke="#b3b8ff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="nagyszoba" points="282.6,149.2 636.2,69.5 745.9,263.3 392.3,343.0" fill="transparent" />
+<g class="zone-caption" transform="translate(604.3 242.3) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#b3b8ff" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#b3b8ff"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Nagyszoba</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 05</text></g>
+</g>
+<polygon points="245.2,380.0 394.3,346.4 394.3,363.4 245.2,397.0" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="394.3,346.4 399.3,355.2 399.3,372.2 394.3,363.4" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="399.3,355.2 449.3,343.9 449.3,360.9 399.3,372.2" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="449.3,343.9 475.5,390.2 475.5,407.2 449.3,360.9" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="475.5,390.2 307.2,428.1 307.2,445.1 475.5,407.2" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="307.2,428.1 300.7,416.5 300.7,433.5 307.2,445.1" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="300.7,416.5 269.8,423.5 269.8,440.5 300.7,433.5" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="269.8,423.5 245.2,380.0 245.2,397.0 269.8,440.5" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<g data-zone="kozlekedo" class="zone-layer">
+<polygon class="floor-halo" points="245.2,380.0 394.3,346.4 399.3,355.2 449.3,343.9 475.5,390.2 307.2,428.1 300.7,416.5 269.8,423.5" fill="#78b4ec" opacity="0.10"/>
+<polygon class="floor-fill" points="245.2,380.0 394.3,346.4 399.3,355.2 449.3,343.9 475.5,390.2 307.2,428.1 300.7,416.5 269.8,423.5" fill="#78b4ec" fill-opacity="0.22" stroke="#93d8fa" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="245.2,380.0 394.3,346.4 399.3,355.2 449.3,343.9 475.5,390.2 307.2,428.1 300.7,416.5 269.8,423.5" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="glass-wall" points="245.2,380.0 394.3,346.4 394.3,321.4 245.2,355.0" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 245.2 355.0 L 394.3 321.4" stroke="#93d8fa" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="394.3,346.4 399.3,355.2 399.3,330.2 394.3,321.4" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 394.3 321.4 L 399.3 330.2" stroke="#93d8fa" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="399.3,355.2 449.3,343.9 449.3,318.9 399.3,330.2" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 399.3 330.2 L 449.3 318.9" stroke="#93d8fa" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="449.3,343.9 475.5,390.2 475.5,365.2 449.3,318.9" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 449.3 318.9 L 475.5 365.2" stroke="#93d8fa" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="475.5,390.2 307.2,428.1 307.2,403.1 475.5,365.2" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 475.5 365.2 L 307.2 403.1" stroke="#93d8fa" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="307.2,428.1 300.7,416.5 300.7,391.5 307.2,403.1" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 307.2 403.1 L 300.7 391.5" stroke="#93d8fa" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="300.7,416.5 269.8,423.5 269.8,398.5 300.7,391.5" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 300.7 391.5 L 269.8 398.5" stroke="#93d8fa" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="269.8,423.5 245.2,380.0 245.2,355.0 269.8,398.5" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 269.8 398.5 L 245.2 355.0" stroke="#93d8fa" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="kozlekedo" points="245.2,380.0 394.3,346.4 399.3,355.2 449.3,343.9 475.5,390.2 307.2,428.1 300.7,416.5 269.8,423.5" fill="transparent" />
+<g class="zone-caption" transform="translate(357.5 385.3) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#93d8fa" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#93d8fa"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Közlekedő</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 08</text></g>
+</g>
+<polygon points="296.6,430.5 421.2,402.4 421.2,419.4 296.6,447.5" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="421.2,402.4 482.4,510.5 482.4,527.5 421.2,419.4" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="482.4,510.5 357.8,538.6 357.8,555.6 482.4,527.5" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="357.8,538.6 296.6,430.5 296.6,447.5 357.8,555.6" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<g data-zone="furdo" class="zone-layer">
+<polygon class="floor-halo" points="296.6,430.5 421.2,402.4 482.4,510.5 357.8,538.6" fill="#a9c3ed" opacity="0.10"/>
+<polygon class="floor-fill" points="296.6,430.5 421.2,402.4 482.4,510.5 357.8,538.6" fill="#a9c3ed" fill-opacity="0.22" stroke="#d5dcff" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="296.6,430.5 421.2,402.4 482.4,510.5 357.8,538.6" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="glass-wall" points="296.6,430.5 421.2,402.4 421.2,377.4 296.6,405.5" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 296.6 405.5 L 421.2 377.4" stroke="#d5dcff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="421.2,402.4 482.4,510.5 482.4,485.5 421.2,377.4" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 421.2 377.4 L 482.4 485.5" stroke="#d5dcff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="482.4,510.5 357.8,538.6 357.8,513.6 482.4,485.5" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 482.4 485.5 L 357.8 513.6" stroke="#d5dcff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="357.8,538.6 296.6,430.5 296.6,405.5 357.8,513.6" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 357.8 513.6 L 296.6 405.5" stroke="#d5dcff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="furdo" points="296.6,430.5 421.2,402.4 482.4,510.5 357.8,538.6" fill="transparent" />
+<g class="zone-caption" transform="translate(391.8 473.4) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#d5dcff" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#d5dcff"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Fürdőhelyiség</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 07</text></g>
+</g>
+<polygon points="450.8,344.4 553.0,321.3 553.0,338.3 450.8,361.4" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="553.0,321.3 663.9,517.2 663.9,534.2 553.0,338.3" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="663.9,517.2 531.8,546.9 531.8,563.9 663.9,534.2" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="531.8,546.9 499.9,490.5 499.9,507.5 531.8,563.9" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="499.9,490.5 529.7,483.8 529.7,500.8 499.9,507.5" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="529.7,483.8 450.8,344.4 450.8,361.4 529.7,500.8" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<g data-zone="konyha" class="zone-layer">
+<polygon class="floor-halo" points="450.8,344.4 553.0,321.3 663.9,517.2 531.8,546.9 499.9,490.5 529.7,483.8" fill="#71daca" opacity="0.10"/>
+<polygon class="floor-fill" points="450.8,344.4 553.0,321.3 663.9,517.2 531.8,546.9 499.9,490.5 529.7,483.8" fill="#71daca" fill-opacity="0.22" stroke="#85ede6" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="450.8,344.4 553.0,321.3 663.9,517.2 531.8,546.9 499.9,490.5 529.7,483.8" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="glass-wall" points="450.8,344.4 553.0,321.3 553.0,296.3 450.8,319.4" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 450.8 319.4 L 553.0 296.3" stroke="#85ede6" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="553.0,321.3 663.9,517.2 663.9,492.2 553.0,296.3" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 553.0 296.3 L 663.9 492.2" stroke="#85ede6" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="663.9,517.2 531.8,546.9 531.8,521.9 663.9,492.2" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 663.9 492.2 L 531.8 521.9" stroke="#85ede6" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="531.8,546.9 499.9,490.5 499.9,465.5 531.8,521.9" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 531.8 521.9 L 499.9 465.5" stroke="#85ede6" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="499.9,490.5 529.7,483.8 529.7,458.8 499.9,465.5" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 499.9 465.5 L 529.7 458.8" stroke="#85ede6" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="529.7,483.8 450.8,344.4 450.8,319.4 529.7,458.8" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 529.7 458.8 L 450.8 319.4" stroke="#85ede6" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="konyha" points="450.8,344.4 553.0,321.3 663.9,517.2 531.8,546.9 499.9,490.5 529.7,483.8" fill="transparent" />
+<g class="zone-caption" transform="translate(561.1 435.3) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#85ede6" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#85ede6"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Konyha</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 09</text></g>
+</g>
+<polygon points="553.0,321.3 753.2,276.2 753.2,293.2 553.0,338.3" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="753.2,276.2 864.1,472.0 864.1,489.0 753.2,293.2" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="864.1,472.0 663.9,517.2 663.9,534.2 864.1,489.0" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="663.9,517.2 553.0,321.3 553.0,338.3 663.9,534.2" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<g data-zone="nappali" class="zone-layer">
+<polygon class="floor-halo" points="553.0,321.3 753.2,276.2 864.1,472.0 663.9,517.2" fill="#93d6b2" opacity="0.10"/>
+<polygon class="floor-fill" points="553.0,321.3 753.2,276.2 864.1,472.0 663.9,517.2" fill="#93d6b2" fill-opacity="0.22" stroke="#b4f0d1" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="553.0,321.3 753.2,276.2 864.1,472.0 663.9,517.2" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="glass-wall" points="553.0,321.3 753.2,276.2 753.2,251.2 553.0,296.3" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 553.0 296.3 L 753.2 251.2" stroke="#b4f0d1" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="753.2,276.2 864.1,472.0 864.1,447.0 753.2,251.2" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 753.2 251.2 L 864.1 447.0" stroke="#b4f0d1" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="864.1,472.0 663.9,517.2 663.9,492.2 864.1,447.0" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 864.1 447.0 L 663.9 492.2" stroke="#b4f0d1" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="663.9,517.2 553.0,321.3 553.0,296.3 663.9,492.2" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 663.9 492.2 L 553.0 296.3" stroke="#b4f0d1" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="nappali" points="553.0,321.3 753.2,276.2 864.1,472.0 663.9,517.2" fill="transparent" />
+<g class="zone-caption" transform="translate(712.8 395.7) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#b4f0d1" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#b4f0d1"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Nappali</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 04</text></g>
+</g>
+<polygon points="636.2,69.5 772.5,38.8 772.5,55.8 636.2,86.5" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<polygon points="772.5,38.8 882.2,232.6 882.2,249.6 772.5,55.8" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="882.2,232.6 745.9,263.3 745.9,280.3 882.2,249.6" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.27" stroke-width="1"/>
+<polygon points="745.9,263.3 636.2,69.5 636.2,86.5 745.9,280.3" fill="#0b2b3f" stroke="#3f7894" stroke-opacity="0.12" stroke-width="1"/>
+<g data-zone="erkely" class="zone-layer">
+<polygon class="floor-halo" points="636.2,69.5 772.5,38.8 882.2,232.6 745.9,263.3" fill="#61b7e6" opacity="0.10"/>
+<polygon class="floor-fill" points="636.2,69.5 772.5,38.8 882.2,232.6 745.9,263.3" fill="#61b7e6" fill-opacity="0.22" stroke="#8cddff" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="636.2,69.5 772.5,38.8 882.2,232.6 745.9,263.3" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="glass-wall" points="636.2,69.5 772.5,38.8 772.5,13.8 636.2,44.5" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 636.2 44.5 L 772.5 13.8" stroke="#8cddff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="772.5,38.8 882.2,232.6 882.2,207.6 772.5,13.8" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 772.5 13.8 L 882.2 207.6" stroke="#8cddff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="882.2,232.6 745.9,263.3 745.9,238.3 882.2,207.6" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 882.2 207.6 L 745.9 238.3" stroke="#8cddff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="glass-wall" points="745.9,263.3 636.2,69.5 636.2,44.5 745.9,238.3" fill="#90c9e9" fill-opacity="0.085" stroke="#a2edff" stroke-opacity="0.18" stroke-width="0.8" pointer-events="none" />
+<path d="M 745.9 238.3 L 636.2 44.5" stroke="#8cddff" stroke-opacity="0.39" stroke-width="1.5" fill="none" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="erkely" points="636.2,69.5 772.5,38.8 882.2,232.6 745.9,263.3" fill="transparent" />
+<g class="zone-caption" transform="translate(765.2 153.1) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#8cddff" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#8cddff"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Erkély</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">KIEG. / ERKÉLY</text></g>
+</g>
+<g class="opening-marker is-unknown" data-opening="bejarat" role="button" tabindex="0" aria-label="Bejárati ajtó: állapot nem ellenőrzött">
+<title>Bejárati ajtó · binary_sensor.ewelink_snzb_04p_contact · R513:f123/w108</title>
+<path d="M 138.7 272.5 L 166.8 322.1" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 138.7 272.5 L 166.8 322.1" class="opening-beam" stroke="#f0bc85" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="152.7" cy="297.3" r="13" fill="#0b2334" stroke="#f0bc85" stroke-width="1.5"/>
+<text x="152.7" y="301.3" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 152.7 301.3)">D</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="erkelyajto" role="button" tabindex="0" aria-label="Erkélyajtó: állapot nem ellenőrzött">
+<title>Erkélyajtó · binary_sensor.ewelink_snzb_04p_contact_2 · R513:f92/w5</title>
+<path d="M 718.4 214.7 L 742.6 257.5" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 718.4 214.7 L 742.6 257.5" class="opening-beam" stroke="#f0bc85" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="730.5" cy="236.1" r="13" fill="#0b2334" stroke="#f0bc85" stroke-width="1.5"/>
+<text x="730.5" y="240.1" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 730.5 240.1)">D</text>
+</g>
+<g class="opening-marker is-unknown provisional" data-opening="furdoajto" role="button" tabindex="0" aria-label="Fürdőajtó: állapot nem ellenőrzött">
+<title>Fürdőajtó · binary_sensor.door_sensor_ajto · R513:r132 top hall boundary only; NO door fixture</title>
+<path d="M 344.5 419.7 L 395.6 408.2" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 344.5 419.7 L 395.6 408.2" class="opening-beam" stroke="#f0bc85" stroke-width="3.7" stroke-dasharray="6 5" fill="none" />
+<circle class="opening-ring" cx="370.1" cy="413.9" r="13" fill="#0b2334" stroke="#f0bc85" stroke-width="1.5"/>
+<text x="370.1" y="417.9" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 370.1 417.9)">D</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nagyszoba_kis" role="button" tabindex="0" aria-label="Nagyszoba kis ablak: állapot nem ellenőrzött">
+<title>Nagyszoba kis ablak · binary_sensor.nagyszoba_kis_ablak_ajto · R513:f93/w5</title>
+<path d="M 639.5 75.3 L 663.7 118.1" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 639.5 75.3 L 663.7 118.1" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="651.6" cy="96.7" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="651.6" y="100.7" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 651.6 100.7)">W</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nagyszoba_nagy" role="button" tabindex="0" aria-label="Nagyszoba nagy ablak: állapot nem ellenőrzött">
+<title>Nagyszoba nagy ablak · binary_sensor.nagyszoba_nagyszoba_nagy_ablak_ajto · R513:f94/w5</title>
+<path d="M 665.6 121.5 L 716.9 211.9" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 665.6 121.5 L 716.9 211.9" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="691.2" cy="166.7" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="691.2" y="170.7" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 691.2 170.7)">W</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nappali_bal" role="button" tabindex="0" aria-label="Nappali bal kis ablak: állapot nem ellenőrzött">
+<title>Nappali bal kis ablak · binary_sensor.nappali_nappali_kis_ablak_bal_ajto_2 · R513:f95/w11</title>
+<path d="M 754.6 278.6 L 778.8 321.4" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 754.6 278.6 L 778.8 321.4" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="766.7" cy="300.0" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="766.7" y="304.0" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 766.7 304.0)">W</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nappali_nagy" role="button" tabindex="0" aria-label="Nappali nagy ablak: állapot nem ellenőrzött">
+<title>Nappali nagy ablak · binary_sensor.myggbett_door_window_sensor_ajto · R513:f96/w11</title>
+<path d="M 780.8 324.8 L 832.0 415.3" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 780.8 324.8 L 832.0 415.3" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="806.4" cy="370.0" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="806.4" y="374.0" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 806.4 374.0)">W</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nappali_jobb" role="button" tabindex="0" aria-label="Nappali jobb kis ablak: állapot nem ellenőrzött">
+<title>Nappali jobb kis ablak · binary_sensor.nappali_jobb_kis_ablak_ajto · R513:f97/w11</title>
+<path d="M 833.5 418.0 L 857.8 460.8" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 833.5 418.0 L 857.8 460.8" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="845.6" cy="439.4" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="845.6" y="443.4" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 845.6 443.4)">W</text>
+</g></g><g id="flatScene" style="display:none" transform="rotate(180 475 332)"><g data-zone="eloszoba" class="zone-layer">
+<polygon class="floor-halo" points="213.8,71.7 290.0,71.7 290.0,67.2 353.8,67.2 353.8,60.8 378.8,60.8 381.2,326.5 207.5,326.5 207.5,251.0 160.0,251.0 160.0,168.2 213.8,168.2" fill="#edc9a0" opacity="0.10"/>
+<polygon class="floor-fill" points="213.8,71.7 290.0,71.7 290.0,67.2 353.8,67.2 353.8,60.8 378.8,60.8 381.2,326.5 207.5,326.5 207.5,251.0 160.0,251.0 160.0,168.2 213.8,168.2" fill="#edc9a0" fill-opacity="0.22" stroke="#f2caa4" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="213.8,71.7 290.0,71.7 290.0,67.2 353.8,67.2 353.8,60.8 378.8,60.8 381.2,326.5 207.5,326.5 207.5,251.0 160.0,251.0 160.0,168.2 213.8,168.2" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="eloszoba" points="213.8,71.7 290.0,71.7 290.0,67.2 353.8,67.2 353.8,60.8 378.8,60.8 381.2,326.5 207.5,326.5 207.5,251.0 160.0,251.0 160.0,168.2 213.8,168.2" fill="transparent" />
+<g class="zone-caption" transform="translate(267.5 195.5) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#f2caa4" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#f2caa4"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Előszoba</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 06</text></g>
+</g>
+<g data-zone="nagyszoba" class="zone-layer is-selected">
+<polygon class="floor-halo" points="382.5,63.6 797.5,63.6 797.5,322.9 382.5,322.9" fill="#9c9bf0" opacity="0.10"/>
+<polygon class="floor-fill" points="382.5,63.6 797.5,63.6 797.5,322.9 382.5,322.9" fill="#9c9bf0" fill-opacity="0.22" stroke="#b3b8ff" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="382.5,63.6 797.5,63.6 797.5,322.9 382.5,322.9" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="nagyszoba" points="382.5,63.6 797.5,63.6 797.5,322.9 382.5,322.9" fill="transparent" />
+<g class="zone-caption" transform="translate(662.5 260.1) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#b3b8ff" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#b3b8ff"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Nagyszoba</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 05</text></g>
+</g>
+<g data-zone="kozlekedo" class="zone-layer">
+<polygon class="floor-halo" points="207.5,327.4 382.5,327.4 382.5,339.3 441.2,339.3 441.2,401.2 243.8,401.2 243.8,385.7 207.5,385.7" fill="#78b4ec" opacity="0.10"/>
+<polygon class="floor-fill" points="207.5,327.4 382.5,327.4 382.5,339.3 441.2,339.3 441.2,401.2 243.8,401.2 243.8,385.7 207.5,385.7" fill="#78b4ec" fill-opacity="0.22" stroke="#93d8fa" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="207.5,327.4 382.5,327.4 382.5,339.3 441.2,339.3 441.2,401.2 243.8,401.2 243.8,385.7 207.5,385.7" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="kozlekedo" points="207.5,327.4 382.5,327.4 382.5,339.3 441.2,339.3 441.2,401.2 243.8,401.2 243.8,385.7 207.5,385.7" fill="transparent" />
+<g class="zone-caption" transform="translate(321.2 363.9) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#93d8fa" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#93d8fa"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Közlekedő</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 08</text></g>
+</g>
+<g data-zone="furdo" class="zone-layer">
+<polygon class="floor-halo" points="231.2,401.2 377.5,401.2 377.5,545.9 231.2,545.9" fill="#a9c3ed" opacity="0.10"/>
+<polygon class="floor-fill" points="231.2,401.2 377.5,401.2 377.5,545.9 231.2,545.9" fill="#a9c3ed" fill-opacity="0.22" stroke="#d5dcff" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="231.2,401.2 377.5,401.2 377.5,545.9 231.2,545.9" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="furdo" points="231.2,401.2 377.5,401.2 377.5,545.9 231.2,545.9" fill="transparent" />
+<g class="zone-caption" transform="translate(305.0 477.6) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#d5dcff" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#d5dcff"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Fürdőhelyiség</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 07</text></g>
+</g>
+<g data-zone="konyha" class="zone-layer">
+<polygon class="floor-halo" points="442.5,340.2 562.5,340.2 562.5,602.3 407.5,602.3 407.5,526.7 442.5,526.7" fill="#71daca" opacity="0.10"/>
+<polygon class="floor-fill" points="442.5,340.2 562.5,340.2 562.5,602.3 407.5,602.3 407.5,526.7 442.5,526.7" fill="#71daca" fill-opacity="0.22" stroke="#85ede6" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="442.5,340.2 562.5,340.2 562.5,602.3 407.5,602.3 407.5,526.7 442.5,526.7" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="konyha" points="442.5,340.2 562.5,340.2 562.5,602.3 407.5,602.3 407.5,526.7 442.5,526.7" fill="transparent" />
+<g class="zone-caption" transform="translate(503.8 477.6) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#85ede6" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#85ede6"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Konyha</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 09</text></g>
+</g>
+<g data-zone="nappali" class="zone-layer">
+<polygon class="floor-halo" points="562.5,340.2 797.5,340.2 797.5,602.3 562.5,602.3" fill="#93d6b2" opacity="0.10"/>
+<polygon class="floor-fill" points="562.5,340.2 797.5,340.2 797.5,602.3 562.5,602.3" fill="#93d6b2" fill-opacity="0.22" stroke="#b4f0d1" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="562.5,340.2 797.5,340.2 797.5,602.3 562.5,602.3" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="nappali" points="562.5,340.2 797.5,340.2 797.5,602.3 562.5,602.3" fill="transparent" />
+<g class="zone-caption" transform="translate(685.0 471.2) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#b4f0d1" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#b4f0d1"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Nappali</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">SEGMENT 04</text></g>
+</g>
+<g data-zone="erkely" class="zone-layer">
+<polygon class="floor-halo" points="797.5,63.6 957.5,63.6 957.5,322.9 797.5,322.9" fill="#61b7e6" opacity="0.10"/>
+<polygon class="floor-fill" points="797.5,63.6 957.5,63.6 957.5,322.9 797.5,322.9" fill="#61b7e6" fill-opacity="0.22" stroke="#8cddff" stroke-opacity="0.34" stroke-width="1.4" />
+<polygon points="797.5,63.6 957.5,63.6 957.5,322.9 797.5,322.9" fill="url(#floor-grid)" opacity="0.35" pointer-events="none"/>
+<polygon class="zone-touch" data-pick="erkely" points="797.5,63.6 957.5,63.6 957.5,322.9 797.5,322.9" fill="transparent" />
+<g class="zone-caption" transform="translate(882.5 197.3) rotate(180)" pointer-events="none"><rect x="-68" y="-25" width="136" height="49" rx="12" fill="#07182a" fill-opacity="0.84" stroke="#8cddff" stroke-opacity="0.34"/><circle cx="-47" cy="-4" r="4" fill="#8cddff"/><text x="0" y="-2" text-anchor="middle" font-size="14" font-weight="600" fill="#f1faff">Erkély</text><text x="0" y="15" text-anchor="middle" font-size="9.5" fill="#9bbbc9" letter-spacing="1.5">KIEG. / ERKÉLY</text></g>
+</g>
+<g class="opening-marker is-unknown" data-opening="bejarat" role="button" tabindex="0" aria-label="Bejárati ajtó: állapot nem ellenőrzött">
+<title>Bejárati ajtó · binary_sensor.ewelink_snzb_04p_contact · R513:f123/w108</title>
+<path d="M 160.0 171.4 L 160.0 237.8" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 160.0 171.4 L 160.0 237.8" class="opening-beam" stroke="#f0bc85" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="160.0" cy="204.6" r="13" fill="#0b2334" stroke="#f0bc85" stroke-width="1.5"/>
+<text x="160.0" y="208.6" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 160.0 208.6)">D</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="erkelyajto" role="button" tabindex="0" aria-label="Erkélyajtó: állapot nem ellenőrzött">
+<title>Erkélyajtó · binary_sensor.ewelink_snzb_04p_contact_2 · R513:f92/w5</title>
+<path d="M 797.5 257.8 L 797.5 315.2" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 797.5 257.8 L 797.5 315.2" class="opening-beam" stroke="#f0bc85" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="797.5" cy="286.5" r="13" fill="#0b2334" stroke="#f0bc85" stroke-width="1.5"/>
+<text x="797.5" y="290.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 797.5 290.5)">D</text>
+</g>
+<g class="opening-marker is-unknown provisional" data-opening="furdoajto" role="button" tabindex="0" aria-label="Fürdőajtó: állapot nem ellenőrzött">
+<title>Fürdőajtó · binary_sensor.door_sensor_ajto · R513:r132 top hall boundary only; NO door fixture</title>
+<path d="M 287.5 401.2 L 347.5 401.2" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 287.5 401.2 L 347.5 401.2" class="opening-beam" stroke="#f0bc85" stroke-width="3.7" stroke-dasharray="6 5" fill="none" />
+<circle class="opening-ring" cx="317.5" cy="401.2" r="13" fill="#0b2334" stroke="#f0bc85" stroke-width="1.5"/>
+<text x="317.5" y="405.2" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 317.5 405.2)">D</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nagyszoba_kis" role="button" tabindex="0" aria-label="Nagyszoba kis ablak: állapot nem ellenőrzött">
+<title>Nagyszoba kis ablak · binary_sensor.nagyszoba_kis_ablak_ajto · R513:f93/w5</title>
+<path d="M 797.5 71.3 L 797.5 128.6" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 797.5 71.3 L 797.5 128.6" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="797.5" cy="99.9" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="797.5" y="103.9" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 797.5 103.9)">W</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nagyszoba_nagy" role="button" tabindex="0" aria-label="Nagyszoba nagy ablak: állapot nem ellenőrzött">
+<title>Nagyszoba nagy ablak · binary_sensor.nagyszoba_nagyszoba_nagy_ablak_ajto · R513:f94/w5</title>
+<path d="M 797.5 133.2 L 797.5 254.2" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 797.5 133.2 L 797.5 254.2" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="797.5" cy="193.7" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="797.5" y="197.7" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 797.5 197.7)">W</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nappali_bal" role="button" tabindex="0" aria-label="Nappali bal kis ablak: állapot nem ellenőrzött">
+<title>Nappali bal kis ablak · binary_sensor.nappali_nappali_kis_ablak_bal_ajto_2 · R513:f95/w11</title>
+<path d="M 797.5 343.4 L 797.5 400.7" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 797.5 343.4 L 797.5 400.7" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="797.5" cy="372.0" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="797.5" y="376.0" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 797.5 376.0)">W</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nappali_nagy" role="button" tabindex="0" aria-label="Nappali nagy ablak: állapot nem ellenőrzött">
+<title>Nappali nagy ablak · binary_sensor.myggbett_door_window_sensor_ajto · R513:f96/w11</title>
+<path d="M 797.5 405.3 L 797.5 526.3" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 797.5 405.3 L 797.5 526.3" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="797.5" cy="465.8" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="797.5" y="469.8" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 797.5 469.8)">W</text>
+</g>
+<g class="opening-marker is-unknown" data-opening="nappali_jobb" role="button" tabindex="0" aria-label="Nappali jobb kis ablak: állapot nem ellenőrzött">
+<title>Nappali jobb kis ablak · binary_sensor.nappali_jobb_kis_ablak_ajto · R513:f97/w11</title>
+<path d="M 797.5 529.9 L 797.5 587.3" class="opening-gap" stroke="#051527" stroke-width="6" fill="none" />
+<path d="M 797.5 529.9 L 797.5 587.3" class="opening-beam" stroke="#8ccae4" stroke-width="3.7" fill="none" />
+<circle class="opening-ring" cx="797.5" cy="558.6" r="13" fill="#0b2334" stroke="#8ccae4" stroke-width="1.5"/>
+<text x="797.5" y="562.6" text-anchor="middle" font-size="11" font-weight="bold" fill="#e5f7ff" pointer-events="none" transform="rotate(180 797.5 562.6)">W</text>
+</g></g></g>
+  <text x="26" y="650" fill="#56778c" font-size="11" letter-spacing="1.6">SOURCE COORDINATES · 628 × 712 PX · CONSÚELA MAP 16</text>
+  <text x="925" y="650" text-anchor="end" fill="#56778c" font-size="11" letter-spacing="1.6">RELIEF: VISUAL / NOT MEASURED</text>
+</svg>
