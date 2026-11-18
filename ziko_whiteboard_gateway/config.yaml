@@ -1,0 +1,26 @@
+name: "ZIKO ● Whiteboard"
+version: "0.5.0"
+slug: "ziko_whiteboard_gateway"
+description: "Authenticated Home Assistant Ingress bridge to the original WBO drawing service, 10 channels and live sync."
+arch:
+  - amd64
+startup: application
+boot: auto
+init: false
+ingress: true
+ingress_port: 8097
+ingress_stream: true
+ingress_entry: /
+panel_admin: true
+panel_title: "ZIKO ● Whiteboard"
+panel_icon: "mdi:draw-pen"
+stage: experimental
+full_access: false
+host_network: false
+homeassistant_api: false
+hassio_api: false
+auth_api: false
+docker_api: false
+ports: {}
+options: {}
+schema: {}
