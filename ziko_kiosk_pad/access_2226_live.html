@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><title>ZIKO ACCESS 2226 · KIOSK-01</title>
+<style>
+*{-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;background:#06101c;color:#e7f6fc;overflow:hidden;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%}
+button,input{font-family:inherit;-webkit-appearance:none;appearance:none}button{cursor:pointer}button:disabled{opacity:.35}
+#app{height:100%;width:100%;overflow:hidden;position:relative;background:radial-gradient(ellipse at 48% -20%,#26465d 0%,#081624 54%,#030913 100%)}
+#app:before{content:"";position:absolute;top:0;left:0;right:0;height:35px;background:linear-gradient(90deg,transparent,rgba(108,213,225,.1),transparent);pointer-events:none}
+header{height:60px;border-bottom:1px solid rgba(124,221,227,.35);padding:10px 20px;position:relative}
+.logo{font-size:23px;letter-spacing:5px;font-weight:bold;float:left}.logo:before{content:"◇";color:#80e4e5;font-size:27px;margin-right:12px;text-shadow:0 0 16px #39d0d8}
+.logo small{display:block;margin-left:52px;font-size:8px;font-weight:normal;letter-spacing:2px;color:#83a9c0}
+.titleline{position:absolute;left:30%;top:18px;font-size:13px;letter-spacing:2px;font-weight:bold;color:#b7e8ee}.titleline em{font-style:normal;color:#819eae}
+.topright{position:absolute;right:18px;top:10px;text-align:right}.clock{font-size:24px}.topstate{font-size:9px;color:#9ab4c5;letter-spacing:1px}
+.panel{position:relative;min-width:0;background:linear-gradient(140deg,rgba(22,45,64,.94),rgba(6,20,32,.96));border:1px solid rgba(91,158,181,.65);border-radius:14px;box-shadow:inset 0 1px 0 rgba(180,248,255,.14),0 9px 28px rgba(0,0,0,.2);overflow:hidden}
+.panel:before{content:"";position:absolute;left:12%;top:0;width:74%;height:1px;background:linear-gradient(90deg,transparent,#72e7ed,transparent);box-shadow:0 0 10px #38d7e7}
+.panel-head{height:37px;padding:10px 12px 6px;border-bottom:1px solid rgba(82,136,161,.29);font-size:12px;font-weight:600;letter-spacing:.3px;white-space:nowrap;overflow:hidden}
+.panel-head small{color:#81b9bd;font-size:9px;font-weight:normal;float:right}
+.main{position:absolute;top:69px;bottom:222px;left:9px;right:9px;overflow:hidden}
+.left{position:absolute;top:0;bottom:0;left:0;width:20.5%}
+.center{position:absolute;top:0;bottom:0;left:21.1%;width:46.5%}
+.right{position:absolute;top:0;bottom:0;left:68.3%;right:0}
+.nav{position:absolute;left:0;top:0;bottom:0;width:43px;border-radius:12px;background:linear-gradient(#132c3e,#061320);border:1px solid #356c7d;text-align:center;padding:6px 2px}
+.nav button{width:35px;height:55px;background:transparent;border:0;color:#a6c4cb;border-bottom:1px solid rgba(93,172,191,.16);font-size:9px}
+.nav button span{display:block;color:#71e3e7;font-size:22px;margin-bottom:3px}
+.cameras{position:absolute;left:49px;right:0;top:0;bottom:0}.camera-panel{height:100%}
+.cam-list{position:absolute;left:7px;right:7px;top:40px;bottom:6px;overflow:auto;-webkit-overflow-scrolling:touch}
+.cam-tile{height:30.8%;position:relative;margin-bottom:7px;border:1px solid #4d7589;border-radius:10px;background:radial-gradient(ellipse,#1b3d54,#071624);overflow:hidden}
+.cam-tile img{width:100%;height:100%;object-fit:cover}
+.cam-tile .caption{position:absolute;left:0;right:0;bottom:0;background:rgba(3,11,18,.86);padding:5px 7px;font-size:10px;color:#d4e9ee}
+.cam-tile .caption small{color:#70dec7;float:right;font-size:9px}
+.cam-tile .noimg{position:absolute;top:36%;left:0;right:0;text-align:center;font-size:10px;color:#7994a2}
+.map-pane{height:100%}.map-options{position:absolute;right:10px;top:42px;z-index:2}
+.map-options button{border:1px solid #426a81;background:#123247;border-radius:8px;padding:7px 10px;font-size:10px;margin-left:4px;color:#d7eff4}
+.map-options button.active{border-color:#74ece8;color:#7efff5;background:#15565d;box-shadow:0 0 12px rgba(35,205,218,.32)}
+.map-holder{position:absolute;left:6px;right:6px;top:75px;bottom:46px;overflow:hidden;text-align:center;background:radial-gradient(ellipse at 50% 50%,rgba(28,76,102,.17),transparent 70%)}
+.map-holder img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;-webkit-transform-origin:50% 50%;transform-origin:50% 50%;transition:transform .2s}
+.map-fallback{color:#789baa;position:absolute;top:44%;left:0;right:0;font-size:12px}
+.map-foot{position:absolute;bottom:0;left:0;right:0;height:43px;border-top:1px solid rgba(92,149,164,.35);padding:10px 12px;font-size:11px}
+.map-foot small{font-size:9px;float:right;color:#7dcfd1}
+.side-panel{height:100%;padding:0}
+.sensor-list{position:absolute;top:37px;left:7px;right:7px;height:46%;overflow:auto;-webkit-overflow-scrolling:touch}
+.sensor-row{height:34px;line-height:33px;padding:0 6px;border-bottom:1px solid rgba(106,153,181,.24);font-size:10px}
+.sensor-row span{float:right;font-size:9px;color:#9bafbe}
+.sensor-row span.good{color:#7de3c6}.sensor-row span.warn{color:#f0c28b}
+.side-bottom{position:absolute;top:53%;left:8px;right:8px;bottom:7px;overflow:auto}
+.micro{min-height:56px;padding:9px;border:1px solid #39596c;border-radius:10px;margin-bottom:7px;background:rgba(9,35,50,.65);font-size:10px}
+.micro strong{font-size:11px;display:block;margin-bottom:5px;color:#a3dbe2}
+.micro big{font-size:21px;font-weight:normal;color:#e3f3ef}.micro em{float:right;font-size:11px;font-style:normal;color:#71d6c8}
+.bottom{position:absolute;left:9px;right:9px;bottom:36px;height:177px;overflow:hidden}
+.bleft{position:absolute;left:0;width:34%;top:0;bottom:0}.bmid{position:absolute;left:34.6%;width:33%;top:0;bottom:0}.bright{position:absolute;left:68.2%;right:0;top:0;bottom:0}
+.bottom .content{position:absolute;top:40px;bottom:6px;left:8px;right:8px;overflow:auto;-webkit-overflow-scrolling:touch}
+.device{display:block;height:34px;line-height:34px;border-bottom:1px solid rgba(119,177,196,.19);font-size:10px;white-space:nowrap;overflow:hidden}
+.device .value{float:right;color:#89b7bb;font-size:9px;margin-right:5px}.device .actions{float:right;margin-top:3px}
+.actions button{height:27px;min-width:34px;padding:3px 8px;margin-left:5px;border:1px solid #4a7d8d;background:#163c4b;border-radius:7px;color:#c6ebed;font-size:10px}
+.actions button:active{background:#1f6e76}
+.scene-list{height:36px;line-height:36px;padding:0 2px;white-space:nowrap}
+.scene-list button{height:29px;width:48%;background:#164659;border:1px solid #68c1c9;border-radius:7px;margin:2px 1%;font-size:10px;color:#d8f2ee}
+.energy-number{font-size:37px;color:#83e4e0;font-weight:300;padding:5px 9px}.energy-number small{font-size:13px;color:#b9e2e6}
+.energy-desc{font-size:10px;color:#90acbc;padding:0 9px 9px}
+.energy-meter{font-size:10px;border-top:1px solid #24495d;padding:5px 4px}.energy-meter span{float:right;color:#a9efee}
+.footer{position:absolute;bottom:0;left:0;right:0;height:30px;background:rgba(4,14,23,.84);border-top:1px solid #32556b;color:#9ec1ca;padding:8px 18px;font-size:9px;letter-spacing:.8px}
+.footer b{color:#78e4d5}.footer a{float:right;color:#83dce3;text-decoration:none}
+#pair{position:absolute;inset:0;top:0;left:0;width:100%;height:100%;background:rgba(3,10,17,.97);z-index:30;display:none}
+.pair-box{width:320px;position:absolute;left:50%;top:25%;margin-left:-160px;border:1px solid #4d8d96;border-radius:18px;text-align:center;padding:25px;background:#12293b}
+.pair-box h2{margin:4px 0 14px;font-weight:normal;font-size:21px;letter-spacing:2px}
+.pair-box p{font-size:11px;color:#9ab8c4;line-height:1.7}
+.pair-box input{width:100%;border:1px solid #53798a;border-radius:8px;margin:12px 0;padding:12px;background:#051728;color:#e9ffff;font-size:24px;letter-spacing:8px;text-align:center}
+.pair-box button{width:100%;background:#246e78;border:1px solid #74bdc4;color:#eefcfc;border-radius:7px;padding:12px;font-weight:bold}
+#notice{display:none;position:absolute;top:68px;left:50%;width:300px;margin-left:-150px;z-index:20;border:1px solid #5baab4;background:#142e3f;color:#d8f6f4;text-align:center;padding:9px;border-radius:9px;font-size:11px}
+#cameraFull{display:none;position:absolute;top:7%;left:8%;width:84%;height:84%;background:#071723;z-index:19;border:1px solid #62b1bd;border-radius:12px;padding:13px}
+#cameraFull img{display:block;height:85%;width:100%;object-fit:contain}
+#cameraFull button{float:right;background:#174455;color:#c9f4f5;border:1px solid #457e91;border-radius:5px;padding:6px}
+@media(max-width:850px){header{height:57px;padding:8px}.logo{font-size:19px}.titleline{left:29%;font-size:11px}.main{top:64px;bottom:255px}.bottom{height:210px}.left{width:19.5%}.center{left:20%;width:47%}.right{left:67.5%}.nav{width:36px}.nav button{width:28px}.cameras{left:40px}.panel-head{font-size:11px}.sensor-row{font-size:9px}.panel-head small{display:none}.map-holder{top:73px}.map-options button{padding:6px}.bottom .content{top:38px}.device{height:35px}.energy-number{font-size:30px}}
+@media(max-width:650px){.main{bottom:315px}.bottom{height:270px}.left{width:17%}.center{left:17.5%;width:49%}.right{left:67%;right:0}.nav{width:30px}.nav button{width:24px;font-size:7px}.cameras{left:32px}.panel-head{padding:9px 6px;font-size:9px}.cam-tile .caption{font-size:8px}.sensor-row{font-size:8px}.bottom .content{top:34px}.bmid{left:34.6%}.bright{left:68.2%}}
+</style></head><body>
+<div id="app"><header><div class="logo">ZIKO<small>SPATIAL SYSTEMS</small></div><div class="titleline">ACCESS 2226 <em>/ DIGITAL TWIN</em></div><div class="topright"><div class="clock" id="clock">--:--</div><div class="topstate" id="connect">KAPCSOLAT ELLENŐRZÉSE</div></div></header>
+<div class="main">
+ <aside class="left"><nav class="nav"><button data-nav="twin"><span>⌂</span>TÉR</button><button data-nav="contacts"><span>▦</span>AJTÓ</button><button data-nav="lights"><span>◉</span>FÉNY</button><button data-nav="media"><span>♫</span>MÉDIA</button><button data-nav="energy"><span>ϟ</span>W</button></nav><section class="panel cameras"><div class="panel-head">Kamerák <small>Házikó</small></div><div id="cameraList" class="cam-list"></div></section></aside>
+ <section class="center"><div class="panel map-pane"><div class="panel-head">2.5D · DigitalTwin <small>Valós alaprajz</small></div><div class="map-options"><button id="modeTilt" class="active">2.5D</button><button id="modeFlat">2D</button><button id="zoomOut">−</button><button id="zoomIn">+</button><button id="zoomReset">↺</button></div><div class="map-holder" id="mapHolder"><div class="map-fallback" id="mapWait">Párosított térkép betöltése</div><img id="map" alt="A Házikó hiteles DigitalTwin 2.5D alaprajza" style="display:none"></div><div class="map-foot"><span id="mapLabel">Házikó · 7 terület / 8 nyílászáró</span><small id="mapStatus">NINCS ADAT</small></div></div></section>
+ <aside class="right"><div class="panel side-panel"><div class="panel-head">Szenzorok <small id="sensorCount">8 nyílászáró</small></div><div class="sensor-list" id="sensors"></div><div class="side-bottom"><div class="micro"><strong>FŰTÉS · NAGYSZOBA</strong><big id="heatValue">— °C</big><em id="heatTarget">CÉL —</em></div><div class="micro"><strong>AQARA U200 · ZÁR</strong><big id="lockValue">NINCS ADAT</big><em>CSAK ÁLLAPOT</em></div></div></div></aside>
+</div>
+<div class="bottom">
+ <section class="panel bleft"><div class="panel-head">Lámpák <small>Élő vezérlés</small></div><div class="content"><div id="lights"></div><div id="scenes" class="scene-list"></div></div></section>
+ <section class="panel bmid"><div class="panel-head">Média <small>TV / SmartBox</small></div><div id="media" class="content"></div></section>
+ <section class="panel bright"><div class="panel-head">Energia <small>8 független mérő</small></div><div class="content"><div id="watts" class="energy-number">— <small>W</small></div><div id="energyDesc" class="energy-desc">Mért részösszeg · nincs friss adat</div><div id="meterList"></div></div></section>
+</div>
+<div class="footer"><span id="footerConnection">KIOSK-01 · HTTPS · NINCS ADAT</span><a href="/" id="oldUI">KORÁBBI KIOSK</a></div><div id="notice"></div>
+<div id="pair"><div class="pair-box"><h2>KIOSK-01</h2><p>HTTPS párosítás szükséges. A nyolcjegyű kódot a Házikó Kiosk Pad alkalmazás naplója tartalmazza.</p><form id="pairForm"><input id="pairCode" type="tel" pattern="[0-9]*" maxlength="8" autocomplete="off" placeholder="••••••••" required><button type="submit">PÁROSÍTÁS</button></form><p id="pairMessage">Az új oldal a meglévő terminálmunkamenetet használja.</p></div></div>
+<div id="cameraFull"><button id="closeCamera">BEZÁRÁS</button><img id="cameraLarge" alt="Kamera pillanatkép"></div>
+</div>
+<script>
+(function(){
+'use strict';
+var items={lights:[],contacts:[],media:[],cameras:[],locks:[],energy:[],climate:[],scenes:[]};
+var paired=false,connected=false,mode='tilt',zoom=1,camAt=0,noticeTime=0,busy=false,requestToken=0;
+function el(id){return document.getElementById(id)}
+function label(id,t){el(id).textContent=String(t)}
+function box(tag,css,t){var n=document.createElement(tag);if(css)n.className=css;if(t!==undefined)n.textContent=String(t);return n}
+function clear(n){while(n.firstChild)n.removeChild(n.firstChild)}
+function clock(){var d=new Date();label('clock',('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2))}
+function show(t){label('notice',t);el('notice').style.display='block';if(noticeTime)clearTimeout(noticeTime);noticeTime=setTimeout(function(){el('notice').style.display='none'},4000)}
+function api(method,path,body,cb){var x=new XMLHttpRequest();x.open(method,path,true);x.timeout=9000;x.setRequestHeader('Accept','application/json');if(method==='POST'){x.setRequestHeader('Content-Type','application/json');x.setRequestHeader('X-ZIKO-Request','1')}var fired=false;function done(ok,data,code){if(fired)return;fired=true;cb(ok,data,code)}
+ x.onreadystatechange=function(){if(x.readyState!==4)return;var data={};try{data=JSON.parse(x.responseText||'{}')}catch(e){}done(x.status>=200&&x.status<300,data,x.status)};x.onerror=function(){done(false,{},0)};x.ontimeout=function(){done(false,{},0)};x.send(body?JSON.stringify(body):null)}
+function connectedStatus(on,s){connected=on;label('connect',s);label('footerConnection','KIOSK-01 · HTTPS · '+s);el('connect').style.color=on?'#78e7c8':'#f1c48a'}
+function pickState(arr,id){for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return null}
+function valid(i){return !!i&&i.state!=='unknown'&&i.state!=='unavailable'&&i.state!==null&&i.state!==undefined}
+function reset(){items={lights:[],contacts:[],media:[],cameras:[],locks:[],energy:[],climate:[],scenes:[]};render()}
+function pairRequired(t){paired=false;connectedStatus(false,'PÁROSÍTÁS SZÜKSÉGES');el('pair').style.display='block';if(t)label('pairMessage',t);reset()}
+function action(id,act,b){if(!connected||!paired||busy){show('NINCS HITELESÍTETT KAPCSOLAT');return}busy=true;if(b)b.disabled=true;api('POST','/api/command',{id:id,action:act},function(ok,data){busy=false;if(b)b.disabled=false;show(ok?'PARANCS ELKÜLDVE · ÁLLAPOT FRISSÍTÉSE':(data.error||'VEZÉRLÉSI HIBA'));setTimeout(refresh,600)})}
+function listRow(root,t,v,buttons){var n=box('div','device'),val=box('span','value',v);if(buttons){var a=box('span','actions');for(var i=0;i<buttons.length;i++){(function(b){var btn=box('button','',b[0]);btn.disabled=!b[2];btn.onclick=function(){action(b[3],b[1],btn)};a.appendChild(btn)})(buttons[i])}n.appendChild(a)}n.appendChild(box('span','',t));if(v)n.appendChild(val);root.appendChild(n)}
+function renderContacts(){var root=el('sensors');clear(root);var n=0;
+ for(var i=0;i<items.contacts.length;i++){var x=items.contacts[i],r=box('div','sensor-row');r.appendChild(box('span',x.state==='on'?'warn':x.state==='off'?'good':'',x.state==='on'?'NYITVA':x.state==='off'?'ZÁRVA':'NINCS ADAT'));r.appendChild(box('b','',x.label));root.appendChild(r);if(valid(x))n++}
+ label('sensorCount',n+' / '+items.contacts.length+' visszajelzés');if(!items.contacts.length)root.appendChild(box('div','sensor-row','NINCS ELÉRHETŐ ADAT'));
+ var l=items.locks.length?items.locks[0]:null;label('lockValue',l&&l.state==='locked'?'ZÁRVA':l&&l.state==='unlocked'?'NYITVA':'NINCS ADAT');
+ var c=items.climate.length?items.climate[0]:null;label('heatValue',c&&typeof c.current_temperature==='number'?c.current_temperature.toFixed(1)+' °C':'— °C');label('heatTarget',c&&typeof c.target_temperature==='number'?'CÉL '+c.target_temperature.toFixed(1)+' °C':'CÉL —')}
+function renderLights(){var root=el('lights');clear(root);
+ for(var i=0;i<items.lights.length;i++){var o=items.lights[i],ok=valid(o);listRow(root,o.label,o.state==='on'?'BE':o.state==='off'?'KI':'NINCS ADAT',[['BE','on',ok,o.id],['KI','off',ok,o.id]])}
+ if(!items.lights.length)root.appendChild(box('div','device','NINCS ADAT'));
+ var s=el('scenes');clear(s);for(var j=0;j<items.scenes.length;j++){(function(x){var b=box('button','',x.label);b.disabled=!valid(x);b.onclick=function(){action(x.id,'activate',b)};s.appendChild(b)})(items.scenes[j])}}
+function renderMedia(){var root=el('media');clear(root);for(var i=0;i<items.media.length;i++){var x=items.media[i],ok=valid(x);listRow(root,x.label,x.state==='unavailable'?'NINCS ADAT':x.state==='on'?'BE':x.state==='off'?'KI':x.state,[['BE','on',ok,x.id],['KI','off',ok,x.id],['▶','play_pause',ok,x.id]])}
+ if(!items.media.length)root.appendChild(box('div','device','NINCS ADAT'))}
+function renderEnergy(){var summary=items.energy_summary||{};label('watts',summary.partial_w===null||typeof summary.partial_w!=='number'?'— W':summary.partial_w.toFixed(1)+' W');label('energyDesc','Mért részösszeg · '+(summary.fresh_meters||0)+'/'+(summary.known_meters||8)+' friss mérő · nem teljes lakás');var root=el('meterList');clear(root);for(var i=0;i<items.energy.length;i++){var o=items.energy[i];var r=box('div','energy-meter',o.label);r.appendChild(box('span','',o.fresh&&typeof o.watts==='number'?o.watts.toFixed(1)+' W':'NINCS FRISS ADAT'));root.appendChild(r)}}
+function renderCameras(force){var root=el('cameraList');if(!force&&new Date().getTime()-camAt<40000)return;clear(root);camAt=new Date().getTime();
+ for(var i=0;i<items.cameras.length;i++){(function(o){var tile=box('div','cam-tile'),cap=box('div','caption');cap.appendChild(box('span','',o.label));cap.appendChild(box('small','',valid(o)?'PILLANATKÉP':'NINCS KÉP'));
+ if(valid(o)){var im=box('img');im.alt=o.label;im.onerror=function(){clear(tile);tile.appendChild(box('div','noimg','KAMERA NEM ELÉRHETŐ'));tile.appendChild(cap)};im.src='/api/camera?id='+encodeURIComponent(o.id)+'&t='+camAt;tile.appendChild(im);tile.onclick=function(){el('cameraFull').style.display='block';el('cameraLarge').src='/api/camera?id='+encodeURIComponent(o.id)+'&t='+new Date().getTime()}}
+ else tile.appendChild(box('div','noimg','KAMERA NEM ELÉRHETŐ'));tile.appendChild(cap);root.appendChild(tile)})(items.cameras[i])}
+ if(!items.cameras.length)root.appendChild(box('div','sensor-row','NINCS ELÉRHETŐ KAMERA'))}
+function mapLoad(){if(!paired)return;var img=el('map'),s=el('mapWait');img.onerror=function(){img.style.display='none';s.style.display='block';label('mapStatus','TÉRKÉPHIBA');label('mapWait','A kanonikus DigitalTwin nem érhető el')};img.onload=function(){img.style.display='block';s.style.display='none';label('mapStatus','CANONICAL · 0.1.2')};img.src='/api/map?mode='+encodeURIComponent(mode);img.style.webkitTransform='scale('+zoom+')';img.style.transform='scale('+zoom+')'}
+function render(){renderContacts();renderLights();renderMedia();renderEnergy();renderCameras(true)}
+function refresh(){api('GET','/api/status',null,function(ok,data){if(!ok){connectedStatus(false,'HÁZIKÓ NEM ELÉRHETŐ');reset();return}if(!data.paired||data.pad!=='KIOSK-01'){pairRequired('A KIOSK-01 terminált HTTPS kapcsolaton kell párosítani.');return}paired=true;el('pair').style.display='none';
+ api('GET','/api/state',null,function(ok,state,code){if(code===401){pairRequired('A munkamenet lejárt vagy más IP-címről érkezett.');return}if(!ok||!state.ok||!state.items){connectedStatus(false,'NINCS FRISS HA-ADAT');reset();return}items=state.items;connectedStatus(true,'ÉLŐ HA ADAT · '+new Date().toLocaleTimeString('hu-HU'));render();if(!el('map').getAttribute('src'))mapLoad()})})}
+function nav(id){if(id==='twin'){el('mapHolder').scrollIntoView();return}if(id==='contacts'){el('sensors').scrollIntoView();return}if(id==='lights'){el('lights').scrollIntoView();return}if(id==='media'){el('media').scrollIntoView();return}if(id==='energy'){el('watts').scrollIntoView()}}
+var ns=document.querySelectorAll('[data-nav]');for(var j=0;j<ns.length;j++)(function(btn){btn.onclick=function(){nav(btn.getAttribute('data-nav'))}})(ns[j]);
+el('pairForm').onsubmit=function(e){if(e&&e.preventDefault)e.preventDefault();var code=el('pairCode').value;el('pairCode').value='';if(!(/^[0-9]{8}$/.test(code))){label('pairMessage','NYOLC SZÁMJEGY SZÜKSÉGES');return false}
+ label('pairMessage','PÁROSÍTÁS…');api('POST','/api/pair',{pad:'KIOSK-01',code:code},function(ok,data){if(ok){paired=true;el('pair').style.display='none';refresh()}else label('pairMessage',data.error||'Párosítás sikertelen')});return false};
+el('modeTilt').onclick=function(){mode='tilt';el('modeTilt').className='active';el('modeFlat').className='';mapLoad()};el('modeFlat').onclick=function(){mode='flat';el('modeFlat').className='active';el('modeTilt').className='';mapLoad()};
+el('zoomIn').onclick=function(){zoom=Math.min(2,zoom+.12);mapLoad()};el('zoomOut').onclick=function(){zoom=Math.max(.55,zoom-.12);mapLoad()};el('zoomReset').onclick=function(){zoom=1;mapLoad()};
+el('closeCamera').onclick=function(){el('cameraFull').style.display='none';el('cameraLarge').removeAttribute('src')};
+clock();setInterval(clock,30000);refresh();setInterval(refresh,15000);
+})();
+</script></body></html>
