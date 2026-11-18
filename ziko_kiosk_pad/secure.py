@@ -304,6 +304,46 @@ def secure_handler(security, html):
                 except (OSError, ssl.SSLError):
                     pass
                 return
+            if path == "/access-2226":
+                try:
+                    body = Path(__file__).with_name("access_2226_live.html").read_bytes()
+                    if not (body.startswith(b"<!doctype html>") and 6000 < len(body) < 100000):
+                        raise ValueError("Invalid HMI 2226 package")
+                except (OSError, ValueError):
+                    self.json_result(503, {"error": "ACCESS 2226 HMI unavailable"})
+                    return
+                self.send_response(200)
+                self.headers_common("text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            if path == "/api/map":
+                pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
+                if pad != "KIOSK-01":
+                    self.json_result(401, {"error": "HTTPS KIOSK-01 pairing required"})
+                    return
+                try:
+                    svg = Path(__file__).with_name("canonical_digitaltwin_v012.svg").read_text(encoding="utf-8")
+                    if not (10000 < len(svg) < 130000 and '<svg' in svg and '</svg>' in svg):
+                        raise ValueError("Invalid trusted map")
+                    mode = urllib.parse.parse_qs(parsed.query).get("mode", ["tilt"])[0]
+                    if mode == "flat":
+                        style = "<style>#tiltedScene{display:none!important}#flatScene{display:inline!important}</style>"
+                        svg = svg.replace(">", ">" + style, 1)
+                    elif mode != "tilt":
+                        self.json_result(400, {"error": "Invalid map mode"})
+                        return
+                    body = svg.encode("utf-8")
+                except (OSError, ValueError):
+                    self.json_result(503, {"error": "Canonical DigitalTwin not available"})
+                    return
+                self.send_response(200)
+                self.headers_common("image/svg+xml; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
             if path in ("/", "/index.html"):
                 self.send_response(200)
                 self.headers_common("text/html; charset=utf-8")
@@ -418,3 +458,4 @@ def start_secure(bridge, html, port=8097, profile_port=8098):
     LOG.info("ZIKO Kiosk CA SHA256 fingerprint: %s", material["ca_sha256"])
     LOG.info("Unlock mode: %s; do not forward these ports to the internet", "paired KIOSK-01 swipe" if security.swipe_without_pin() else "PIN required")
     return server, profile_server
+
