@@ -112,7 +112,7 @@ class App(BaseHTTPRequestHandler):
                 "next_digest":"19:00 Europe/Budapest",
             })
         elif path=="/api/messages":
-            self.json(200,{"messages":STORE.messages(user)})
+            self.json(200,{"messages":STORE.message_threads(user)})
         elif path=="/api/briefing":
             snapshot=STORE.briefing()
             self.json(200,{
@@ -147,7 +147,7 @@ class App(BaseHTTPRequestHandler):
             self.json(403,{"error":"request_origin_denied"})
             return
         route=safe_route(self.path)
-        if route not in ("/api/messages","/api/work/approve"):
+        if route not in ("/api/messages","/api/messages/replies","/api/work/approve"):
             self.json(405,{"error":"write_not_supported"})
             return
         rawsize=self.headers.get("Content-Length","")
@@ -173,6 +173,20 @@ class App(BaseHTTPRequestHandler):
                 self.json(400,{"error":"invalid_approval_request"})
                 return
             self.json(202,receipt)
+            return
+        if route=="/api/messages/replies":
+            try:
+                payload=json.loads(self.rfile.read(int(rawsize)))
+                if not isinstance(payload,dict) or set(payload)!={"parent_id","text","client_key"}:
+                    raise ValueError("invalid reply fields")
+                result=STORE.reply_to_message(
+                    user,payload["parent_id"],payload["text"],payload["client_key"])
+            except (ValueError,TypeError,UnicodeError,RecursionError):
+                self.json(400,{"error":"reply_invalid_or_not_owned"})
+                return
+            self.json(202,{"id":result["id"],"parent_id":result["parent_id"],
+                           "state":"awaiting_ai",
+                           "note":"A válaszod mentve. A Ziko AI-válaszadó még nincs bekötve."})
             return
         try:
             payload=json.loads(self.rfile.read(int(rawsize)))

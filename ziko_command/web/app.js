@@ -54,7 +54,45 @@ async function refreshMessages(){
    body.textContent=message.text||"";
    const meta=document.createElement("div");meta.className="meta";
    meta.textContent=message.status==="awaiting_ai"?"⏳ Rögzítve · Ziko AI kapcsolatra vár":"Állapot: "+message.status;
-   article.append(head,body,meta);
+   const answers=document.createElement("div");answers.className="msgReplies";
+   for(const reply of Array.isArray(message.replies)?message.replies:[]){
+    const item=document.createElement("p");item.className="msgReply";
+    item.textContent="TE · "+(reply.text||"");
+    answers.append(item);
+   }
+   const replyButton=document.createElement("button");
+   replyButton.type="button";replyButton.className="reply-control";
+   replyButton.textContent="Válasz Zikónak";
+   const replyForm=document.createElement("form");replyForm.className="replyComposer";
+   replyForm.hidden=true;
+   const replyInput=document.createElement("textarea");
+   replyInput.maxLength=1200;replyInput.rows=2;replyInput.required=true;
+   replyInput.placeholder="Egyeztetés vagy válasz a korábbi üzenethez…";
+   const replySend=document.createElement("button");replySend.type="submit";
+   replySend.textContent="Válasz mentése";
+   replyForm.append(replyInput,replySend);
+   replyButton.addEventListener("click",()=>{
+    replyForm.hidden=!replyForm.hidden;
+    if(!replyForm.hidden)replyInput.focus();
+   });
+   replyForm.addEventListener("submit",async event=>{
+    event.preventDefault();
+    const value=replyInput.value.trim();if(!value)return;
+    replySend.disabled=true;
+    try{
+     const key=(typeof crypto!=="undefined"&&crypto.randomUUID)?
+       crypto.randomUUID():"reply"+Date.now().toString(36);
+     const result=await readJson("api/messages/replies",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","X-Ziko-Request":"1"},
+      body:JSON.stringify({parent_id:message.id,text:value,client_key:key})
+     });
+     showNotice(result.note||"A válasz mentve.");
+     await refreshMessages();
+    }catch(error){showNotice("Válasz: "+error.message,true);}
+    finally{replySend.disabled=false;}
+   });
+   article.append(head,body,meta,answers,replyButton,replyForm);
    feed.append(article);
   }
  }catch(error){showNotice("Üzenetek olvasása: "+error.message,true);}

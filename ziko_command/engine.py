@@ -88,6 +88,17 @@ class CommandStore:
                     UNIQUE(user_id, client_key)
                 );
                 CREATE INDEX IF NOT EXISTS messages_by_user ON messages(user_id,created_at);
+                CREATE TABLE IF NOT EXISTS thread_replies (
+                    id TEXT PRIMARY KEY,
+                    parent_id TEXT NOT NULL REFERENCES messages(id),
+                    user_id TEXT NOT NULL,
+                    text TEXT NOT NULL,
+                    client_key TEXT NOT NULL,
+                    created_at INTEGER NOT NULL,
+                    UNIQUE(user_id,client_key)
+                );
+                CREATE INDEX IF NOT EXISTS replies_by_parent
+                    ON thread_replies(parent_id,user_id,created_at);
                 CREATE TABLE IF NOT EXISTS proposals (
                     id TEXT PRIMARY KEY,
                     title TEXT NOT NULL,
@@ -376,6 +387,74 @@ class CommandStore:
                 "WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT ?",
                 (user_id,limit)
             )]
+
+    def reply_to_message(self, user_id: str, parent_id: str,
+                         text: str, client_key: str, now: int | None = None) -> dict:
+        """Append to an owner's existing Command message, without claiming AI work."""
+        now = now_ts() if now is None else now
+        if not isinstance(user_id,str) or not SOURCE_ID.fullmatch(user_id):
+            raise ValueError("invalid HA identity")
+        if not isinstance(parent_id,str) or not re.fullmatch(r"[a-f0-9-]{36}",parent_id):
+            raise ValueError("invalid parent message id")
+        if not isinstance(text,str) or not (1 <= len(text.strip()) <= 1200):
+            raise ValueError("reply must be 1–1200 characters")
+        if not isinstance(client_key,str) or not SOURCE_ID.fullmatch(client_key):
+            raise ValueError("idempotency key required")
+        with closing(connect(self.path)) as con:
+            con.execute("BEGIN IMMEDIATE")
+            try:
+                owner=con.execute(
+                    "SELECT id FROM messages WHERE id=? AND user_id=?",
+                    (parent_id,user_id)
+                ).fetchone()
+                if not owner:
+                    raise ValueError("message not found or forbidden")
+                existing=con.execute(
+                    "SELECT * FROM thread_replies WHERE user_id=? AND client_key=?",
+                    (user_id,client_key)
+                ).fetchone()
+                if existing:
+                    if existing["parent_id"] != parent_id or existing["text"] != text.strip():
+                        raise ValueError("conflicting idempotency key")
+                    con.execute("COMMIT")
+                    return dict(existing)
+                num=con.execute(
+                    "SELECT COUNT(*) FROM thread_replies WHERE user_id=? AND created_at>=?",
+                    (user_id,now-86400)
+                ).fetchone()[0]
+                if num >= 100:
+                    raise ValueError("daily reply limit reached")
+                rid=str(uuid.uuid4())
+                con.execute(
+                    "INSERT INTO thread_replies "
+                    "(id,parent_id,user_id,text,client_key,created_at) "
+                    "VALUES (?,?,?,?,?,?)",
+                    (rid,parent_id,user_id,text.strip(),client_key,now)
+                )
+                con.execute(
+                    "INSERT INTO events(at,kind,job_id,actor,detail) VALUES (?,?,?,?,?)",
+                    (now,"message_reply_recorded",None,user_id,"awaiting_ziko_ai")
+                )
+                con.execute("COMMIT")
+                return {"id":rid,"parent_id":parent_id,"text":text.strip(),
+                        "created_at":now,"status":"awaiting_ai"}
+            except BaseException:
+                con.execute("ROLLBACK")
+                raise
+
+    def message_threads(self,user_id: str,limit:int=30)->list[dict]:
+        """User-private Command threads; no foreign user or Todo data exposure."""
+        messages=self.messages(user_id,limit)
+        if not messages:
+            return messages
+        with closing(connect(self.path)) as con:
+            for message in messages:
+                message["replies"]=[dict(row) for row in con.execute(
+                    "SELECT id,text,created_at FROM thread_replies "
+                    "WHERE parent_id=? AND user_id=? ORDER BY created_at,id LIMIT 100",
+                    (message["id"],user_id)
+                )]
+        return messages
 
     def briefing(self, now: int | None = None) -> dict:
         now = now_ts() if now is None else now
