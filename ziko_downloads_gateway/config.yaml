@@ -1,5 +1,5 @@
 name: "ZIKO ● Downloads – Házikó"
-version: "0.1.0"
+version: "0.1.1"
 slug: "ziko_downloads_gateway"
 description: "Home Assistant authenticated Ingress gateway for existing CT108 ZIKO Downloads upload and file actions"
 arch:
