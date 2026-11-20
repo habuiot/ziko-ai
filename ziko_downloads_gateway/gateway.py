@@ -18,7 +18,7 @@ from urllib.parse import urlsplit,unquote
 LISTEN_PORT=8097
 BACKEND_PORT=8791
 SUPERVISOR_PEER="172.30.32.2"
-CONFIG_FILE=Path("/data/options.json")
+CONFIG_FILE=Path("/tmp/zdl-options.json")
 CERT_FILE=Path(__file__).with_name("backend.crt")
 PIN_SHA256="1f12760262d16a14fe52926fde1bd6a29426a646f58c88738cc7770249c17423"
 INGRESS_RE=re.compile(r"/api/hassio_ingress/[A-Za-z0-9_-]{8,200}/")
