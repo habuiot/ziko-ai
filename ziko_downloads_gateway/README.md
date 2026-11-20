@@ -23,3 +23,5 @@ Security:
 - Uploads are streamed with normalized Content-Length, including chunked
   HA Ingress framing, with no full file in RAM.
 - A physical Opera/Tab A9 test is still necessary after install.
+
+0.1.1: root-only Supervisor options are copied to protected 0600 runtime file before su-exec permanently drops the process user to zdl.
