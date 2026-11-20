@@ -1,0 +1,30 @@
+name: "ZIKO ● Downloads – Házikó"
+version: "0.1.0"
+slug: "ziko_downloads_gateway"
+description: "Home Assistant authenticated Ingress gateway for existing CT108 ZIKO Downloads upload and file actions"
+arch:
+  - amd64
+startup: application
+boot: auto
+init: false
+ingress: true
+ingress_port: 8097
+ingress_stream: true
+ingress_entry: /
+panel_admin: false
+panel_title: "ZIKO ● Downloads"
+panel_icon: "mdi:folder-download-outline"
+stage: experimental
+full_access: false
+host_network: false
+homeassistant_api: false
+hassio_api: false
+auth_api: false
+docker_api: false
+ports: {}
+options:
+  sso_key: ""
+  backend_host: "192.168.10.188"
+schema:
+  sso_key: password
+  backend_host: str
