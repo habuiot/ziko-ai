@@ -342,7 +342,7 @@ PAD_COPY_ALLOWED_SERVICES = {
  "script": frozenset(("haziko3_fenyjelenet", "ziko_color_dispatch", "ziko_lights_core")),
 }
 PAD_COPY_ASSETS = frozenset((
- "pad-lights-014.js", "pad-lights-014.css",
+ "pad-lights-015.js", "pad-lights-015.css",
  "webcomponents-bundle.js", "core-js-bundle.js", "dom4.js", "pep.js",
  "kiosk-thermostat-copy.es5.js", "kiosk-lights-copy.es5.js",
  "kiosk-v1.2.9.css", "kiosk-lights-v1.2.15.css", "kiosk-pad-legacy.css", "pad-copy-adapter.js", "pad-copy-diagnostic.js", "intl-polyfill-1.2.5.min.js", "intl-locale-hu-HU.js", "pad-copy-intl-compat.js",
@@ -436,7 +436,7 @@ def secure_handler(security, html):
             if path in ("/kiosk-pad", "/kiosk-pad/", "/kiosk-pad/thermostat", "/kiosk-pad/lights", "/kiosk-pad/attekintes", "/kiosk-pad/vilagitasok"):
                 try:
                     body=(Path(__file__).with_name("pad_copy")/"index.html").read_bytes()
-                    body=body.replace(b"</head>",b'<script src="/kiosk-pad/assets/pad-lights-014.js"></script></head>',1)
+                    body=body.replace(b"</head>",b'<script src="/kiosk-pad/assets/pad-lights-015.js"></script></head>',1)
                     if not body.startswith(b"<!doctype html>"):raise ValueError("Invalid standalone copy")
                 except (OSError,ValueError):
                     self.json_result(503, {"error":"Kiosk Pad copy unavailable"})
