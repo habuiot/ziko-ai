@@ -26,3 +26,7 @@ This is instrumentation and failure recovery, not proof of iOS9 compatibility. T
 Only the copied iPad Kiosk package adds local Intl.js 1.2.5 (MIT, bundled LICENSE) and hu-HU JSONP CLDR locale pack *before* the exact copied Miix component assets. A bounded, browser-feature-detected wrapper adds Budapest timezone support when the old polyfill itself supports only UTC; uses EU DST last-Sunday-March and last-Sunday-October rules in UTC. Native Intl implementations remain unchanged. This is a browser compatibility layer, NOT a redesign of Miix UI, and does not touch native Miix source.
 Node VM with window.Intl explicitly unavailable: number formatting hu-HU PASS, winter Budapest UTC+1 PASS, summer UTC+2 PASS, November UTC+1 PASS. Python compiled/isolated fake HA HTML/auth/security test PASS; generic lock proxy still blocked, no physical U200 command.
 Physical iPad2 reloading and component mounting MUST be verified from actual IPAD_BOOT_DIAG logs after deploy; do not claim device E2E from runtime simulation. Prior 0.3.11 and immutable original Miix and old HTTPS root remain rollback.
+
+
+## 0.3.13 Kiosk Pad iPad2 compact Lights
+Fork-only iOS9 ES5 light interface. All old Miix copies and control logic preserved. Six first-page and four second-page group cards, quick scenes, room custom RGB/white and full corridor PIR/timer controls. Only Pad, no original Miix/Node03 or U200 edits; v0.3.12 rollback. Physical iPad beta QA remains open.
