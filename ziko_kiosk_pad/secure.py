@@ -344,7 +344,7 @@ PAD_COPY_ALLOWED_SERVICES = {
 PAD_COPY_ASSETS = frozenset((
  "webcomponents-bundle.js", "core-js-bundle.js", "dom4.js", "pep.js",
  "kiosk-thermostat-copy.es5.js", "kiosk-lights-copy.es5.js",
- "kiosk-v1.2.9.css", "kiosk-lights-v1.2.15.css", "kiosk-pad-legacy.css", "pad-copy-adapter.js",
+ "kiosk-v1.2.9.css", "kiosk-lights-v1.2.15.css", "kiosk-pad-legacy.css", "pad-copy-adapter.js", "pad-copy-diagnostic.js",
 ))
 def pad_copy_states(bridge):
  raw=bridge.ha.states()
@@ -614,6 +614,31 @@ def secure_handler(security, html):
                 self.json_result(401, {"error": "HTTPS terminalparositas szukseges"})
                 return
 
+            if path == "/api/padcopy/diag":
+                if pad != "KIOSK-01":
+                    self.json_result(403, {"error": "KIOSK-01 required"})
+                    return
+                import re
+                def compact(value, maximum=120):
+                    if not isinstance(value, str):
+                        return ""
+                    value=re.sub(r"\\d{5,}", "[number]", value)
+                    return re.sub(r"[^A-Za-z0-9 .:_/()\\[\\]-]", " ", value)[:maximum]
+                event=compact(data.get("event"), 24)
+                if event not in ("js-error","asset-fail","script-ok","probe","timeout"):
+                    self.json_result(403, {"error": "Unsupported diagnostics"})
+                    return
+                source=compact(data.get("source"),64)
+                detail=compact(data.get("detail"),100)
+                line=data.get("line")
+                line=line if type(line) is int and 0<=line<100000 else 0
+                LOG.warning("IPAD_BOOT_DIAG event=%s source=%s detail=%s line=%s custom=%s thermo=%s lights=%s",
+                            event,source,detail,line,
+                            bool(data.get("hasCustomElements")),
+                            bool(data.get("thermostatRegistered")),
+                            bool(data.get("lightsRegistered")))
+                self.json_result(200, {"ok":True})
+                return
             if path == "/api/padcopy/service":
                 if pad!="KIOSK-01":
                     self.json_result(403,{"error":"Paired KIOSK-01 required"})

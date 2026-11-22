@@ -14,3 +14,9 @@ QA: server mock HTTP routes/static 200, paired states filtered, anonymous HTTP40
 
 Rollback: use original HA native /ziko-kiosk-thermostat/attekintes and /vilagitasok (unchanged), or original HTTPS root / legacy app; if necessary revert this addon source to GitHub merged 0.3.8 commit and update addon. Preserve CA, sessions, pairing options and data. NEVER delete original Miix JS/CSS.
 \nCompatibility refinement v0.3.10: stylesheet kiosk-pad-legacy.css is appended only to the fork copy shadow roots; with @supports not(display:grid) it emulates the original layout using iOS9-supported flexbox. Native Miix v1.2.13/v1.2.16 JS and original CSS are still byte-identical. New fallback is not visible on modern CSS Grid browsers.\n
+### 2026-11-22 v0.3.11 diagnostic incident
+Owner photo and repeat report: iPad2 Safari9 shows only "A ZIKO Kiosk másolata inicializálódik…" despite every asset HTTP200. The prior retry timer stopped after 27.6s without error.
+New CODE ONLY in copied Kiosk Pad (original Miix JS/CSS unchanged):
+* Early, same-origin ES5 diagnostic asset records script load failures/JS exceptions and only the registration boolean; paired KIOSK-01 protected POST /api/padcopy/diag accepts sanitized structured error metadata, **never** cookie/pair code, sensor values or passwords; logs only low-risk file/line/type. No new network port, no different authentication.
+* After 28s, visible failure with ÚJRAPRÓBÁLOM button rather than forever loading. No real U200 command.
+This is instrumentation and failure recovery, not proof of iOS9 compatibility. The next actual iPad load is needed for precise JavaScript exception from Safari. Prior v0.3.10 remains available through Git history and Vault.
