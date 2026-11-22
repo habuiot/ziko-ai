@@ -19,6 +19,7 @@ import ssl
 import subprocess
 import threading
 import time
+import datetime
 import urllib.parse
 import uuid
 from http import cookies
@@ -205,6 +206,87 @@ class Security:
         except (OSError, ValueError, TypeError):
             return ""
 
+    def ipad_entry_state(self):
+        """Fresh, limited U200/door/timer snapshot. A missing input disables actions."""
+        ids = (
+            "binary_sensor.ewelink_snzb_04p_contact",
+            "lock.eloszoba_bejarati_ajto_also_zar",
+            "automation.haziko_kulcs_belepes_ajtofigyeles_es_automatikus_visszazaras",
+            "timer.haziko_kulcs_belepesi_idoablak",
+            "input_select.haziko_kulcs_belepesi_folyamat",
+        )
+        try:
+            rows = self.bridge.ha.states()
+            if not isinstance(rows, list):
+                raise ValueError("Invalid HA states")
+            lookup = {r.get("entity_id"): r for r in rows if isinstance(r, dict) and r.get("entity_id") in ids}
+            def state(e):
+                r = lookup.get(e) or {}
+                return r.get("state", "unknown")
+            door, lock, guard, timer, phase = [state(i) for i in ids]
+            remaining = None
+            timer_row = lookup.get(ids[3]) or {}
+            if timer == "active" and phase == "varakozas_ajtonyitasra":
+                finish = (timer_row.get("attributes") or {}).get("finishes_at")
+                if finish:
+                    try:
+                        t = datetime.datetime.fromisoformat(str(finish).replace("Z", "+00:00")).timestamp()
+                        remaining = int(max(0, min(60, t - time.time() + 0.999)))
+                    except (TypeError, ValueError, OverflowError):
+                        remaining = None
+            return 200, {"ok": True, "ts": int(time.time()), "door": door, "lock": lock,
+                         "guard": guard, "timer": timer, "phase": phase, "remaining": remaining}
+        except Exception as exc:
+            LOG.warning("iPad entry state unavailable: %s", type(exc).__name__)
+            return 503, {"ok": False, "error": "A zár és az ajtó állapota nem ellenőrizhető",
+                         "door": "unknown", "lock": "unknown", "guard": "unknown",
+                         "timer": "unknown", "phase": "unknown", "remaining": None}
+
+    def ipad_entry_action(self, pad, ip, action, confirmation):
+        """Mirror Node03: short tap closes; 750 ms touch hold opens, fail closed."""
+        if pad != "KIOSK-01":
+            return 403, {"error": "Csak párosított KIOSK-01 terminál vezérelheti a zárat"}
+        if (action, confirmation) not in (("unlock", "hold"), ("lock", "tap")):
+            return 403, {"error": "Nem engedélyezett zárművelet vagy érintési gesztus"}
+        status, snapshot = self.ipad_entry_state()
+        if status != 200:
+            return status, snapshot
+        if snapshot["door"] != "off":
+            return 423, {"error": "Az ajtó nyitva vagy ismeretlen: zárvezérlés tiltva"}
+        if action == "unlock":
+            if snapshot["lock"] != "locked":
+                return 423, {"error": "Nyitás csak igazoltan zárt U200 állapotból"}
+            if snapshot["guard"] != "on" or snapshot["timer"] in ("unknown", "unavailable", None):
+                return 423, {"error": "A visszazárási automatika vagy időzítő nem elérhető"}
+            if not self.swipe_without_pin():
+                return 423, {"error": "A PIN nélküli nyitás nincs engedélyezve; nyitás tiltva"}
+            # Reuse existing KIOSK-01/IP-bound unlock rate limit and state confirmation.
+            return self.unlock(pad, ip, None)
+        if snapshot["lock"] == "locked":
+            return 200, {"ok": True, "state": "locked", "already_locked": True}
+        if snapshot["lock"] != "unlocked":
+            return 423, {"error": "A zár mozog vagy állapota ismeretlen; zárás tiltva"}
+        with self.unlock_mutex:
+            # Re-read immediately before acting to reject stale screen state.
+            status, latest = self.ipad_entry_state()
+            if status != 200:
+                return status, latest
+            if latest["door"] != "off" or latest["lock"] != "unlocked":
+                return 423, {"error": "Ajtó vagy U200 állapota megváltozott; zárás tiltva"}
+            try:
+                self.bridge.ha.service("lock", "lock", LOCK_ENTITY)
+                for attempt in range(6):
+                    actual = self.bridge.ha.request("/states/" + LOCK_ENTITY).get("state")
+                    if actual == "locked":
+                        self.bridge.last_read = 0
+                        return 200, {"ok": True, "state": "locked"}
+                    if attempt < 5:
+                        time.sleep(0.7)
+                return 503, {"error": "Zárási parancs elküldve, de az U200 nem igazolta a zárást"}
+            except Exception as exc:
+                LOG.warning("iPad U200 lock action failed: %s", type(exc).__name__)
+                return 503, {"error": "A zárás nem sikerült vagy nem ellenőrizhető"}
+
     def unlock(self, pad, ip, supplied):
         if pad != "KIOSK-01":
             return 403, {"error": "Csak KIOSK-01 terminalon lehet nyitni"}
@@ -304,6 +386,20 @@ def secure_handler(security, html):
                 except (OSError, ssl.SSLError):
                     pass
                 return
+            if path == "/kiosk-2026":
+                try:
+                    body = Path(__file__).with_name("ipad_kiosk_2026.html").read_bytes()
+                    if not (body.startswith(b"<!doctype html>") and 10000 < len(body) < 100000):
+                        raise ValueError("Invalid iPad Kiosk package")
+                except (OSError, ValueError):
+                    self.json_result(503, {"error": "ZIKO Kiosk iPad frontend nem elérhető"})
+                    return
+                self.send_response(200)
+                self.headers_common("text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
             if path == "/access-2226":
                 try:
                     body = Path(__file__).with_name("access_2226_live.html").read_bytes()
@@ -356,6 +452,14 @@ def secure_handler(security, html):
                 self.json_result(200, {"paired": bool(pad), "pad": pad,
                                        "secure": True, "unlock_ready": bool(security.swipe_without_pin() or security.expected_pin())})
                 return
+            if path == "/api/entry":
+                pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
+                if pad != "KIOSK-01":
+                    self.json_result(401, {"error": "Párosított HTTPS KIOSK-01 szükséges"})
+                    return
+                status, result = security.ipad_entry_state()
+                self.json_result(status, result)
+                return
             if path == "/api/state":
                 pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
                 if not pad:
@@ -399,6 +503,11 @@ def secure_handler(security, html):
             pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
             if not pad:
                 self.json_result(401, {"error": "HTTPS terminalparositas szukseges"})
+                return
+            if path == "/api/entry":
+                status, result = security.ipad_entry_action(
+                    pad, self.client_address[0], data.get("action"), data.get("confirm"))
+                self.json_result(status, result)
                 return
             if path == "/api/command":
                 try:
