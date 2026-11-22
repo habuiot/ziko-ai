@@ -1,5 +1,5 @@
 name: "ZIKO Kiosk Pad"
-version: "0.3.13"
+version: "0.3.14"
 slug: ziko_kiosk_pad
 description: "Legacy iPad 2 HMI, 2226 HTTPS dashboard plus paired lights, scenes, media and read-only Energy"
 arch:
