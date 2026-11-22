@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="hu"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ZIKO Kiosk">
+<meta name="format-detection" content="telephone=no">
+<title>ZIKO KIOSK · iPad 2</title>
+<style>
+*{-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{position:fixed;top:0;left:0;right:0;bottom:0;margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#050e18;color:#eaf5ff;font:15px Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;-webkit-user-select:none;user-select:none}
+body{background:radial-gradient(circle at 75% 4%,#143b52 0,#09192b 46%,#050d17 100%)}
+button,input{font:inherit;border-radius:9px;-webkit-appearance:none;appearance:none}
+button{cursor:pointer;color:#e8fcff;border:1px solid #36647f;background:#102a3e;min-height:45px}
+button:disabled{cursor:default;opacity:.38}
+button:active{background:#1b4d62}
+#shell{position:absolute;top:0;bottom:0;left:0;right:0;overflow:hidden}
+#header{height:71px;padding:12px 16px 6px;background:rgba(4,14,26,.92);border-bottom:1px solid #23506b;position:relative;z-index:1}
+#brand{font-size:25px;font-weight:bold;letter-spacing:3px;line-height:26px;color:#72e8fc;text-shadow:0 0 15px rgba(53,198,240,.4)}
+#brand small{font-size:11px;color:#f3f9ff;letter-spacing:2px}
+#subtitle{margin-top:4px;font-size:11px;color:#98b8c8;letter-spacing:1px}
+#headright{position:absolute;right:14px;top:10px;text-align:right}
+#clock{display:block;font-size:26px;color:#fff;font-weight:bold}
+#connection{font-size:10px;letter-spacing:1px;color:#d9a776}
+#connection.online{color:#7dffcb}
+#main{position:absolute;top:71px;bottom:73px;left:0;right:0;padding:10px;overflow:hidden}
+.page{display:none;width:100%;height:100%;overflow:hidden}
+.page.active{display:block}
+.panel{border:1px solid #26485e;border-radius:12px;background:rgba(12,30,47,.94);box-shadow:inset 0 1px 0 rgba(130,210,245,.06),0 8px 18px rgba(0,0,0,.15)}
+.panel-title{font-size:12px;letter-spacing:1.5px;color:#86dbef;font-weight:bold;padding:12px 13px 8px;border-bottom:1px solid rgba(100,175,210,.13)}
+.panel-title b{float:right;color:#8da8b9;letter-spacing:0;font-weight:normal;font-size:11px}
+#home .left,#home .right{height:100%;vertical-align:top}
+#home .left{display:inline-block;width:53%;padding-right:5px}
+#home .right{display:inline-block;width:47%;padding-left:5px}
+#home .left>.panel,#home .right>.panel{height:100%;overflow:hidden}
+#openings{padding:8px;overflow:auto;height:calc(100% - 42px);-webkit-overflow-scrolling:touch}
+.subheading{font-size:10px;letter-spacing:1px;color:#79b2cc;margin:4px 4px 7px;font-weight:bold}
+.tile{display:inline-block;vertical-align:top;width:48.4%;min-height:59px;margin:0 0.8% 7px;padding:10px;border:1px solid #305168;border-radius:8px;background:#11283c}
+.tile b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:#cee7f0;margin-bottom:7px}
+.tile span{font-size:13px;font-weight:bold;color:#a2c6d4}
+.tile span.good{color:#76ffc7}.tile span.warn{color:#ffb978}.tile span.bad{color:#ff8597}
+#entryPane{position:relative;height:calc(100% - 41px);padding:11px;overflow:hidden}
+#lockPanel{display:block;position:relative;margin:0 0 12px;width:100%;height:49%;min-height:210px;padding:16px;border:1px solid #35617a;border-radius:11px;background:linear-gradient(160deg,#153f4e,#11263c);color:#d7f6fc;text-align:center;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#lockPanel.safe{border-color:#1f9e88;background:linear-gradient(160deg,#145148,#0c2d36)}
+#lockPanel.open{border-color:#df9d4e;background:linear-gradient(160deg,#51402b,#192e3c)}
+#lockPanel.danger{border-color:#bf5166;background:linear-gradient(160deg,#462c3c,#172332)}
+#lockPanel .label{display:block;font-size:12px;letter-spacing:1px;color:#9bcddf;margin-bottom:11px}
+#lockMain{display:block;font-size:23px;letter-spacing:.5px;font-weight:bold;margin:8px 0 13px}
+#lockStates{display:block;font-size:13px;color:#d3e7ee}
+#lockGuide{display:block;font-size:12px;color:#a8beca;line-height:1.5;margin-top:10px}
+#lockProgress{height:3px;background:#65ecdc;position:absolute;bottom:0;left:0;width:0;transition:width .75s linear;-webkit-transition:width .75s linear;border-radius:0 0 10px 10px}
+#lockPanel.holding #lockProgress{width:100%}
+#entryCountdown{display:block;text-align:center;font-size:14px;color:#ffd18e;min-height:25px;margin-top:8px}
+#entryDetails{font-size:12px;color:#8ba8bc;line-height:1.55}
+#entryDetails strong{color:#c5e2ee}
+#fullscreenHint{font-size:11px;color:#9ab8cb;line-height:1.5;margin:12px 3px;padding:10px;border:1px dashed #345d73;border-radius:7px}
+#footer{position:absolute;bottom:0;left:0;right:0;height:73px;border-top:1px solid #2b566a;padding:7px 6px;background:#071727}
+.tab{display:inline-block;width:23.6%;height:56px;margin:0 .7%;border-radius:9px;font-size:13px;font-weight:bold;color:#9dc1d2}
+.tab.active{border-color:#54ddec;background:#174b5f;color:#eafaff}
+#message{position:absolute;bottom:75px;left:10px;right:10px;min-height:0;padding:0;z-index:7;pointer-events:none}
+#message.show{padding:13px;background:rgba(22,51,64,.98);border:1px solid #67b7ce;border-radius:8px;font-size:13px;color:#fff;box-shadow:0 10px 28px #000}
+#message.bad{border-color:#de6a7f;color:#ffdbdf}
+#lightsPage,#mediaPage,#energyPage{overflow:hidden}
+.scroll{height:calc(100% - 44px);overflow:auto;-webkit-overflow-scrolling:touch;padding:9px}
+.page>.panel{height:100%}
+.item{display:inline-block;vertical-align:top;width:48.9%;margin:.5% .5% 9px;padding:12px;border:1px solid #2b516b;background:#0f293f;border-radius:9px;min-height:115px}
+.item .name{display:block;color:#edf6fc;font-size:14px;font-weight:bold;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.item .state{display:block;margin:8px 0;color:#90acbc;font-size:12px}
+.item .controls button{min-width:54px;min-height:40px;margin:0 6px 0 0;padding:4px 13px}
+.item .controls button.on{border-color:#3bb79d;color:#8affe0}
+#pairLayer{position:absolute;z-index:15;top:0;left:0;right:0;bottom:0;background:rgba(5,17,29,.98);padding:26px;display:none}
+#pairLayer.visible{display:block}
+#pairCard{max-width:490px;margin:10% auto;background:#112b40;border:1px solid #41778e;border-radius:16px;padding:24px}
+#pairCard h1{margin:0 0 8px;color:#71eaff;letter-spacing:2px}
+#pairCard p{color:#b1ccdc;line-height:1.6}
+#pairCode{width:100%;height:53px;font-size:24px;text-align:center;letter-spacing:5px;color:#fff;background:#071a2c;border:1px solid #3b809b;padding:7px;margin:12px 0}
+#pairBtn{width:100%;min-height:55px;border-color:#69eeed;background:#155e6d;color:#fff;font-weight:bold}
+#pairMessage{min-height:20px;color:#ffcf84;font-size:12px}
+@media(max-width:760px), (orientation:portrait){
+ #header{height:65px}
+ #brand{font-size:23px}
+ #main{top:65px;bottom:68px}
+ #footer{height:68px}
+ .tab{height:52px}
+ #home .left,#home .right{display:block;width:100%;height:49.5%;padding:0}
+ #home .left{padding-bottom:4px}
+ #home .right{padding-top:4px}
+ #home .left>.panel,#home .right>.panel{height:100%}
+ #openings{height:calc(100% - 33px)}
+ #entryPane{height:calc(100% - 36px);padding:5px 9px}
+ #lockPanel{min-height:0;height:75%;padding:8px}
+ #lockMain{font-size:20px;margin:8px 0}
+ #lockPanel .label{margin-bottom:4px}
+ #lockGuide{margin-top:5px;font-size:11px}
+ #entryCountdown{font-size:12px;margin-top:2px;min-height:14px}
+ #entryDetails{display:none}
+ #fullscreenHint{display:none}
+ .tile{min-height:40px;padding:6px 8px;margin-bottom:4px}
+ .tile b{margin-bottom:3px;font-size:10px}
+ .tile span{font-size:11px}
+ .panel-title{padding:8px 10px 5px}
+ .item{width:48.7%;min-height:107px}
+}
+@media(max-height:670px) and (orientation:landscape){
+ #header{height:59px;padding:7px 12px}
+ #brand{font-size:22px}
+ #headright{top:5px}
+ #main{top:59px;bottom:64px}
+ #footer{height:64px;padding:4px 5px}
+ .tab{height:53px}
+ #entryPane{padding:7px}
+ #lockPanel{min-height:175px;height:55%;padding:9px}
+ #entryDetails{display:none}
+ #fullscreenHint{margin-top:7px}
+ .tile{min-height:49px;padding:7px}
+ #lockMain{font-size:20px;margin:5px 0}
+}
+</style></head>
+<body><div id="shell">
+<div id="header"><div id="brand">ZIKO <small>KIOSK</small></div><div id="subtitle">HÁZIKÓ · KIOSK-01 · iPAD</div>
+<div id="headright"><span id="clock">--:--</span><span id="connection">KAPCSOLÓDÁS...</span></div></div>
+<div id="main">
+<section id="home" class="page active">
+<div class="left"><div class="panel"><div class="panel-title">NYÍLÁSZÁRÓK <b id="openingSummary">Nincs adat</b></div><div id="openings"></div></div></div><div class="right"><div class="panel"><div class="panel-title">BEJÁRATI AJTÓ · U200 <b id="safeSignal">VÉDETT</b></div><div id="entryPane">
+<button type="button" id="lockPanel" disabled aria-label="Bejárati ajtó zárvezérlés. Rövid nyomás zár, hosszú nyomás nyit."><span class="label">BEJÁRATI AJTÓ</span>
+<span id="lockMain">NINCS ADAT</span><span id="lockStates">AJTÓ -- · ZÁR --</span><span id="lockGuide">Rövid érintés: zárás · 0,75 mp hosszú: nyitás</span><i id="lockProgress"></i></button>
+<div id="entryCountdown"></div><div id="entryDetails"><strong>Valós U200 visszajelzés.</strong> Ismeretlen ajtó- vagy zárállapot esetén nincs vezérlés. A nyitás csak az aktív 60 mp-es visszazárási védelemmel engedélyezett.</div>
+<div id="fullscreenHint">TELJES KÉPERNYŐ: Safari → Megosztás → Főképernyőhöz. Az ikonnal megnyitva a böngésző címsora nélkül fut.</div>
+</div></div></div></section>
+<section id="lightsPage" class="page"><div class="panel"><div class="panel-title">VILÁGÍTÁS <b>élő Házikó</b></div><div id="lightItems" class="scroll"></div></div></section>
+<section id="mediaPage" class="page"><div class="panel"><div class="panel-title">MÉDIA <b>valós készülékek</b></div><div id="mediaItems" class="scroll"></div></div></section>
+<section id="energyPage" class="page"><div class="panel"><div class="panel-title">ENERGIA ÉS KLÍMA <b id="energyTotal">részösszeg</b></div><div id="energyItems" class="scroll"></div></div></section>
+</div>
+<div id="message"></div>
+<div id="footer">
+<button type="button" class="tab active" data-page="home">OTTHON</button><button type="button" class="tab" data-page="lightsPage">FÉNYEK</button><button type="button" class="tab" data-page="mediaPage">MÉDIA</button><button type="button" class="tab" data-page="energyPage">ENERGIA</button></div>
+<div id="pairLayer"><div id="pairCard"><h1>ZIKO KIOSK</h1><p>Biztonságos, helyi HTTPS-kapcsolat. A vezérléshez egyszer párosítsd a <b>KIOSK-01</b> iPadet a Házikóval.</p><input id="pairCode" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="8 számjegy" autocomplete="off"><button id="pairBtn" type="button">PÁROSÍTÁS</button><p id="pairMessage"></p><p>Jelszót vagy nyitókódot ne írj a ChatGPT-be. A párosítás kizárólag a Házikóval történik.</p></div></div>
+</div>
+<script>
+(function(){
+"use strict";
+var started=false,paired=false,busy=false,refreshing=false,online=false,items=null,entry=null,toastTimer=null;
+var touch=false,lastTouch=0,pressing=false,holdTimer=null,held=false,startX=0,startY=0,pressStart=0;
+function E(id){return document.getElementById(id);}
+function esc(x){return String(x===undefined||x===null?"":x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function state(x){return x===undefined||x===null||x===""?"unavailable":String(x);}
+function stateLabel(x){return x==="on"?"BE":x==="off"?"KI":x==="locked"?"ZÁRVA":x==="unlocked"?"NYITVA":x==="active"?"AKTÍV":x==="idle"?"INAKTÍV":x==="unavailable"||x==="unknown"?"NINCS ADAT":x;}
+function get(items,key){var a=(items&&items[key])||[];return a instanceof Array?a:[];}
+function byId(arr,id){for(var i=0;i<arr.length;i++){if(arr[i].id===id)return arr[i];}return null;}
+function alertUser(s,bad){var m=E("message");m.textContent=s;m.className="show"+(bad?" bad":"");clearTimeout(toastTimer);toastTimer=setTimeout(function(){m.className="";},5200);}
+function api(method,url,data,cb){
+ var xhr=new XMLHttpRequest();xhr.open(method,url,true);xhr.timeout=11000;xhr.setRequestHeader("X-ZIKO-Request","1");
+ if(data!==null)xhr.setRequestHeader("Content-Type","application/json");
+ xhr.onreadystatechange=function(){if(xhr.readyState!==4)return;var v={};try{v=JSON.parse(xhr.responseText);}catch(e){}cb(xhr.status>=200&&xhr.status<300,v,xhr.status);};
+ xhr.onerror=function(){cb(false,{error:"Hálózati kapcsolat megszakadt"},0);};
+ xhr.ontimeout=function(){cb(false,{error:"Időtúllépés"},0);};
+ try{xhr.send(data===null?null:JSON.stringify(data));}catch(e){cb(false,{error:"Kapcsolati hiba"},0);}
+}
+function showPair(s){paired=false;online=false;E("pairLayer").className="visible";E("pairMessage").textContent=s||"";E("connection").textContent="PÁROSÍTÁS SZÜKSÉGES";E("connection").className="";}
+function ready(){E("pairLayer").className="";paired=true;}
+function renderContacts(){
+ var arr=get(items,"contacts"),groups=[["NAGYSZOBA",["binary_sensor.nagyszoba_kis_ablak_ajto","binary_sensor.nagyszoba_nagyszoba_nagy_ablak_ajto","binary_sensor.ewelink_snzb_04p_contact_2"]],["NAPPALI",["binary_sensor.nappali_nappali_kis_ablak_bal_ajto_2","binary_sensor.myggbett_door_window_sensor_ajto","binary_sensor.nappali_jobb_kis_ablak_ajto"]]];
+ var h="",open=0,unknown=0;
+ for(var g=0;g<groups.length;g++){
+  h+='<div class="subheading">'+groups[g][0]+"</div>";
+  for(var j=0;j<groups[g][1].length;j++){
+   var v=byId(arr,groups[g][1][j]),s=v?state(v.state):"unavailable";
+   if(s==="on")open++;if(s!=="on"&&s!=="off")unknown++;
+   h+='<div class="tile"><b>'+esc(v?v.label:groups[g][1][j])+'</b><span class="'+(s==="off"?"good":s==="on"?"warn":"bad")+'">'+(s==="off"?"ZÁRVA":s==="on"?"NYITVA":"NINCS ADAT")+"</span></div>";
+  }
+ }
+ E("openings").innerHTML=h;
+ E("openingSummary").textContent=open?open+" NYITVA":unknown?unknown+" ISMERETLEN":"MIND ZÁRVA";
+}
+function canClose(){return !!entry&&entry.ok===true&&entry.door==="off"&&entry.lock==="unlocked"&&online&&paired&&!busy;}
+function canOpen(){return !!entry&&entry.ok===true&&entry.door==="off"&&entry.lock==="locked"&&entry.guard==="on"&&entry.timer!=="unknown"&&entry.timer!=="unavailable"&&online&&paired&&!busy;}
+function updateEntry(){
+ var e=entry||{},door=state(e.door),lock=state(e.lock),p=E("lockPanel"),can=canClose()||canOpen(),main="",mode="";
+ if(door==="on"){main="AJTÓ NYITVA";mode="danger";}
+ else if(door!=="off"){main="NINCS AJTÓADAT";mode="danger";}
+ else if(lock==="locked"){main="BIZTONSÁGBAN";mode="safe";}
+ else if(lock==="unlocked"){main="ZÁR NYITVA";mode="open";}
+ else if(lock==="locking"||lock==="unlocking"){main="MOZGÁSBAN";mode="open";}
+ else{main="NINCS ZÁRADAT";mode="danger";}
+ E("lockMain").textContent=main;
+ E("lockStates").textContent="AJTÓ "+(door==="off"?"CSUKVA":door==="on"?"NYITVA":"NINCS ADAT")+"  ·  U200 "+stateLabel(lock);
+ E("lockGuide").textContent=canOpen()?"TARTSD 0,75 MP-IG A NYITÁSHOZ":canClose()?"ÉRINTSD MEG RÖVIDEN A ZÁRÁSHOZ":door==="on"?"Ajtó nyitva: zárvezérlés tiltva":"Zárvezérlés a biztonsági feltételek miatt tiltva";
+ E("entryCountdown").textContent=(e.remaining!==null&&e.remaining!==undefined&&e.timer==="active"&&e.phase==="varakozas_ajtonyitasra")?"Visszazárás: "+e.remaining+" mp · az ajtó első nyitásáig":"";
+ p.className=mode+(pressing?" holding":"");p.disabled=!can;
+ E("safeSignal").textContent=e.guard==="on"?"VÉDELEM AKTÍV":"VÉDELEM NINCS ADAT";
+}
+function tileItems(key,container){
+ var arr=get(items,key),h="";
+ for(var i=0;i<arr.length;i++){
+  var v=arr[i],s=state(v.state),domain=key==="lights"?"light":"media_player";
+  h+='<div class="item"><span class="name">'+esc(v.label)+'</span><span class="state">'+esc(stateLabel(s))+"</span><div class='controls'>";
+  if(key==="lights"){
+   h+='<button class="on" data-id="'+esc(v.id)+'" data-act="on" data-domain="'+domain+'">BE</button><button data-id="'+esc(v.id)+'" data-act="off" data-domain="'+domain+'">KI</button>';
+  }else{
+   h+='<button data-id="'+esc(v.id)+'" data-act="play_pause" data-domain="'+domain+'">▶❚❚</button><button data-id="'+esc(v.id)+'" data-act="volume_down" data-domain="'+domain+'">−</button><button data-id="'+esc(v.id)+'" data-act="volume_up" data-domain="'+domain+'">+</button>';
+  }
+  h+="</div></div>";
+ }
+ E(container).innerHTML=h||'<div class="tile">Nincs elérhető adat</div>';
+ var buttons=E(container).getElementsByTagName("button");
+ for(var j=0;j<buttons.length;j++){
+  buttons[j].disabled=!online||!paired;
+  buttons[j].onclick=function(){command(this.getAttribute("data-id"),this.getAttribute("data-act"));};
+ }
+}
+function renderEnergy(){
+ var arr=get(items,"energy"),cl=get(items,"climate"),h="",summary=items&&items.energy_summary?items.energy_summary:{};
+ if(cl.length){var c=cl[0];h+='<div class="item"><span class="name">HŐMÉRSÉKLET</span><span class="state">'+esc(c.label)+'</span><b>'+esc(c.current_temperature===null?"--":c.current_temperature)+" °C</b></div>";}
+ for(var i=0;i<arr.length;i++){
+  var x=arr[i];h+='<div class="item"><span class="name">'+esc(x.label)+'</span><span class="state">'+(x.fresh?"FRISS MÉRÉS":"NINCS FRISS ADAT")+"</span><b>"+esc(x.fresh&&x.watts!==null?x.watts+" W":"--")+"</b></div>";
+ }
+ E("energyItems").innerHTML=h;
+ E("energyTotal").textContent=summary.partial_w!==null&&summary.partial_w!==undefined?"Mért részösszeg "+summary.partial_w+" W":"Nincs friss mért részösszeg";
+}
+function render(){
+ E("connection").textContent=online?"HAZIKÓ ONLINE":"NINCS KAPCSOLAT";
+ E("connection").className=online?"online":"";
+ if(items){renderContacts();tileItems("lights","lightItems");tileItems("media","mediaItems");renderEnergy();}
+ updateEntry();
+}
+function refresh(){
+ if(refreshing||busy)return;
+ refreshing=true;
+ api("GET","/api/status",null,function(ok,status){
+  if(!ok){refreshing=false;online=false;entry=null;render();return;}
+  if(!status.paired||status.pad!=="KIOSK-01"){refreshing=false;showPair("A KIOSK-01 munkamenet hiányzik vagy lejárt.");entry=null;items=null;render();return;}
+  ready();
+  api("GET","/api/state",null,function(stateOK,body,code){
+   if(code===401){refreshing=false;showPair("Új párosítás szükséges.");return;}
+   items=stateOK&&body.ok&&body.items?body.items:null;
+   online=!!items;
+   api("GET","/api/entry",null,function(entryOK,detail,entryCode){
+    entry=entryOK&&detail.ok?detail:null;refreshing=false;render();
+    if(entryCode===401){showPair("A zárkezeléshez új KIOSK-01 párosítás szükséges.");}
+   });
+  });
+ });
+}
+function command(id,action){
+ if(!online||!paired||busy){alertUser("Nincs hitelesített kapcsolat.",true);return;}
+ busy=true;render();
+ api("POST","/api/command",{id:id,action:action},function(ok,resp){
+  busy=false;alertUser(ok?"Parancs elküldve":resp.error||"A parancs nem hajtható végre",!ok);
+  setTimeout(refresh,450);
+ });
+}
+function entryAction(action){
+ if(busy||!paired||!online)return;
+ if(action==="unlock"&&!canOpen()){alertUser("A zárnyitás feltételei nem teljesülnek.",true);return;}
+ if(action==="lock"&&!canClose()){alertUser("A zárás feltételei nem teljesülnek.",true);return;}
+ busy=true;updateEntry();
+ api("POST","/api/entry",{action:action,confirm:action==="unlock"?"hold":"tap"},function(ok,resp){
+  busy=false;
+  alertUser(ok?(action==="unlock"?"U200 nyitás visszaigazolva.":"U200 zárás visszaigazolva."):(resp.error||"U200 művelet sikertelen, ellenőrizd az állapotot."),!ok);
+  setTimeout(refresh,250);
+ });
+}
+function cancelPress(){clearTimeout(holdTimer);holdTimer=null;pressing=false;held=false;E("lockPanel").className=E("lockPanel").className.replace(/ holding/g,"");}
+function startPress(x,y){
+ if(pressing||(!canOpen()&&!canClose()))return;
+ pressing=true;held=false;startX=x;startY=y;pressStart=Date.now();
+ E("lockPanel").className+=" holding";
+ holdTimer=setTimeout(function(){if(!pressing||!canOpen())return;held=true;E("lockPanel").className=E("lockPanel").className.replace(/ holding/g,"");entryAction("unlock");},760);
+}
+function movePress(x,y){if(pressing&&(Math.abs(x-startX)>24||Math.abs(y-startY)>24))cancelPress();}
+function endPress(){
+ if(!pressing)return;
+ var wasHeld=held;clearTimeout(holdTimer);holdTimer=null;pressing=false;held=false;E("lockPanel").className=E("lockPanel").className.replace(/ holding/g,"");
+ if(!wasHeld&&Date.now()-pressStart<760)entryAction("lock");
+}
+function bindEntry(){
+ var p=E("lockPanel");
+ p.addEventListener("touchstart",function(e){lastTouch=Date.now();touch=true;if(e.touches.length!==1)return;startPress(e.touches[0].clientX,e.touches[0].clientY);if(e.cancelable)e.preventDefault();},false);
+ p.addEventListener("touchmove",function(e){if(e.touches.length!==1){cancelPress();return;}movePress(e.touches[0].clientX,e.touches[0].clientY);if(e.cancelable)e.preventDefault();},false);
+ p.addEventListener("touchend",function(e){lastTouch=Date.now();endPress();if(e.cancelable)e.preventDefault();},false);
+ p.addEventListener("touchcancel",function(){cancelPress();},false);
+ p.addEventListener("mousedown",function(e){if(Date.now()-lastTouch<1000||e.button!==0)return;startPress(e.clientX,e.clientY);},false);
+ p.addEventListener("mousemove",function(e){if(!touch)movePress(e.clientX,e.clientY);},false);
+ p.addEventListener("mouseup",function(e){if(Date.now()-lastTouch<1000)return;endPress();},false);
+ p.addEventListener("mouseleave",function(){cancelPress();},false);
+ p.addEventListener("contextmenu",function(e){e.preventDefault();return false;},false);
+}
+function clock(){var d=new Date();E("clock").textContent=("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);}
+function page(name){
+ var names=["home","lightsPage","mediaPage","energyPage"];
+ for(var i=0;i<names.length;i++)E(names[i]).className="page"+(names[i]===name?" active":"");
+ var buttons=E("footer").getElementsByTagName("button");
+ for(var j=0;j<buttons.length;j++)buttons[j].className="tab"+(buttons[j].getAttribute("data-page")===name?" active":"");
+}
+function pair(){
+ var code=E("pairCode").value.replace(/[^0-9]/g,"");
+ if(code.length!==8){E("pairMessage").textContent="Pontosan 8 számjegy szükséges.";return;}
+ E("pairBtn").disabled=true;
+ api("POST","/api/pair",{pad:"KIOSK-01",code:code},function(ok,res){
+  E("pairCode").value="";E("pairBtn").disabled=false;
+  if(ok){ready();refresh();}else{E("pairMessage").textContent=res.error||"Párosítás nem sikerült";}
+ });
+}
+function init(){
+ if(started)return;started=true;
+ E("pairBtn").onclick=pair;
+ var b=E("footer").getElementsByTagName("button");
+ for(var i=0;i<b.length;i++)b[i].onclick=function(){page(this.getAttribute("data-page"));};
+ bindEntry();clock();setInterval(clock,1000);refresh();setInterval(refresh,7000);
+ if(window.navigator&&window.navigator.standalone===true)E("fullscreenHint").style.display="none";
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,false);else init();
+})();
+</script></body></html>
