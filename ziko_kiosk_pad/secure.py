@@ -344,7 +344,7 @@ PAD_COPY_ALLOWED_SERVICES = {
 PAD_COPY_ASSETS = frozenset((
  "webcomponents-bundle.js", "core-js-bundle.js", "dom4.js", "pep.js",
  "kiosk-thermostat-copy.es5.js", "kiosk-lights-copy.es5.js",
- "kiosk-v1.2.9.css", "kiosk-lights-v1.2.15.css", "pad-copy-adapter.js",
+ "kiosk-v1.2.9.css", "kiosk-lights-v1.2.15.css", "kiosk-pad-legacy.css", "pad-copy-adapter.js",
 ))
 def pad_copy_states(bridge):
  raw=bridge.ha.states()
