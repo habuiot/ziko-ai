@@ -327,6 +327,51 @@ class Security:
                 return 503, {"error": "A zarnyitas nem sikerult vagy nem ellenorizheto"}
 
 
+PAD_COPY_ALLOWED_ENTITIES = frozenset(('automation.haziko_kulcs_belepes_ajtofigyeles_es_automatikus_visszazaras', 'automation.torolkozoszarito_idozitett_inditas', 'automation.torolkozoszarito_idozito_lejart', 'binary_sensor.ewelink_snzb_04p_contact', 'binary_sensor.ewelink_snzb_04p_contact_2', 'binary_sensor.myggbett_door_window_sensor_ajto', 'binary_sensor.nagyszoba_kis_ablak_ajto', 'binary_sensor.nagyszoba_nagyszoba_nagy_ablak_ajto', 'binary_sensor.nappali_jobb_kis_ablak_ajto', 'binary_sensor.nappali_nappali_kis_ablak_bal_ajto_2', 'climate.sonoff_trvzb', 'climate.sonoff_trvzb_2', 'input_boolean.ziko_kiosk_torolkozoszarito_napi_utemezes', 'input_boolean.ziko_kozlekedo_nappali_konyha_kovetes', 'input_boolean.ziko_kozlekedo_pir_automatikus_feny_engedelyezve', 'input_datetime.ziko_kiosk_torolkozoszarito_inditasi_ido', 'input_number.kozlekedo_lekapcsolas_kesleltetese', 'input_number.torolkozoszarito_ciklus_kezdo_energia', 'input_number.ziko_energy_fix_tarifa_ft_kwh', 'input_number.ziko_energy_szamlazasi_fordulonap', 'input_number.ziko_kiosk_torolkozoszarito_utemezes_percek', 'input_select.haziko_kulcs_belepesi_folyamat', 'light.agy_led', 'light.agyfenyek', 'light.awox_eglo_zm_rgb_tw', 'light.furdoszoba_furdoszoba_lampa_hb_1_kapcsolo', 'light.konyha_nappali_osszes_feny', 'light.led_izzo_wifi', 'light.led_izzo_wifi_2', 'light.led_szalag_wifi', 'light.led_szalag_wifi_2', 'light.led_szalag_wifi_3', 'light.led_szalag_wifi_4', 'light.nagyszoba_agy_led_kozep', 'light.nagyszoba_tv_hattervilagitas', 'lock.eloszoba_bejarati_ajto_also_zar', 'number.zhimi_de_874594721_rmb1_favorite_level_p_9_11', 'select.zhimi_de_874594721_rmb1_mode_p_2_4', 'sensor.erkely_erkely_homero_homerseklet', 'sensor.erkely_erkely_homero_paratartalom', 'sensor.konyha_konyha_homero_homerseklet', 'sensor.konyha_konyha_homero_paratartalom', 'sensor.nagyszoba_fokapcsolo_teljes_energiamennyiseg', 'sensor.nagyszoba_fokapcsolo_teljesitmeny', 'sensor.sonoff_trvzb_local_temperature', 'sensor.sonoff_trvzb_local_temperature_2', 'sensor.zhimi_de_874594721_rmb1_filter_life_level_p_4_1', 'sensor.zhimi_de_874594721_rmb1_moto_speed_rpm_p_9_1', 'sensor.zhimi_de_874594721_rmb1_pm2_5_density_p_3_4', 'sensor.zhimi_de_874594721_rmb1_relative_humidity_p_3_1', 'sensor.zhimi_de_874594721_rmb1_temperature_p_3_7', 'switch.lampa_1_kapcsolo_3', 'switch.nagyszoba_fokapcsolo_1_aljzat', 'switch.nagyszoba_tv_hattervilagitas_dreamview', 'switch.zhimi_de_874594721_rmb1_on_p_2_1', 'timer.attributes', 'timer.haziko_kulcs_belepesi_idoablak', 'timer.state', 'timer.torolkozoszarito_idozito', 'timer.ziko_lights_mozgas'))
+
+PAD_COPY_ALLOWED_SERVICES = {
+ "light": frozenset(("turn_on", "turn_off")),
+ "switch": frozenset(("turn_on", "turn_off")),
+ "climate": frozenset(("set_temperature", "set_hvac_mode")),
+ "timer": frozenset(("start", "cancel")),
+ "input_boolean": frozenset(("turn_on", "turn_off")),
+ "input_number": frozenset(("set_value",)),
+ "input_datetime": frozenset(("set_datetime",)),
+ "select": frozenset(("select_option",)),
+ "number": frozenset(("set_value",)),
+ "script": frozenset(("haziko3_fenyjelenet", "ziko_color_dispatch", "ziko_lights_core")),
+}
+PAD_COPY_ASSETS = frozenset((
+ "webcomponents-bundle.js", "core-js-bundle.js", "dom4.js", "pep.js",
+ "kiosk-thermostat-copy.es5.js", "kiosk-lights-copy.es5.js",
+ "kiosk-v1.2.9.css", "kiosk-lights-v1.2.15.css", "pad-copy-adapter.js",
+))
+def pad_copy_states(bridge):
+ raw=bridge.ha.states()
+ if not isinstance(raw,list):raise ValueError("HA states malformed")
+ return {r["entity_id"]:r for r in raw if isinstance(r,dict) and isinstance(r.get("entity_id"),str) and r["entity_id"] in PAD_COPY_ALLOWED_ENTITIES}
+def pad_copy_service(bridge,domain,service,payload):
+ if not isinstance(domain,str) or not isinstance(service,str) or not isinstance(payload,dict):raise ValueError("Bad service request")
+ if domain=="lock" or service not in PAD_COPY_ALLOWED_SERVICES.get(domain,frozenset()):raise ValueError("Unapproved service")
+ if len(json.dumps(payload,ensure_ascii=False))>1700:raise ValueError("Request too long")
+ if domain=="script":
+  if "entity_id" in payload:raise ValueError("Script entity id denied")
+  targets=payload.get("targets")
+  if targets is not None and (not isinstance(targets,list) or len(targets)>20 or any(not isinstance(x,str) or x not in PAD_COPY_ALLOWED_ENTITIES for x in targets)):raise ValueError("Invalid targets")
+  if any(k not in ("profile","targets","command","parameters","request") for k in payload):raise ValueError("Unexpected script argument")
+  if "request" in payload:
+   request=payload["request"]
+   if not isinstance(request,dict) or request.get("op")!="double" or any(k not in ("op","at") for k in request):raise ValueError("Unexpected core request")
+  if "command" in payload and payload["command"]!="turn_on":raise ValueError("Unsupported command")
+  if "profile" in payload and payload["profile"] not in ("warm","teal","red"):raise ValueError("Unsupported light profile")
+ else:
+  vals=payload.get("entity_id")
+  if isinstance(vals,str):vals=[vals]
+  if not isinstance(vals,list) or not vals or len(vals)>25:raise ValueError("Missing/too many entity IDs")
+  if any(not isinstance(x,str) or x not in PAD_COPY_ALLOWED_ENTITIES or not x.startswith(domain+".") for x in vals):raise ValueError("Not a whitelisted entity")
+  if any(k not in ("entity_id","temperature","hvac_mode","brightness_pct","transition","rgb_color","color_temp_kelvin","duration","value","option","datetime","time","brightness") for k in payload):raise ValueError("Unexpected service argument")
+ return bridge.ha.request("/services/"+domain+"/"+service,payload)
+
 def secure_handler(security, html):
     bridge = security.bridge
 
@@ -337,14 +382,14 @@ def secure_handler(security, html):
         def log_message(self, fmt, *args):
             LOG.info("%s - %s", self.address_string(), fmt % args)
 
-        def headers_common(self, mime):
+        def headers_common(self, mime, fork=False):
             self.send_header("Content-Type", mime)
             self.send_header("Cache-Control", "no-store, max-age=0")
             self.send_header("Strict-Transport-Security", "max-age=2592000")
             self.send_header("X-Content-Type-Options", "nosniff")
             self.send_header("X-Frame-Options", "DENY")
             self.send_header("Referrer-Policy", "no-referrer")
-            self.send_header("Content-Security-Policy", "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self'; base-uri 'none'; form-action 'self'")
+            self.send_header("Content-Security-Policy", "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; base-uri 'none'; form-action 'self'" if fork else "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self'; base-uri 'none'; form-action 'self'")
 
         def json_result(self, status, payload, cookie=None):
             data = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
@@ -385,6 +430,70 @@ def secure_handler(security, html):
                     self.wfile.write(image_data)
                 except (OSError, ssl.SSLError):
                     pass
+                return
+
+            if path in ("/kiosk-pad", "/kiosk-pad/", "/kiosk-pad/thermostat", "/kiosk-pad/lights", "/kiosk-pad/attekintes", "/kiosk-pad/vilagitasok"):
+                try:
+                    body=(Path(__file__).with_name("pad_copy")/"index.html").read_bytes()
+                    if not body.startswith(b"<!doctype html>"):raise ValueError("Invalid standalone copy")
+                except (OSError,ValueError):
+                    self.json_result(503, {"error":"Kiosk Pad copy unavailable"})
+                    return
+                self.send_response(200)
+                self.headers_common("text/html; charset=utf-8",fork=True)
+                self.send_header("Content-Length",str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            if path.startswith("/kiosk-pad/assets/"):
+                name=path[len("/kiosk-pad/assets/"):]
+                if name not in PAD_COPY_ASSETS:
+                    self.json_result(404,{"error":"Unknown asset"})
+                    return
+                try:
+                    body=(Path(__file__).with_name("pad_copy")/name).read_bytes()
+                except OSError:
+                    self.json_result(503,{"error":"Kiosk copy asset missing"})
+                    return
+                mime="text/css; charset=utf-8" if name.endswith(".css") else "text/javascript; charset=utf-8"
+                self.send_response(200)
+                self.headers_common(mime,fork=True)
+                self.send_header("Content-Length",str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+            if path == "/api/padcopy/states":
+                pad=security.identity(self.headers.get("Cookie"),self.client_address[0])
+                if pad!="KIOSK-01":
+                    self.json_result(401,{"error":"HTTPS paired KIOSK-01 required"})
+                    return
+                try:
+                    self.json_result(200,{"ok":True,"states":pad_copy_states(bridge)})
+                except Exception as exc:
+                    LOG.warning("Pad copy state fetch unavailable: %s",type(exc).__name__)
+                    self.json_result(503,{"error":"HA state unavailable"})
+                return
+            if path == "/api/padcopy/ha":
+                pad=security.identity(self.headers.get("Cookie"),self.client_address[0])
+                if pad!="KIOSK-01":
+                    self.json_result(401,{"error":"HTTPS paired KIOSK-01 required"})
+                    return
+                query=urllib.parse.parse_qs(parsed.query).get("path",[])
+                if len(query)!=1 or len(query[0])>800:
+                    self.json_result(400,{"error":"Invalid HA API path"})
+                    return
+                api_path=query[0]
+                permitted=api_path.startswith("states/") and api_path[7:] in PAD_COPY_ALLOWED_ENTITIES
+                if api_path.startswith("history/period/") and "filter_entity_id=" in api_path:
+                    names=urllib.parse.parse_qs(urllib.parse.urlsplit(api_path).query).get("filter_entity_id",[])
+                    permitted=len(names)==1 and all(x in PAD_COPY_ALLOWED_ENTITIES for x in names[0].split(","))
+                if not permitted:
+                    self.json_result(403,{"error":"HA API path forbidden"})
+                    return
+                try:self.json_result(200,bridge.ha.request("/"+api_path))
+                except Exception as exc:
+                    LOG.warning("Pad copy HA query unavailable: %s",type(exc).__name__)
+                    self.json_result(503,{"error":"HA API unavailable"})
                 return
             if path == "/kiosk-2026":
                 try:
@@ -503,6 +612,20 @@ def secure_handler(security, html):
             pad = security.identity(self.headers.get("Cookie"), self.client_address[0])
             if not pad:
                 self.json_result(401, {"error": "HTTPS terminalparositas szukseges"})
+                return
+
+            if path == "/api/padcopy/service":
+                if pad!="KIOSK-01":
+                    self.json_result(403,{"error":"Paired KIOSK-01 required"})
+                    return
+                try:
+                    pad_copy_service(bridge,data.get("domain"),data.get("service"),data.get("data"))
+                    self.json_result(200,{"ok":True})
+                except ValueError:
+                    self.json_result(403,{"error":"Unapproved kiosk service"})
+                except Exception as exc:
+                    LOG.warning("Pad copy service error: %s",type(exc).__name__)
+                    self.json_result(503,{"error":"HA command unavailable"})
                 return
             if path == "/api/entry":
                 status, result = security.ipad_entry_action(
